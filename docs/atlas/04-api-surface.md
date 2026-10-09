@@ -27,7 +27,7 @@
 
 | Ендпойнти | Кому |
 |-----------|------|
-| `/cars`, `/cars/{id}`, `POST /cars`, `/orders`, `/orders/{id}`, `/finance`, `/reminders` | лише `role = staff` |
+| `/cars`, `/cars/{id}`, `POST /cars`, `/orders`, `/orders/{id}`, `/finance`, `/reminders` | лише майстер — один акаунт, за `Firebase:OwnerUid` |
 | `/my-vehicles`, `/my-vehicles/{id}` | лише власник, `userId` з токена |
 
 `GET /my-vehicles` стає залежним від суб'єкта — це зміна контракту, не лише
