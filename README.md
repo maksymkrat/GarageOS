@@ -8,7 +8,9 @@
 | --- | --- | --- |
 | `GarageOSMobile/` | Мобільний застосунок (клієнт + режим сервісу) | Expo, React Native, TypeScript, expo-router |
 | `GarageOSWeb/` | Backend API для застосунку | .NET, ASP.NET Core (`GarageOS.Api`) |
+| `docs/atlas/` | Атлас архітектури: межі, домени, модель даних, API, ADR | Markdown + Mermaid |
 | `garage-erd.drawio` | Рукописна ER-схема домену, спільна для обох частин | draw.io |
+| `AGENTS.md` | Спільні правила для агентів (`CLAUDE.md` -> `@AGENTS.md`) | — |
 | `.mcp.json` | MCP-сервери проєкту (drawio, figma) — діють на весь монорепо | — |
 
 ## Запуск

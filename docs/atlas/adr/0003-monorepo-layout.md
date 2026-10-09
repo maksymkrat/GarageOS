@@ -16,9 +16,12 @@
 
 ```
 GarageOS/
-  GarageOSMobile/      Expo / React Native, тут же docs/atlas/
+  GarageOSMobile/      Expo / React Native
   GarageOSWeb/         ASP.NET Core 9 (GarageOS.sln, GarageOS.Api/)
-  .mcp.json            MCP-сервери на весь репозиторій
+  docs/atlas/          атлас архітектури та ADR
+  AGENTS.md            спільні правила (CLAUDE.md -> @AGENTS.md)
+  .claude/, .vscode/   налаштування на весь репозиторій
+  .mcp.json            MCP-сервери (drawio, figma)
   .gitignore           артефакти .NET та IDE
   garage-erd.drawio    ER-схема домену
   README.md
@@ -35,8 +38,10 @@ GarageOS/
 `.gitignore` розділений: корневий закриває артефакти .NET та IDE,
 `GarageOSMobile/.gitignore` — Node та Expo.
 
-На корінь піднято `.mcp.json`, бо MCP-сервери (drawio, figma) мусять діяти на
-обидва яруси.
+На корінь піднято все, що мусить діяти на обидва яруси: `docs/atlas/`,
+`AGENTS.md` з `CLAUDE.md`, `.claude/`, `.vscode/` і `.mcp.json`. У `GarageOSMobile/`
+лишився власний `AGENTS.md` — лише з тим, що стосується самого Expo.
+Правило: спільне правило живе в корені, специфічне для стеку — у теці яруса.
 
 Поділ `GarageOSWeb` за фічами (`Features/Cars/`, `Features/Orders/`), а не за
 типами, щоб межі модулів сервера збігалися з межами модулів у
@@ -64,15 +69,9 @@ PR замість одного коміту.
 **Ціна:** CI доведеться робити з фільтрами за шляхами, щоб збірка .NET не
 запускалася на правку екрана. До появи CI це не коштує нічого.
 
-## Що ще не піднято на корінь
+## Відкрите питання: LICENSE
 
-Наслідок «один набір правил на обидва яруси» поки неповний:
-
-- `docs/atlas/` лежить у `GarageOSMobile/`, хоч описує всю систему, включно з
-  `GarageOSWeb`;
-- `CLAUDE.md`, `AGENTS.md`, `.claude/`, `.vscode/` і `LICENSE` теж лишилися в
-  `GarageOSMobile/`, тому правила для агентів і налаштування редактора діють
-  лише на мобільний ярус.
-
-Доки це не зроблено, сесію, що працює з сервером, правила мобілки не
-підхоплюють.
+`GarageOSMobile/LICENSE` — це MIT-ліцензія самого Expo
+(`Copyright (c) 2015-present 650 Industries, Inc.`), що приїхала з шаблону, а
+не ліцензія GarageOS. Тому на корінь її свідомо **не** піднімали: там вона
+читалася б як ліцензія всього проєкту. Власну ліцензію ще не обрано.
