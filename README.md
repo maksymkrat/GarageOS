@@ -7,7 +7,7 @@
 | Шлях | Що це | Стек |
 | --- | --- | --- |
 | `GarageOSMobile/` | Мобільний застосунок (клієнт + режим сервісу) | Expo, React Native, TypeScript, expo-router |
-| `GarageOSWeb/` | Backend API для застосунку | .NET, ASP.NET Core (`GarageOS.Api`) |
+| `GarageOSWeb/` | Backend API: `Domain`, `DAL`, `Services`, `Api` | .NET 10, ASP.NET Core, EF Core 10, PostgreSQL |
 | `docs/atlas/` | Атлас архітектури: межі, домени, модель даних, API, ADR | Markdown + Mermaid |
 | `garage-erd.drawio` | Рукописна ER-схема домену, спільна для обох частин | draw.io |
 | `AGENTS.md` | Спільні правила для агентів (`CLAUDE.md` -> `@AGENTS.md`) | — |
@@ -27,8 +27,13 @@ npx expo start
 
 ```bash
 cd GarageOSWeb
+docker compose up -d                      # PostgreSQL на 5432
+dotnet ef database update --project GarageOS.DAL --startup-project GarageOS.Api
 dotnet run --project GarageOS.Api
 ```
+
+Потрібен .NET SDK 10 і Docker. Міграції генеруються без запущеної БД,
+застосовуються — лише з нею.
 
 ## Конвенції
 

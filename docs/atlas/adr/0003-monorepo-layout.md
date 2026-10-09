@@ -17,7 +17,7 @@
 ```
 GarageOS/
   GarageOSMobile/      Expo / React Native
-  GarageOSWeb/         ASP.NET Core 9 (GarageOS.sln, GarageOS.Api/)
+  GarageOSWeb/         ASP.NET Core 10 (GarageOS.sln, 4 проєкти — ADR-0006)
   docs/atlas/          атлас архітектури та ADR
   AGENTS.md            спільні правила (CLAUDE.md -> @AGENTS.md)
   .claude/, .vscode/   налаштування на весь репозиторій
@@ -43,9 +43,11 @@ GarageOS/
 лишився власний `AGENTS.md` — лише з тим, що стосується самого Expo.
 Правило: спільне правило живе в корені, специфічне для стеку — у теці яруса.
 
-Поділ `GarageOSWeb` за фічами (`Features/Cars/`, `Features/Orders/`), а не за
+~~Поділ `GarageOSWeb` за фічами (`Features/Cars/`, `Features/Orders/`), а не за
 типами, щоб межі модулів сервера збігалися з межами модулів у
-`GarageOSMobile/src/api/`. Це цільовий стан: сервер поки шаблон.
+`GarageOSMobile/src/api/`.~~ **Скасовано
+[ADR-0006](0006-backend-layering.md):** сервер поділено за шарами —
+`Domain`, `DAL`, `Services`, `Api`. Решта цього ADR чинна.
 
 ## Альтернативи
 

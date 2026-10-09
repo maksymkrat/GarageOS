@@ -51,22 +51,22 @@ flowchart LR
 `Orders`. Серверного ендпойнта для нього немає свідомо
 ([04-api-surface.md](04-api-surface.md#композиція-на-клієнті)).
 
-## Проєкція на структуру `GarageOSWeb` (TO-BE)
+## Проєкція на структуру `GarageOSWeb`
 
 ```
-GarageOS.Api/
-  Features/
-    Cars/        CarsController, CarDto, CarDetailDto, CreateCarRequest
-    Orders/      OrdersController, OrderDto, OrderDetailDto
-    Finance/     FinanceController, FinanceOverviewDto
-    Reminders/   RemindersController, ReminderItemDto
-    Vehicles/    VehiclesController, MyVehicleDto, LogEntryDto
-  Domain/        сутності та правила статусів
-  Infrastructure/ персистентність (ADR-0004)
+GarageOS.Domain/     Models/ (11 моделей) Enums/ (CarStatus, LogEntryKind, FinancePeriod)
+GarageOS.DAL/        Entities/ Configurations/ Context/ Repositories/ Migrations/
+GarageOS.Services/   CarService, OrderService, FinanceService, ReminderService,
+                     MyVehicleService + Dtos/ Mapping/
+GarageOS.Api/        Controllers/ (Cars, Orders, Finance, Reminders, MyVehicles)
 ```
 
-Поділ за фічами, а не за типами (`Controllers/`, `Services/`, `Models/`) —
-щоб зміна одного домену лишалася в одній папці й збігалася з межею модуля на
-клієнті. Див. [ADR-0003](adr/0003-monorepo-layout.md).
+Поділ за шарами, а не за фічами. Межа домену на сервері проходить не папкою, а
+трійкою «сервіс + репозиторій + контролер» з однаковою назвою: домен `Cars` —
+це `CarService`, `CarRepository` і `CarsController`. Див.
+[ADR-0006](adr/0006-backend-layering.md), який скасував попередній намір різати
+сервер за фічами.
+
+**Work board** серверного відповідника не має й тут: його збирає клієнт.
 
 → Далі: [03 · Модель даних](03-data-model.md)

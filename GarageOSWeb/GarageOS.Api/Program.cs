@@ -1,22 +1,35 @@
+using System.Text.Json.Serialization;
+using GarageOS.Api.Infrastructure;
+using GarageOS.DAL;
+using GarageOS.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("Garage")
+    ?? throw new InvalidOperationException("Не задано ConnectionStrings:Garage");
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddDataAccess(connectionString);
+builder.Services.AddBusinessServices();
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    // Контракт позначає необов'язкові поля як `nextService?: string`, тож їх
+    // краще не надсилати зовсім, ніж надсилати null.
+    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+});
+
+builder.Services.AddExceptionHandler<NotFoundExceptionHandler>();
+builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseExceptionHandler();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 

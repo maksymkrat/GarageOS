@@ -12,21 +12,24 @@ flowchart TB
         http["HTTP-клієнт<br/><i>TO-BE</i>"]
     end
 
-    subgraph server["GarageOSWeb · ASP.NET Core 9"]
-        ctrl["Контролери<br/><i>TO-BE</i><br/>нині лише WeatherForecast"]
-        domain["Доменна логіка<br/><i>TO-BE</i>"]
-        data["Шар даних<br/><i>TO-BE · ADR-0004</i>"]
+    subgraph server["GarageOSWeb · ASP.NET Core 10 · ADR-0006"]
+        ctrl["GarageOS.Api<br/><i>Controllers/</i><br/>cars, orders, finance, reminders, my-vehicles"]
+        svc["GarageOS.Services<br/><i>бізнес-логіка + мапінг у DTO</i>"]
+        dom["GarageOS.Domain<br/><i>моделі та enum, без залежностей</i>"]
+        data["GarageOS.DAL<br/><i>EF Core, репозиторії, міграції</i>"]
     end
 
-    db[("База даних<br/><i>не обрано · ADR-0004</i>")]
+    db[("PostgreSQL 18<br/><i>docker compose · ADR-0004</i>")]
 
     screens --> queries
     queries --> apimod
     apimod -->|сьогодні| mock
     apimod -.->|цільово| http
     http -.->|JSON over HTTPS| ctrl
-    ctrl --> domain
-    domain --> data
+    ctrl --> svc
+    svc --> data
+    svc --> dom
+    data --> dom
     data --> db
 ```
 
@@ -35,8 +38,8 @@ flowchart TB
 | Контейнер | Технологія | Відповідальність | Стан |
 |-----------|-----------|------------------|------|
 | **mobile** | Expo SDK 57, RN 0.86, React 19.2, TypeScript 6, expo-router | Весь UI, навігація, кеш і стани запитів, композиція read-моделей | працює на моках |
-| **api** | .NET 9, ASP.NET Core, OpenAPI | Реалізація контракту `src/api/*`, валідація, персистентність | шаблон |
-| **db** | не обрано | Збереження авто, нарядів, нагадувань, журналів | немає |
+| **api** | .NET 10, ASP.NET Core, EF Core 10, OpenAPI | Реалізація контракту `src/api/*`, валідація, персистентність | усі 9 ендпойнтів є, без авторизації й даних |
+| **db** | PostgreSQL 18 (контейнер) | Збереження авто, нарядів, нагадувань, журналів | 11 таблиць, перша міграція |
 
 ## Ключова архітектурна точка: шов транспорту
 

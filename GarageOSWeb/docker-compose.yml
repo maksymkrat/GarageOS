@@ -1,0 +1,25 @@
+# Postgres для локальної розробки. Рішення — ADR-0004.
+# Підняти:  docker compose up -d
+# Рядок підключення збігається з appsettings.Development.json.
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: garageos-db
+    environment:
+      POSTGRES_DB: garageos
+      POSTGRES_USER: garageos
+      POSTGRES_PASSWORD: garageos
+      # Дати в домені календарні, тож дата «сьогодні» мусить бути київською.
+      TZ: Europe/Kyiv
+    ports:
+      - "5432:5432"
+    volumes:
+      - garageos-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U garageos -d garageos"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  garageos-pgdata:

@@ -19,5 +19,6 @@ ADR фіксує **одне** рішення: контекст, вибір, ал
 | [0001](0001-record-architecture-decisions.md) | Фіксувати архітектурні рішення в ADR | Accepted |
 | [0002](0002-client-contract-source-of-truth.md) | Контракт клієнта — джерело істини для API | Accepted |
 | [0003](0003-monorepo-layout.md) | Монорепозиторій з `GarageOSMobile` та `GarageOSWeb` | Accepted |
-| [0004](0004-persistence.md) | Персистентність для `GarageOSWeb` | Proposed |
+| [0004](0004-persistence.md) | Персистентність: PostgreSQL + EF Core | Accepted |
 | [0005](0005-authentication.md) | Автентифікація через Firebase, пошта й пароль | Accepted |
+| [0006](0006-backend-layering.md) | Шарова структура `GarageOSWeb` | Accepted |
