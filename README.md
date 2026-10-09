@@ -8,6 +8,8 @@
 | --- | --- | --- |
 | `GarageOSMobile/` | Мобільний застосунок (клієнт + режим сервісу) | Expo, React Native, TypeScript, expo-router |
 | `GarageOSWeb/` | Backend API для застосунку | .NET, ASP.NET Core (`GarageOS.Api`) |
+| `garage-erd.drawio` | Рукописна ER-схема домену, спільна для обох частин | draw.io |
+| `.mcp.json` | MCP-сервери проєкту (drawio, figma) — діють на весь монорепо | — |
 
 ## Запуск
 
