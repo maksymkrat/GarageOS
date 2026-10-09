@@ -18,5 +18,5 @@ ADR фіксує **одне** рішення: контекст, вибір, ал
 |---|---------|--------|
 | [0001](0001-record-architecture-decisions.md) | Фіксувати архітектурні рішення в ADR | Accepted |
 | [0002](0002-client-contract-source-of-truth.md) | Контракт клієнта — джерело істини для API | Accepted |
-| [0003](0003-monorepo-layout.md) | Монорепозиторій з `apps/mobile` та `apps/api` | Accepted |
-| [0004](0004-persistence.md) | Персистентність для `apps/api` | Proposed |
+| [0003](0003-monorepo-layout.md) | Монорепозиторій з `GarageOSMobile` та `GarageOSWeb` | Accepted |
+| [0004](0004-persistence.md) | Персистентність для `GarageOSWeb` | Proposed |

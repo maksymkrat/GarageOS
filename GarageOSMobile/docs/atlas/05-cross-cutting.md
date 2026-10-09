@@ -29,7 +29,7 @@ class ApiError extends Error {
 Тексти — українською («Авто не знайдено», «Наряд не знайдено»), бо показуються
 на екрані як є.
 
-Для `apps/api` це означає: стандартний ASP.NET `ProblemDetails` **не збігається**
+Для `GarageOSWeb` це означає: стандартний ASP.NET `ProblemDetails` **не збігається**
 з цією формою. Потрібен або маппінг `ProblemDetails` → `ApiError` у HTTP-клієнті
 (рекомендовано: `detail` → `message`, `status` → `status`, `instance` → `endpoint`),
 або власний формат відповіді про помилку. Вибір треба зафіксувати ADR, коли
@@ -71,7 +71,7 @@ p95 < 300 ms у [00-overview.md](00-overview.md#якісні-атрибути).
 | Що | Де зараз | Куди цільово |
 |----|----------|--------------|
 | Базова URL API | ніде (моки) | `expo-constants` + `app.json` → `extra` |
-| Рівні логування сервера | `apps/api/GarageOS.Api/appsettings.json` | без змін |
+| Рівні логування сервера | `GarageOSWeb/GarageOS.Api/appsettings.json` | без змін |
 | Секрети | немає | змінні середовища, не в репо (`.gitignore` уже закриває `.env`, `appsettings.Local.json`) |
 
 ## Логування та діагностика

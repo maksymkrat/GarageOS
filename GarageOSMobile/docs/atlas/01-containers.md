@@ -4,7 +4,7 @@
 
 ```mermaid
 flowchart TB
-    subgraph client["apps/mobile · Expo / React Native 0.86"]
+    subgraph client["GarageOSMobile · Expo / React Native 0.86"]
         screens["Екрани<br/><i>expo-router</i><br/>(service): work, garage, money, reminders<br/>personal: index, [id]"]
         queries["Шар запитів<br/><i>@tanstack/react-query 5</i><br/>src/queries/*"]
         apimod["Модулі API<br/><i>src/api/*.ts</i><br/>cars, orders, finance, reminders, vehicles"]
@@ -12,7 +12,7 @@ flowchart TB
         http["HTTP-клієнт<br/><i>TO-BE</i>"]
     end
 
-    subgraph server["apps/api · ASP.NET Core 9"]
+    subgraph server["GarageOSWeb · ASP.NET Core 9"]
         ctrl["Контролери<br/><i>TO-BE</i><br/>нині лише WeatherForecast"]
         domain["Доменна логіка<br/><i>TO-BE</i>"]
         data["Шар даних<br/><i>TO-BE · ADR-0004</i>"]
@@ -56,7 +56,7 @@ export function getCars(): Promise<Car[]> {
 
 Перехід на реальний бекенд — це заміна реалізації `request`, а не переписування
 екранів: `src/queries/*` і компоненти не знають, звідки дані. Умова, яку це
-накладає на `apps/api`: **відповіді мусять точно збігатися за формою** з тим,
+накладає на `GarageOSWeb`: **відповіді мусять точно збігатися за формою** з тим,
 що сьогодні повертає мок, включно зі склеєними read-моделями
 (`CarDetail`, `OrderDetail`, `FinanceOverview`, `ReminderItem`).
 
@@ -66,7 +66,7 @@ export function getCars(): Promise<Car[]> {
 
 - **mobile** — збірка Expo (EAS або локально), плюс web-таргет через
   `react-native-web`.
-- **api** — контейнер Linux; `Dockerfile` уже є в `apps/api/GarageOS.Api/`,
+- **api** — контейнер Linux; `Dockerfile` уже є в `GarageOSWeb/GarageOS.Api/`,
   `DockerDefaultTargetOS=Linux` у csproj.
 - Базова URL-адреса API на клієнті поки ніде не задана — з'явиться разом із
   HTTP-клієнтом (`expo-constants` уже в залежностях і підходить для цього).
