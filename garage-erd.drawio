@@ -3,10 +3,10 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="owner" value="&lt;b&gt;Owner (клієнт)&lt;/b&gt;&lt;hr size=1&gt;PK id: number&lt;br&gt;name: string&lt;br&gt;phone: string&lt;hr size=1&gt;createdAt: datetime&lt;br&gt;updatedAt: datetime" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=10;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+        <mxCell id="client" value="&lt;b&gt;Client&lt;/b&gt;&lt;hr size=1&gt;PK id: number&lt;br&gt;name: string&lt;br&gt;phone: string&lt;hr size=1&gt;createdAt: datetime&lt;br&gt;updatedAt: datetime" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=10;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="40" y="40" width="220" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="car" value="&lt;b&gt;Car&lt;/b&gt;&lt;hr size=1&gt;PK id: number&lt;br&gt;FK ownerId → Owner.id&lt;br&gt;plate: string&lt;br&gt;make: string&lt;br&gt;model: string&lt;br&gt;year: number&lt;br&gt;status: CarStatus (enum)&lt;br&gt;debt: number&lt;br&gt;mileage: number&lt;br&gt;lastVisit: date&lt;br&gt;nextService?: date&lt;hr size=1&gt;createdAt: datetime&lt;br&gt;updatedAt: datetime" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=10;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+        <mxCell id="car" value="&lt;b&gt;Car&lt;/b&gt;&lt;hr size=1&gt;PK id: number&lt;br&gt;FK clientId → Client.id&lt;br&gt;plate: string&lt;br&gt;make: string&lt;br&gt;model: string&lt;br&gt;year: number&lt;br&gt;status: CarStatus (enum)&lt;br&gt;debt: number&lt;br&gt;mileage: number&lt;br&gt;lastVisit: date&lt;br&gt;nextService?: date&lt;hr size=1&gt;createdAt: datetime&lt;br&gt;updatedAt: datetime" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=10;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="340" y="40" width="260" height="330" as="geometry" />
         </mxCell>
         <mxCell id="order" value="&lt;b&gt;Order (наряд)&lt;/b&gt;&lt;hr size=1&gt;PK id: number&lt;br&gt;FK carId → Car.id&lt;br&gt;date: date&lt;br&gt;description: string&lt;br&gt;status: CarStatus (enum)&lt;br&gt;paid: number&lt;br&gt;daysWaiting: number&lt;hr size=1&gt;createdAt: datetime&lt;br&gt;updatedAt: datetime" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=10;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
@@ -30,10 +30,10 @@
         <mxCell id="logEntry" value="&lt;b&gt;LogEntry&lt;/b&gt;&lt;hr size=1&gt;PK id: number&lt;br&gt;FK vehicleId → MyVehicle.id&lt;br&gt;date: date&lt;br&gt;mileage: number&lt;br&gt;title: string&lt;br&gt;note?: string&lt;br&gt;cost: number&lt;br&gt;kind: enum&lt;hr size=1&gt;createdAt: datetime&lt;br&gt;updatedAt: datetime" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=10;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="40" y="500" width="240" height="250" as="geometry" />
         </mxCell>
-        <mxCell id="user" value="&lt;b&gt;User / Account (додати)&lt;/b&gt;&lt;hr size=1&gt;PK id: number&lt;br&gt;name: string&lt;br&gt;email: string&lt;hr size=1&gt;createdAt: datetime&lt;br&gt;updatedAt: datetime" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=10;fontSize=12;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-          <mxGeometry x="1280" y="40" width="240" height="150" as="geometry" />
+        <mxCell id="user" value="&lt;b&gt;User / Account&lt;/b&gt;&lt;hr size=1&gt;PK id: number&lt;br&gt;name: string&lt;br&gt;email: string&lt;br&gt;passwordHash?: string&lt;br&gt;FK subscriptionId? → Subscription.id&lt;hr size=1&gt;createdAt: datetime&lt;br&gt;updatedAt: datetime" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=10;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="40" width="240" height="190" as="geometry" />
         </mxCell>
-        <mxCell id="e1" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=10;" edge="1" parent="1" source="owner" target="car">
+        <mxCell id="e1" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=10;" edge="1" parent="1" source="client" target="car">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e2" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=10;" edge="1" parent="1" source="car" target="order">
@@ -57,8 +57,14 @@
         <mxCell id="e8" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=10;" edge="1" parent="1" source="myVehicle" target="logEntry">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="legend" value="&lt;b&gt;Легенда&lt;/b&gt;&lt;hr size=1&gt;Синій = вже є в коді макету (Figma Make)&lt;br&gt;Зелений = запропоновано додати&lt;br&gt;createdAt / updatedAt = службові поля аудиту,&lt;br&gt;однакові в усіх сутностях" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=10;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
-          <mxGeometry x="1280" y="220" width="240" height="150" as="geometry" />
+        <mxCell id="subscription" value="&lt;b&gt;Subscription (додати)&lt;/b&gt;&lt;hr size=1&gt;PK id: number&lt;br&gt;name: string&lt;br&gt;price: number&lt;br&gt;periodMonths: number&lt;hr size=1&gt;createdAt: datetime&lt;br&gt;updatedAt: datetime" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=10;fontSize=12;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="260" width="240" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=entityRelationEdgeStyle;rounded=0;html=1;startArrow=ERone;startFill=0;endArrow=ERmany;endFill=0;fontSize=10;" edge="1" parent="1" source="subscription" target="user">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="&lt;b&gt;Легенда&lt;/b&gt;&lt;hr size=1&gt;Синій = ядро моделі, підтверджено&lt;br&gt;Зелений = запропоновано, ще не підтверджено&lt;br&gt;createdAt / updatedAt = службові поля аудиту,&lt;br&gt;однакові в усіх сутностях" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=10;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="460" width="240" height="150" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel></diagram>
