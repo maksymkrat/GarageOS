@@ -1,0 +1,32 @@
+# GarageOS
+
+Монорепозиторій GarageOS: мобільний застосунок і бекенд-API в одному дереві.
+
+## Структура
+
+| Шлях | Що це | Стек |
+| --- | --- | --- |
+| `GarageOSMobile/` | Мобільний застосунок (клієнт + режим сервісу) | Expo, React Native, TypeScript, expo-router |
+| `GarageOSWeb/` | Backend API для застосунку | .NET, ASP.NET Core (`GarageOS.Api`) |
+
+## Запуск
+
+### Мобільний застосунок
+
+```bash
+cd GarageOSMobile
+npm install
+npx expo start
+```
+
+### API
+
+```bash
+cd GarageOSWeb
+dotnet run --project GarageOS.Api
+```
+
+## Конвенції
+
+- Один git-репозиторій на весь проєкт; кожна частина живе у своїй теці та має власні залежності.
+- Коміти бажано префіксувати частиною, якої вони стосуються: `mobile:`, `api:`, `repo:`.

@@ -1,0 +1,35 @@
+# ---- Claude / IDE local state ----
+**/.claude/settings.local.json
+.idea/
+.vs/
+*.user
+*.suo
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+
+# ---- .NET (GarageOSWeb) ----
+[Bb]in/
+[Oo]bj/
+*.sln.docstates
+*.userprefs
+artifacts/
+publish/
+TestResults/
+*.nupkg
+*.snupkg
+
+# ---- secrets / local env ----
+.env
+.env.*.local
+appsettings.*.Local.json
+
+# ---- Node / Expo (GarageOSMobile має власний .gitignore, це дублюючий захист) ----
+node_modules/
+.expo/
+dist/
+web-build/
+*.tsbuildinfo
+npm-debug.*
+yarn-error.*
