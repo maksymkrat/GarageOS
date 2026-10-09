@@ -20,3 +20,4 @@ ADR фіксує **одне** рішення: контекст, вибір, ал
 | [0002](0002-client-contract-source-of-truth.md) | Контракт клієнта — джерело істини для API | Accepted |
 | [0003](0003-monorepo-layout.md) | Монорепозиторій з `GarageOSMobile` та `GarageOSWeb` | Accepted |
 | [0004](0004-persistence.md) | Персистентність для `GarageOSWeb` | Proposed |
+| [0005](0005-authentication.md) | Автентифікація через Firebase, пошта й пароль | Accepted |
