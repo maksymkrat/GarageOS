@@ -55,6 +55,18 @@ GarageOS.Api/       Controllers/ Infrastructure/
    що має пароль, живе в сховищі користувача (`UserSecretsId` у csproj), бо
    `appsettings.Development.json` комітиться. Якщо `ConnectionStrings:Garage`
    не задано, застосунок падає на старті з підказкою — це навмисно.
+
+   **User secrets читаються лише в `Development`.** Запуск без профілю
+   (`--no-launch-profile`) лишає середовище `Production`, сховище не
+   підхоплюється, і застосунок падає на тій самій підказці. Або профіль із
+   `launchSettings.json`, або явно:
+
+   ```bash
+   ASPNETCORE_ENVIRONMENT=Development dotnet run --project GarageOS.Api
+   ```
+
+   На проді рядок підключення приходить змінною оточення
+   `ConnectionStrings__Garage`, а не зі сховища.
 8. **`NotFoundException` з українським текстом** — він іде користувачу на екран
    як є. Обробляє `NotFoundExceptionHandler`, віддаючи `ProblemDetails`.
 
