@@ -51,7 +51,11 @@ GarageOS.Api/       Controllers/ Infrastructure/
    об'єкт клієнта там, де на руках лише `ClientId`.
 6. **Міграції комітяться.** Генерувати:
    `dotnet ef migrations add Name --project GarageOS.DAL --startup-project GarageOS.Api`
-7. **`NotFoundException` з українським текстом** — він іде користувачу на екран
+7. **Секрети — в user secrets, не в `appsettings`.** Рядок підключення й усе,
+   що має пароль, живе в сховищі користувача (`UserSecretsId` у csproj), бо
+   `appsettings.Development.json` комітиться. Якщо `ConnectionStrings:Garage`
+   не задано, застосунок падає на старті з підказкою — це навмисно.
+8. **`NotFoundException` з українським текстом** — він іде користувачу на екран
    як є. Обробляє `NotFoundExceptionHandler`, віддаючи `ProblemDetails`.
 
 ## Чого тут ще немає

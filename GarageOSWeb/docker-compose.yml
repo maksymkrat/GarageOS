@@ -1,22 +1,31 @@
 # Postgres для локальної розробки. Рішення — ADR-0004.
-# Підняти:  docker compose up -d
-# Рядок підключення збігається з appsettings.Development.json.
+#
+# Еквівалент команди:
+#   docker run -d --name postgresql -p 5432:5432 -e POSTGRES_PASSWORD=pass \
+#     -v pgdata:/var/lib/postgresql postgres:latest
+#
+# Рядок підключення живе в user secrets, не тут і не в appsettings:
+#   dotnet user-secrets set "ConnectionStrings:Garage" \
+#     "Host=localhost;Port=5432;Database=garageos;Username=postgres;Password=pass" \
+#     --project GarageOS.Api
 services:
   db:
     image: postgres:18-alpine
     container_name: garageos-db
     environment:
-      POSTGRES_DB: garageos
-      POSTGRES_USER: garageos
-      POSTGRES_PASSWORD: garageos
-      # Дати в домені календарні, тож дата «сьогодні» мусить бути київською.
+      # Користувач за замовчуванням — postgres; бази garageos тут немає
+      # навмисно: її створює EF під час `database update`.
+      POSTGRES_PASSWORD: pass
+      # Дати в домені календарні, тож «сьогодні» мусить бути київським.
       TZ: Europe/Kyiv
     ports:
       - "5432:5432"
     volumes:
-      - garageos-pgdata:/var/lib/postgresql/data
+      # Саме /var/lib/postgresql, без /data: у postgres:18 розкладку змінили,
+      # і старий шлях ламає запуск контейнера.
+      - garageos-pgdata:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U garageos -d garageos"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 3s
       retries: 10

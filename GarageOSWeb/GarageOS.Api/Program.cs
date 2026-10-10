@@ -5,8 +5,12 @@ using GarageOS.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Рядок підключення тримається в user secrets, а не в appsettings: там він
+// потрапив би в git разом із паролем.
+//   dotnet user-secrets set "ConnectionStrings:Garage" "..." --project GarageOS.Api
 var connectionString = builder.Configuration.GetConnectionString("Garage")
-    ?? throw new InvalidOperationException("Не задано ConnectionStrings:Garage");
+    ?? throw new InvalidOperationException(
+        "Не задано ConnectionStrings:Garage. Задай через user secrets — див. README.");
 
 builder.Services.AddDataAccess(connectionString);
 builder.Services.AddBusinessServices();

@@ -27,13 +27,18 @@ npx expo start
 
 ```bash
 cd GarageOSWeb
-docker compose up -d                      # PostgreSQL на 5432
+docker compose up -d                      # PostgreSQL 18 на 5432
+
+# Рядок підключення — в user secrets, не в appsettings (один раз на машину):
+dotnet user-secrets set "ConnectionStrings:Garage" "Host=localhost;Port=5432;Database=garageos;Username=postgres;Password=pass" --project GarageOS.Api
+
 dotnet ef database update --project GarageOS.DAL --startup-project GarageOS.Api
 dotnet run --project GarageOS.Api
 ```
 
-Потрібен .NET SDK 10 і Docker. Міграції генеруються без запущеної БД,
-застосовуються — лише з нею.
+Потрібен .NET SDK 10 і Docker. Базу `garageos` створює сама EF під час
+`database update` — у контейнері її немає. Міграції генеруються без запущеної
+БД, застосовуються — лише з нею.
 
 ## Конвенції
 
