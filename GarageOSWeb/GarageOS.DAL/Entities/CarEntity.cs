@@ -7,9 +7,9 @@ public class CarEntity : BaseEntity
     public int ClientId { get; set; }
     public ClientEntity Client { get; set; } = null!;
 
-    public string Plate { get; set; } = null!;
-    public string Make { get; set; } = null!;
-    public string Model { get; set; } = null!;
+    public required string Plate { get; set; }
+    public required string Make { get; set; }
+    public required string Model { get; set; }
     public int Year { get; set; }
     public CarStatus Status { get; set; }
     public decimal Debt { get; set; }

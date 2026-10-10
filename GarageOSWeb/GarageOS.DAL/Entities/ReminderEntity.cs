@@ -9,5 +9,5 @@ public class ReminderEntity : BaseEntity
     public int? DueMileage { get; set; }
 
     /// <summary>Текст, який контракт віддає як <c>what</c>.</summary>
-    public string Message { get; set; } = null!;
+    public required string Message { get; set; }
 }

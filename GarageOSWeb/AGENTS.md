@@ -37,9 +37,21 @@ GarageOS.Api/       Controllers/ Infrastructure/
 3. **Репозиторії не зберігають.** Вони тільки `Add`; `SaveChangesAsync` кличе
    сервіс через `IUnitOfWork`, щоб операція лягла однією транзакцією.
 4. **Поля аудиту не чіпати руками** — їх проставляє `GarageDbContext`.
-5. **Міграції комітяться.** Генерувати:
+5. **`required` на скалярах, `= null!` лише на навігаційних.** Колонка
+   `NOT NULL` оголошується як `public required string Name { get; set; }` —
+   тоді сутність не створити, забувши поле. `= null!` лишається там, де
+   значення підставляє EF при `Include`:
+
+   ```csharp
+   public required string Plate { get; set; }        // колонка
+   public ClientEntity Client { get; set; } = null!; // навігаційна
+   ```
+
+   Навігаційні не роблять `required`: інакше `new CarEntity` вимагав би цілий
+   об'єкт клієнта там, де на руках лише `ClientId`.
+6. **Міграції комітяться.** Генерувати:
    `dotnet ef migrations add Name --project GarageOS.DAL --startup-project GarageOS.Api`
-6. **`NotFoundException` з українським текстом** — він іде користувачу на екран
+7. **`NotFoundException` з українським текстом** — він іде користувачу на екран
    як є. Обробляє `NotFoundExceptionHandler`, віддаючи `ProblemDetails`.
 
 ## Чого тут ще немає

@@ -8,7 +8,7 @@ public class OrderEntity : BaseEntity
     public CarEntity Car { get; set; } = null!;
 
     public DateOnly Date { get; set; }
-    public string Description { get; set; } = null!;
+    public required string Description { get; set; }
     public CarStatus Status { get; set; }
     public decimal Paid { get; set; }
     public int DaysWaiting { get; set; }

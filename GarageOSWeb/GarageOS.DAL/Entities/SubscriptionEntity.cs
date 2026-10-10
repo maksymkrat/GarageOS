@@ -2,7 +2,7 @@ namespace GarageOS.DAL.Entities;
 
 public class SubscriptionEntity : BaseEntity
 {
-    public string Name { get; set; } = null!;
+    public required string Name { get; set; }
     public decimal Price { get; set; }
     public int PeriodMonths { get; set; }
 

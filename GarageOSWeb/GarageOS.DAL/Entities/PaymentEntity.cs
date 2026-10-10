@@ -7,5 +7,5 @@ public class PaymentEntity : BaseEntity
 
     public DateOnly Date { get; set; }
     public decimal Amount { get; set; }
-    public string Method { get; set; } = null!;
+    public required string Method { get; set; }
 }

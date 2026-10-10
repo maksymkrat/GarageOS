@@ -5,7 +5,7 @@ public class OrderPartEntity : BaseEntity
     public int OrderId { get; set; }
     public OrderEntity Order { get; set; } = null!;
 
-    public string Name { get; set; } = null!;
+    public required string Name { get; set; }
     public int Qty { get; set; }
 
     /// <summary>Закупівельна ціна — у контракті віддається, бо екран рахує маржу.</summary>

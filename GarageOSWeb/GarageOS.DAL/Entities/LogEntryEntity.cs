@@ -9,7 +9,7 @@ public class LogEntryEntity : BaseEntity
 
     public DateOnly Date { get; set; }
     public int Mileage { get; set; }
-    public string Title { get; set; } = null!;
+    public required string Title { get; set; }
     public string? Note { get; set; }
     public decimal Cost { get; set; }
     public LogEntryKind Kind { get; set; }
