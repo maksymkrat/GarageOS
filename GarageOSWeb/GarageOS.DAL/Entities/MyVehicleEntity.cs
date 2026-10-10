@@ -1,6 +1,6 @@
 namespace GarageOS.DAL.Entities;
 
-public class MyVehicleEntity : AuditableEntity
+public class MyVehicleEntity : BaseEntity
 {
     public int UserId { get; set; }
     public UserEntity User { get; set; } = null!;

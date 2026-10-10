@@ -1,6 +1,6 @@
 namespace GarageOS.DAL.Entities;
 
-public class OrderPartEntity : AuditableEntity
+public class OrderPartEntity : BaseEntity
 {
     public int OrderId { get; set; }
     public OrderEntity Order { get; set; } = null!;

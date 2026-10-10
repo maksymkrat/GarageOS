@@ -1,6 +1,6 @@
 namespace GarageOS.DAL.Entities;
 
-public class ReminderEntity : AuditableEntity
+public class ReminderEntity : BaseEntity
 {
     public int CarId { get; set; }
     public CarEntity Car { get; set; } = null!;

@@ -1,6 +1,6 @@
 namespace GarageOS.DAL.Entities;
 
-public class ClientEntity : AuditableEntity
+public class ClientEntity : BaseEntity
 {
     public string Name { get; set; } = null!;
 

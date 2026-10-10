@@ -1,6 +1,6 @@
 namespace GarageOS.DAL.Entities;
 
-public class SubscriptionEntity : AuditableEntity
+public class SubscriptionEntity : BaseEntity
 {
     public string Name { get; set; } = null!;
     public decimal Price { get; set; }

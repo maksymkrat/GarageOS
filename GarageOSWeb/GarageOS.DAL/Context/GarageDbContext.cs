@@ -43,7 +43,7 @@ public class GarageDbContext(DbContextOptions<GarageDbContext> options) : DbCont
     {
         var now = DateTime.UtcNow;
 
-        foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
         {
             if (entry.State == EntityState.Added)
             {

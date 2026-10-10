@@ -1,6 +1,6 @@
 namespace GarageOS.DAL.Entities;
 
-public class UserEntity : AuditableEntity
+public class UserEntity : BaseEntity
 {
     /// <summary>Claim <c>sub</c> з ID-токена Firebase. Унікальний індекс, не PK (ADR-0005).</summary>
     public string FirebaseUid { get; set; } = null!;

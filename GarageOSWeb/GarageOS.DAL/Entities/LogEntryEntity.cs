@@ -2,7 +2,7 @@ using GarageOS.Domain.Enums;
 
 namespace GarageOS.DAL.Entities;
 
-public class LogEntryEntity : AuditableEntity
+public class LogEntryEntity : BaseEntity
 {
     public int VehicleId { get; set; }
     public MyVehicleEntity Vehicle { get; set; } = null!;

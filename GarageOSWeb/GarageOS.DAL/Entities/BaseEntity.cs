@@ -1,7 +1,7 @@
 namespace GarageOS.DAL.Entities;
 
 /// <summary>Спільна основа всіх таблиць: сурогатний ключ і поля аудиту з ER-схеми.</summary>
-public abstract class AuditableEntity
+public abstract class BaseEntity
 {
     public int Id { get; set; }
 

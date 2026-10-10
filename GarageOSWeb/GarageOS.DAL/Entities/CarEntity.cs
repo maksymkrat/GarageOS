@@ -2,7 +2,7 @@ using GarageOS.Domain.Enums;
 
 namespace GarageOS.DAL.Entities;
 
-public class CarEntity : AuditableEntity
+public class CarEntity : BaseEntity
 {
     public int ClientId { get; set; }
     public ClientEntity Client { get; set; } = null!;
