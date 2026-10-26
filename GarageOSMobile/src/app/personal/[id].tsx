@@ -1,8 +1,9 @@
+import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { myVehiclePhotoSource } from '@/api/vehicles';
-import { CameraIcon } from '@/components/icons';
+import { CameraIcon, CarGlyph } from '@/components/icons';
 import { ModeHeader } from '@/components/mode-header';
 import { PressableCard } from '@/components/ui/card';
 import { BackButton } from '@/components/ui/back-button';
@@ -10,7 +11,6 @@ import { PickerDialog } from '@/components/ui/picker-dialog';
 import { QueryState } from '@/components/ui/query-state';
 import { Screen } from '@/components/ui/screen';
 import { SectionTitle } from '@/components/ui/section-title';
-import { VehicleImage } from '@/components/ui/vehicle-image';
 import { usePhotoActions, type PhotoAction } from '@/hooks/use-photo-actions';
 import { mockDue } from '@/lib/due-mock';
 import { formatMileage, formatMoney, formatNumber, mileageUnitLabel } from '@/lib/format';
@@ -138,15 +138,22 @@ function MyVehiclePhoto({ vehicle }: { vehicle: MyVehicle }) {
 
   return (
     <View style={styles.photoSlot}>
-      <VehicleImage
-        source={
-          vehicle.photoId === undefined
-            ? null
-            : myVehiclePhotoSource(vehicle.id, vehicle.photoId, 'full')
-        }
-        glyph={64}
-        style={styles.photo}
-      />
+      {/* Built like the customer card's header rather than through
+          VehicleImage: an empty square of its own, and the photo laid over it.
+          The wrapper repaints a replaced picture only after the screen is
+          opened again, and this is the hero of the screen. */}
+      <View style={[styles.photo, vehicle.photoId === undefined && styles.photoEmpty]}>
+        <CarGlyph size={64} color={colors.placeholder} />
+      </View>
+
+      {vehicle.photoId !== undefined && (
+        <Image
+          source={myVehiclePhotoSource(vehicle.id, vehicle.photoId, 'full')}
+          contentFit="cover"
+          cachePolicy="memory-disk"
+          style={styles.photoImage}
+        />
+      )}
 
       <Pressable
         accessibilityRole="button"
@@ -216,6 +223,23 @@ const styles = StyleSheet.create({
   photo: {
     width: '100%',
     aspectRatio: 1,
+    borderRadius: radius.lg,
+    backgroundColor: colors.fill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  photoEmpty: {
+    borderWidth: 1,
+    borderColor: colors.borderSoft,
+  },
+  // Over the square above, which is what gives the slot its height.
+  photoImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     borderRadius: radius.lg,
   },
   photoButton: {
