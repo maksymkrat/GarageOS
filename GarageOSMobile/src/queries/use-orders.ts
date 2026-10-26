@@ -105,10 +105,8 @@ export function useAddOrderPhoto(orderId: number) {
   });
 }
 
-// The same write from the create screen, where the naryad gets its id only
-// when its POST comes back, so the id travels with the file. Going through a
-// mutation is what drops the naryad's cached detail afterwards — the create
-// already invalidated it a moment before these photos existed.
+// For the create screen: the naryad gets its id only when its POST comes
+// back, so the id travels with the file.
 export function useAddNewOrderPhoto() {
   const client = useQueryClient();
 

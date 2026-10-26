@@ -47,12 +47,8 @@ export function useCreateMyVehicle() {
   });
 }
 
-// Writes the new photo id into every cached copy of the vehicle, so the screen
-// shows the picture as soon as the upload answers instead of waiting for the
-// re-read. Only the id: the write loads the vehicle without its log, so the
-// card that comes back has an empty one, and storing it whole would blank the
-// log already on screen. The list and the detail both live under the
-// `vehicles` prefix and exist once per `includeLog`, hence setQueriesData.
+// Only the id: the write loads the vehicle without its log, so storing the
+// answer whole would blank the log already on screen.
 function patchPhotoId(client: QueryClient, id: number, photoId: string | undefined) {
   const patch = (vehicle: MyVehicle) => (vehicle.id === id ? { ...vehicle, photoId } : vehicle);
 
@@ -66,8 +62,6 @@ function patchPhotoId(client: QueryClient, id: number, photoId: string | undefin
   );
 }
 
-// The photo id travels inside the vehicle, and the vehicle appears both in the
-// list and on its own screen, so the whole `vehicles` prefix is dropped.
 export function useSetMyVehiclePhoto(id: number) {
   const client = useQueryClient();
 

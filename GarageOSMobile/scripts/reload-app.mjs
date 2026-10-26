@@ -1,25 +1,17 @@
-// Pushes a reload to every app already connected to the Metro dev server, so a
-// restarted bundler does not leave the phone sitting on the previous bundle.
-//
-// Metro exposes a websocket at `/message`. A client connected from this machine
-// is trusted and may broadcast `reload` and `devMenu` to every connected app —
-// that is the same channel the `r` key of `expo start` uses, and the only way
-// to trigger a reload without touching the phone.
+// Reloads every app connected to the Metro dev server over its `/message`
+// websocket — the channel `expo start` uses for its own `r` key.
 import { setTimeout as sleep } from 'node:timers/promises';
 import { pathToFileURL } from 'node:url';
 
 const DEFAULT_HOST = '127.0.0.1';
 const DEFAULT_PORT = 8081;
 
-// Metro's own framing: anything with a different version is dropped silently.
 const PROTOCOL_VERSION = 2;
 
 const CONNECT_TIMEOUT_MS = 2_000;
 const REPLY_TIMEOUT_MS = 2_000;
 const RETRY_DELAY_MS = 1_000;
 
-// Waits for one reply with our id and ignores the broadcasts that arrive in the
-// meantime — the socket carries every client's traffic, not only ours.
 function request(socket, method) {
   const id = `reload-app-${Date.now()}`;
 
@@ -72,8 +64,6 @@ function connect(url) {
   });
 }
 
-// One attempt: connect, ask who is connected, broadcast. Returns how many apps
-// the reload went to, or null when the dev server itself is not up yet.
 async function attempt(url) {
   let socket;
 
@@ -84,17 +74,14 @@ async function attempt(url) {
   }
 
   try {
-    // `getpeers` counts everyone but us, so a lone CLI reads as zero apps.
     const peers = await request(socket, 'getpeers');
     const count = Object.keys(peers ?? {}).length;
 
     if (count === 0) return 0;
 
     // No id and no target: that is what makes Metro treat it as a broadcast
-    // rather than as a request addressed to the server.
     socket.send(JSON.stringify({ version: PROTOCOL_VERSION, method: 'reload' }));
 
-    // The send is asynchronous; closing straight away can drop the frame.
     await sleep(100);
 
     return count;
@@ -103,10 +90,6 @@ async function attempt(url) {
   }
 }
 
-/**
- * @param {{ host?: string, port?: number, waitMs?: number, log?: (line: string) => void }} options
- * @returns {Promise<number>} apps the reload reached; 0 when nobody was listening
- */
 export async function reloadConnectedApps({
   host = DEFAULT_HOST,
   port = DEFAULT_PORT,
@@ -116,7 +99,6 @@ export async function reloadConnectedApps({
   const url = `ws://${host}:${port}/message`;
   const deadline = Date.now() + waitMs;
 
-  // Each state is announced once, so a long wait does not fill the terminal.
   let announced = null;
 
   for (;;) {
@@ -153,7 +135,6 @@ function parseArgs(argv) {
   return options;
 }
 
-// Only when run as a command; `dev.mjs` imports the function instead.
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const options = parseArgs(process.argv.slice(2));
   const reached = await reloadConnectedApps({ ...options, log: (line) => console.log(line) });

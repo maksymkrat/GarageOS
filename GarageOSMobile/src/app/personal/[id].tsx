@@ -138,10 +138,6 @@ function MyVehiclePhoto({ vehicle }: { vehicle: MyVehicle }) {
 
   return (
     <View style={styles.photoSlot}>
-      {/* Built like the customer card's header rather than through
-          VehicleImage: an empty square of its own, and the photo laid over it.
-          The wrapper repaints a replaced picture only after the screen is
-          opened again, and this is the hero of the screen. */}
       <View style={[styles.photo, vehicle.photoId === undefined && styles.photoEmpty]}>
         <CarGlyph size={64} color={colors.placeholder} />
       </View>
@@ -233,7 +229,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.borderSoft,
   },
-  // Over the square above, which is what gives the slot its height.
   photoImage: {
     position: 'absolute',
     top: 0,

@@ -53,25 +53,16 @@ export function usePayClientVehicle(id: number) {
   });
 }
 
-// The photo id travels inside the card, inside the garage list and inside the
-// vehicle nested in an order detail, so a new picture drops all three.
 function invalidatePhoto(client: QueryClient, id: number) {
   client.invalidateQueries({ queryKey: queryKeys.clientVehicle(id) });
   client.invalidateQueries({ queryKey: queryKeys.clientVehicles });
   client.invalidateQueries({ queryKey: queryKeys.ordersAll });
 }
 
-// What every successful photo write leaves behind, wherever it was started
-// from. In one place because a write that skips it looks like it worked and
-// then shows the car without its picture.
+// Written into the caches, not only invalidated: a replacement deletes the
+// file the cached `photoId` points at, so until the re-read lands the list
+// would be asking for a photo that no longer exists.
 function afterPhotoWrite(client: QueryClient, id: number, vehicle: ClientVehicle) {
-  // Written into the caches, not merely invalidated. The answer to the upload
-  // *is* the new card, and an invalidation only promises a re-read — it has to
-  // reach a mounted query to happen at all, and the garage list sits behind
-  // the screen the photo was taken on. Until that re-read lands, the list
-  // still holds the previous `photoId`, and a replacement deletes the picture
-  // that id points at: the row would be asking the server for a photo that no
-  // longer exists, which is an empty slot rather than a stale one.
   client.setQueryData<ClientVehicle[]>(queryKeys.clientVehicles, (rows) =>
     rows?.map((row) => (row.id === id ? vehicle : row))
   );
@@ -80,8 +71,7 @@ function afterPhotoWrite(client: QueryClient, id: number, vehicle: ClientVehicle
     detail === undefined ? undefined : { ...detail, vehicle }
   );
 
-  // Both renditions: the garage list reads the thumbnail and the card the
-  // full one, and either screen may be the next one shown.
+  // Both renditions: the list reads the thumbnail, the card the full one.
   if (vehicle.photoId !== undefined) {
     warmPhotoCache(
       clientVehiclePhotoSource(id, vehicle.photoId, 'thumb'),
@@ -101,11 +91,8 @@ export function useSetClientVehiclePhoto(id: number) {
   });
 }
 
-// The same write from the create form, where the id arrives with the file
-// rather than with the hook: a car has no id to bind to until its POST comes
-// back. Its own hook rather than a bare call to the API, because the garage
-// list refetches the moment the car is created — a second before its photo
-// exists — and nothing would ever tell it about the picture that followed.
+// For the create form: the car has no id to bind a hook to until its POST
+// comes back, so the id travels with the file.
 export function useSetNewClientVehiclePhoto() {
   const client = useQueryClient();
 
@@ -121,8 +108,6 @@ export function useDeleteClientVehiclePhoto(id: number) {
 
   return useMutation({
     mutationFn: () => deleteClientVehiclePhoto(id),
-    // The same path as setting one: removing a photo also leaves every cached
-    // copy of the card pointing at a file that has just been unlinked.
     onSuccess: (vehicle) => afterPhotoWrite(client, id, vehicle),
   });
 }
