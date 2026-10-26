@@ -47,7 +47,6 @@ export default function HomeScreen() {
           <View style={[styles.ring, styles.ringInner]} />
 
           <View style={styles.cardHead}>
-            <Text style={styles.serviceKicker}>01</Text>
             <View style={styles.arrow}>
               <ArrowUpRightIcon color={colors.cream} />
             </View>
@@ -67,7 +66,6 @@ export default function HomeScreen() {
           onPress={() => router.push('/personal')}
           style={({ pressed }) => [styles.card, styles.personalCard, pressed && styles.pressed]}>
           <View style={styles.cardHead}>
-            <Text style={styles.personalKicker}>02</Text>
             <View style={styles.arrow}>
               <ArrowUpRightIcon color={colors.cream} />
             </View>
@@ -129,10 +127,16 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   cards: {
-    marginTop: spacing.xl,
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: spacing.md,
   },
   card: {
+    flex: 1,
+    aspectRatio: 1,
+    justifyContent: 'space-between',
     borderRadius: radius.xxl,
     padding: spacing.lg,
     overflow: 'hidden',
@@ -156,35 +160,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   ringOuter: {
-    width: 144,
-    height: 144,
-    right: -24,
-    top: -24,
+    width: 104,
+    height: 104,
+    right: -20,
+    top: -20,
     borderColor: 'rgba(201, 123, 34, 0.3)',
   },
   ringInner: {
-    width: 208,
-    height: 208,
-    right: -56,
-    top: -56,
+    width: 152,
+    height: 152,
+    right: -44,
+    top: -44,
     borderColor: 'rgba(201, 123, 34, 0.15)',
   },
   cardHead: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  serviceKicker: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 2,
-    color: colors.orange,
-  },
-  personalKicker: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 2,
-    color: colors.warmMuted,
+    justifyContent: 'flex-end',
   },
   arrow: {
     width: 32,
@@ -195,22 +186,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   serviceTitle: {
-    marginTop: spacing.lg,
     fontSize: 22,
     fontWeight: '700',
     color: colors.text,
   },
   personalTitle: {
-    marginTop: spacing.lg,
     fontSize: 22,
     fontWeight: '700',
     color: colors.ink,
   },
   stats: {
-    flexDirection: 'row',
-    gap: spacing.lg,
-    marginTop: spacing.lg,
-    paddingTop: spacing.md,
+    gap: 2,
+    paddingTop: spacing.sm,
     borderTopWidth: 1,
   },
   serviceStats: {
