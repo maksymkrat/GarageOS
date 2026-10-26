@@ -3,16 +3,19 @@
 // here reaches the contract. A make missing from the list is not a dead end —
 // the picker offers the typed text as a value of its own.
 //
+// Cars and motorcycles are separate catalogues even where the name repeats:
+// Honda sells both, and a CBR has no business being offered under «Авто».
+//
 // `alias` is the Cyrillic spelling people actually type on a Ukrainian
 // keyboard («мерс» for Mercedes-Benz). It is searched, never displayed.
 
-export interface CarMake {
+export interface VehicleMake {
   name: string;
   alias: string;
   models: readonly string[];
 }
 
-export const CAR_MAKES: readonly CarMake[] = [
+const CAR_MAKES: readonly VehicleMake[] = [
   { name: 'Acura', alias: 'Акура', models: ['ILX', 'Integra', 'MDX', 'NSX', 'RDX', 'RLX', 'TLX', 'ZDX'] },
   { name: 'Alfa Romeo', alias: 'Альфа Ромео', models: ['147', '156', '159', '166', '4C', 'Brera', 'Giulia', 'Giulietta', 'MiTo', 'Stelvio', 'Tonale'] },
   { name: 'Aston Martin', alias: 'Астон Мартін', models: ['DB9', 'DB11', 'DB12', 'DBS', 'DBX', 'Rapide', 'Vantage'] },
@@ -85,39 +88,113 @@ export const CAR_MAKES: readonly CarMake[] = [
   { name: 'ZAZ', alias: 'ЗАЗ', models: ['Forza', 'Lanos', 'Sens', 'Slavuta', 'Tavria', 'Vida'] },
 ];
 
-export const MAKE_NAMES: readonly string[] = CAR_MAKES.map((make) => make.name);
+// Motorcycles, scooters and quads under one kind, the way the garage already
+// counts them. The Chinese and Ukrainian marques are here because they are what
+// actually rolls in, not because they are famous.
+const MOTO_MAKES: readonly VehicleMake[] = [
+  { name: 'Aprilia', alias: 'Апрілія', models: ['Dorsoduro', 'Pegaso', 'RS 125', 'RS 660', 'RSV4', 'Shiver', 'SR 150', 'Tuono 660', 'Tuono V4'] },
+  { name: 'Bajaj', alias: 'Баджадж', models: ['Avenger', 'Boxer', 'Dominar 400', 'Pulsar 150', 'Pulsar 200'] },
+  { name: 'Bashan', alias: 'Башан', models: ['BS200', 'BS250', 'BS250-11'] },
+  { name: 'Benelli', alias: 'Бенеллі', models: ['302S', 'Imperiale 400', 'Leoncino 500', 'TNT 25', 'TRK 502'] },
+  { name: 'Beta', alias: 'Бета', models: ['RR 125', 'RR 250', 'RR 300', 'RR 350', 'Xtrainer'] },
+  { name: 'BMW', alias: 'БМВ', models: ['C 400 X', 'F 650 GS', 'F 750 GS', 'F 800 GS', 'F 850 GS', 'G 310 GS', 'G 310 R', 'K 1600 GTL', 'R 1200 GS', 'R 1250 GS', 'R nineT', 'S 1000 RR', 'S 1000 XR'] },
+  { name: 'Can-Am', alias: 'Кен-Ем', models: ['Maverick', 'Outlander', 'Renegade', 'Ryker', 'Spyder'] },
+  { name: 'CFMoto', alias: 'СіЕфМото', models: ['150NK', '250NK', '400NK', '650MT', '650NK', '700CL-X', '800MT'] },
+  { name: 'Daelim', alias: 'Деїлім', models: ['Daystar', 'Roadwin', 'VJF 250'] },
+  { name: 'Dnepr', alias: 'Дніпро', models: ['K-750', 'MT-10', 'MT-11', 'MT-16'] },
+  { name: 'Ducati', alias: 'Дукаті', models: ['Diavel', 'Hypermotard', 'Monster', 'Multistrada', 'Panigale V2', 'Panigale V4', 'Scrambler', 'Streetfighter', 'SuperSport'] },
+  { name: 'Forte', alias: 'Форте', models: ['FT125', 'FT150', 'FT200', 'FT250', 'Alpha'] },
+  { name: 'GasGas', alias: 'ГазГаз', models: ['EC 250', 'EC 300', 'ES 700', 'MC 250'] },
+  { name: 'Geon', alias: 'Геон', models: ['CR6', 'Dakar', 'Issen', 'Pantera', 'Stinger', 'Terra-X', 'X-Ride', 'X-Road'] },
+  { name: 'Harley-Davidson', alias: 'Харлей', models: ['Fat Boy', 'Forty-Eight', 'Heritage', 'Iron 883', 'Pan America', 'Road Glide', 'Road King', 'Softail', 'Sportster 883', 'Sportster 1200', 'Street 750', 'Street Glide'] },
+  { name: 'Honda', alias: 'Хонда', models: ['Africa Twin', 'CB125', 'CB500', 'CB650R', 'CBR125R', 'CBR600RR', 'CBR1000RR', 'CRF250L', 'CRF450R', 'Dio', 'Forza', 'Gold Wing', 'Lead', 'PCX', 'Rebel 500', 'Shadow', 'Tact', 'Transalp', 'Varadero', 'X-ADV'] },
+  { name: 'Husqvarna', alias: 'Хускварна', models: ['FC 450', 'FE 350', 'Norden 901', 'Svartpilen 401', 'TE 300', 'Vitpilen 401'] },
+  { name: 'Hyosung', alias: 'Хьосунг', models: ['Aquila 250', 'Aquila 650', 'GT250', 'GT650'] },
+  { name: 'IZH', alias: 'Іж', models: ['Jupiter', 'Planeta', 'Planeta Sport', '49'] },
+  { name: 'Jawa', alias: 'Ява', models: ['350', '350 OHC', '638', '640'] },
+  { name: 'Kawasaki', alias: 'Кавасакі', models: ['KLX250', 'KX250F', 'Ninja 250', 'Ninja 300', 'Ninja 400', 'Ninja 650', 'Ninja ZX-6R', 'Ninja ZX-10R', 'Versys 650', 'Vulcan S', 'Z400', 'Z650', 'Z750', 'Z800', 'Z900', 'Z1000'] },
+  { name: 'KTM', alias: 'КТМ', models: ['125 Duke', '200 Duke', '250 Duke', '390 Duke', '690 Duke', '790 Adventure', '790 Duke', '890 Adventure', '890 Duke', '1290 Super Adventure', '1290 Super Duke', 'EXC 250', 'EXC 300', 'EXC-F 350', 'RC 390', 'SX-F 450'] },
+  { name: 'Kymco', alias: 'Кімко', models: ['Agility', 'AK 550', 'Downtown', 'Like', 'People', 'Xciting'] },
+  { name: 'Lifan', alias: 'Ліфан', models: ['KP150', 'KP200', 'KPR200', 'KPT200', 'LF200'] },
+  { name: 'Loncin', alias: 'Лонсін', models: ['CR4', 'CR5', 'GP250', 'LX200', 'LX250'] },
+  { name: 'Minsk', alias: 'Мінськ', models: ['3.112', 'C4 250', 'D4 125', 'X250'] },
+  { name: 'Moto Guzzi', alias: 'Мото Гуцці', models: ['Breva', 'California', 'Griso', 'V7', 'V9', 'V85 TT'] },
+  { name: 'Musstang', alias: 'Мустанг', models: ['MT150', 'MT200', 'MT250', 'Region'] },
+  { name: 'MV Agusta', alias: 'МВ Агуста', models: ['Brutale 800', 'Dragster', 'F3', 'F4', 'Turismo Veloce'] },
+  { name: 'Peugeot', alias: 'Пежо', models: ['Django', 'Kisbee', 'Speedfight', 'Tweet'] },
+  { name: 'Piaggio', alias: 'Піаджо', models: ['Beverly', 'Liberty', 'Medley', 'MP3', 'Zip'] },
+  { name: 'Polaris', alias: 'Поларіс', models: ['Ranger', 'RZR', 'Scrambler', 'Sportsman'] },
+  { name: 'QJMotor', alias: 'КюДжей', models: ['SRK 400', 'SRT 700', 'SRV 550'] },
+  { name: 'Royal Enfield', alias: 'Роял Енфілд', models: ['Classic 350', 'Continental GT 650', 'Himalayan', 'Interceptor 650', 'Meteor 350'] },
+  { name: 'Segway', alias: 'Сегвей', models: ['Fugleman', 'Snarler', 'Villain'] },
+  { name: 'Sherco', alias: 'Шерко', models: ['SE 250', 'SE 300', 'SEF 450'] },
+  { name: 'Shineray', alias: 'Шинерей', models: ['Elcrosso 400', 'X-Trail 200', 'XY200', 'XY250'] },
+  { name: 'Simson', alias: 'Сімсон', models: ['S50', 'S51', 'Schwalbe'] },
+  { name: 'Spark', alias: 'Спарк', models: ['SP125C', 'SP150', 'SP200', 'SP250'] },
+  { name: 'Suzuki', alias: 'Сузукі', models: ['Address', 'Bandit 600', 'Bandit 1200', 'Burgman', 'DL650 V-Strom', 'DL1000 V-Strom', 'DR-Z400', 'GSX-R600', 'GSX-R750', 'GSX-R1000', 'GSX-S750', 'Intruder', "Let's", 'RM-Z250', 'SV650'] },
+  { name: 'SYM', alias: 'Сім', models: ['Cruisym', 'Fiddle', 'Jet 14', 'Joyride', 'Symphony'] },
+  { name: 'Triumph', alias: 'Тріумф', models: ['Bonneville T100', 'Bonneville T120', 'Rocket 3', 'Scrambler 1200', 'Speed Triple', 'Street Triple', 'Tiger 800', 'Tiger 900', 'Tiger 1200', 'Trident 660'] },
+  { name: 'TVS', alias: 'ТіВіЕс', models: ['Apache RTR 160', 'Apache RTR 200', 'Ntorq', 'Raider'] },
+  { name: 'Ural', alias: 'Урал', models: ['Gear Up', 'M-72', 'Ranger', 'Solo sT'] },
+  { name: 'Vespa', alias: 'Веспа', models: ['GTS 300', 'LX 125', 'Primavera', 'Sprint'] },
+  { name: 'Viper', alias: 'Вайпер', models: ['Active', 'F2', 'Storm', 'V150', 'V200', 'V250', 'ZS150'] },
+  { name: 'Voge', alias: 'Воге', models: ['300AC', '300R', '500DS', '500R', '525DSX', '650DS'] },
+  { name: 'Yamaha', alias: 'Ямаха', models: ['Aerox', 'Drag Star', 'FZ1', 'FZ6', 'Jog', 'MT-03', 'MT-07', 'MT-09', 'MT-125', 'NMAX', 'Tenere 700', 'TMAX', 'Virago', 'WR250F', 'XJ6', 'XMAX', 'XT660', 'YZ250F', 'YZF-R1', 'YZF-R3', 'YZF-R6', 'YZF-R125'] },
+  { name: 'Zongshen', alias: 'Зонгшен', models: ['RX3', 'Z-One', 'ZS200', 'ZS250'] },
+  { name: 'Zontes', alias: 'Зонтес', models: ['125U', '155U', '310R', '310T', '350X'] },
+];
 
-const BY_NAME = new Map(CAR_MAKES.map((make) => [make.name.toLowerCase(), make]));
-
-export function modelsOf(make: string): readonly string[] {
-  return BY_NAME.get(make.trim().toLowerCase())?.models ?? [];
+export interface MakeCatalog {
+  readonly names: readonly string[];
+  models(make: string): readonly string[];
+  matches(make: string, query: string): boolean;
+  fields(name: string): { make: string; model: string };
 }
 
-// Matches the Latin name and the Cyrillic alias, so «мерс» and «merc» both
-// reach Mercedes-Benz. Only makes carry an alias: models are typed as written.
-export function makeMatches(make: string, query: string): boolean {
-  const found = BY_NAME.get(make.toLowerCase());
+function buildCatalog(makes: readonly VehicleMake[]): MakeCatalog {
+  const byName = new Map(makes.map((make) => [make.name.toLowerCase(), make]));
 
-  return (
-    make.toLowerCase().includes(query) || (found?.alias.toLowerCase().includes(query) ?? false)
-  );
+  // Longest make first, so «Land Rover Discovery» does not match a
+  // hypothetical «Land» and «Moto Guzzi V7» does not match «Moto».
+  const byLength = [...makes].sort((a, b) => b.name.length - a.name.length);
+
+  return {
+    names: makes.map((make) => make.name),
+
+    models(make) {
+      return byName.get(make.trim().toLowerCase())?.models ?? [];
+    },
+
+    // Matches the Latin name and the Cyrillic alias, so «мерс» and «merc» both
+    // reach Mercedes-Benz. Only makes carry an alias: models are typed as
+    // written on the tank.
+    matches(make, query) {
+      const found = byName.get(make.toLowerCase());
+
+      return (
+        make.toLowerCase().includes(query) || (found?.alias.toLowerCase().includes(query) ?? false)
+      );
+    },
+
+    // A name the pickers did not write — one typed before this screen existed —
+    // still has to survive an edit, so it lands in the make whole rather than
+    // being guessed at.
+    fields(name) {
+      const trimmed = name.trim();
+      const lower = trimmed.toLowerCase();
+
+      const found = byLength.find(
+        (make) =>
+          lower === make.name.toLowerCase() || lower.startsWith(`${make.name.toLowerCase()} `)
+      );
+
+      if (found === undefined) return { make: trimmed, model: '' };
+
+      return { make: found.name, model: trimmed.slice(found.name.length).trim() };
+    },
+  };
 }
 
-// Longest make first, so «Land Rover Discovery» does not match a hypothetical
-// «Land». Returns empty strings when the name was not written by the pickers —
-// a vehicle saved before this screen existed, or one typed by hand.
-export function splitVehicleName(name: string): { make: string; model: string } {
-  const trimmed = name.trim();
-  const lower = trimmed.toLowerCase();
+export const CAR_CATALOG = buildCatalog(CAR_MAKES);
 
-  const found = [...CAR_MAKES]
-    .sort((a, b) => b.name.length - a.name.length)
-    .find(
-      (make) =>
-        lower === make.name.toLowerCase() || lower.startsWith(`${make.name.toLowerCase()} `)
-    );
-
-  if (found === undefined) return { make: '', model: '' };
-
-  return { make: found.name, model: trimmed.slice(found.name.length).trim() };
-}
+export const MOTO_CATALOG = buildCatalog(MOTO_MAKES);

@@ -5,8 +5,8 @@ import { ChipRow } from '@/components/ui/chip-row';
 import { SearchPickerDialog } from '@/components/ui/search-picker-dialog';
 import { SelectField } from '@/components/ui/select-field';
 import { TextField } from '@/components/ui/text-field';
-import { MAKE_NAMES, makeMatches, modelsOf, splitVehicleName } from '@/lib/car-catalog';
 import { mileageUnitLabel } from '@/lib/format';
+import { CAR_CATALOG, MOTO_CATALOG, type MakeCatalog } from '@/lib/vehicle-catalog';
 import { colors, radius, shadows, spacing } from '@/theme/tokens';
 import type { MileageUnit } from '@/types/domain';
 
@@ -15,14 +15,22 @@ import type { MileageUnit } from '@/types/domain';
 // three spellings.
 const CAR = 'Авто';
 
-const KINDS = [CAR, 'Мото', 'Техніка'];
+const MOTO = 'Мото';
+
+const KINDS = [CAR, MOTO, 'Техніка'];
+
+// Cars and bikes are picked from a catalogue; everything else is still typed,
+// because there is no list of make and model worth the name for a trailer or
+// a tiller.
+const CATALOGS: Record<string, MakeCatalog | undefined> = {
+  [CAR]: CAR_CATALOG,
+  [MOTO]: MOTO_CATALOG,
+};
 
 const UNITS: MileageUnit[] = ['km', 'hours'];
 
 const EARLIEST_YEAR = 1900;
 
-// A car is picked from the catalogue, everything else is still typed: there is
-// no list of make and model worth the name for a Niva trailer or a tiller.
 export interface MyVehicleFormValues {
   kind: string;
   name: string;
@@ -49,6 +57,8 @@ type Picker = 'make' | 'model' | 'year';
 
 type FormErrors = Partial<Record<FieldKey, string>>;
 
+const NO_FIELDS = { make: '', model: '' };
+
 function digitsOf(value: string): string {
   return value.replace(/\D/g, '');
 }
@@ -57,7 +67,7 @@ function nextYear(): number {
   return new Date().getFullYear() + 1;
 }
 
-// Newest first: a car from this decade is what somebody is adding, and the
+// Newest first: a vehicle from this decade is what somebody is adding, and the
 // 1950s are a scroll away rather than the other way round.
 function yearOptions(): string[] {
   const years: string[] = [];
@@ -67,27 +77,19 @@ function yearOptions(): string[] {
   return years;
 }
 
-// A name the pickers did not write — one typed before this screen existed —
-// still has to survive an edit, so it lands in the make whole and the model
-// stays empty rather than being guessed at.
-function toCarFields(name: string): { make: string; model: string } {
-  const split = splitVehicleName(name);
-
-  return split.make ? split : { make: name.trim(), model: '' };
-}
-
 function composeName(form: FormState): string {
-  return form.kind === CAR ? `${form.make} ${form.model}`.trim() : form.name.trim();
+  return CATALOGS[form.kind] ? `${form.make} ${form.model}`.trim() : form.name.trim();
 }
 
 function toFormState(initial?: MyVehicleFormValues): FormState {
   const name = initial?.name ?? '';
   const kind = initial?.kind ?? KINDS[0];
+  const catalog = CATALOGS[kind];
 
   return {
     kind,
     name,
-    ...(kind === CAR ? toCarFields(name) : { make: '', model: '' }),
+    ...(catalog ? catalog.fields(name) : NO_FIELDS),
     year: initial === undefined ? '' : String(initial.year),
     mileage: initial === undefined ? '' : String(initial.mileage),
     mileageUnit: initial?.mileageUnit ?? 'km',
@@ -99,7 +101,7 @@ function validate(form: FormState): FormErrors {
   const limit = nextYear();
   const year = Number(digitsOf(form.year));
 
-  if (form.kind === CAR) {
+  if (CATALOGS[form.kind]) {
     if (!form.make.trim()) errors.make = 'Оберіть марку';
   } else if (!form.name.trim()) {
     errors.name = 'Вкажіть назву';
@@ -135,37 +137,41 @@ export function MyVehicleForm({
   const [errors, setErrors] = useState<FormErrors>({});
   const [picker, setPicker] = useState<Picker | null>(null);
 
-  const isCar = form.kind === CAR;
+  const catalog = CATALOGS[form.kind];
 
   const years = useMemo(() => yearOptions(), []);
 
   // A value saved earlier may be outside the catalogue; it still has to show as
   // the current choice instead of disappearing from its own list.
-  const makes = useMemo(
-    () => (!form.make || MAKE_NAMES.includes(form.make) ? MAKE_NAMES : [form.make, ...MAKE_NAMES]),
-    [form.make]
-  );
+  const makes = useMemo(() => {
+    const known = catalog?.names ?? [];
+
+    return !form.make || known.includes(form.make) ? known : [form.make, ...known];
+  }, [catalog, form.make]);
 
   const models = useMemo(() => {
-    const known = modelsOf(form.make);
+    const known = catalog?.models(form.make) ?? [];
 
     return !form.model || known.includes(form.model) ? known : [form.model, ...known];
-  }, [form.make, form.model]);
+  }, [catalog, form.make, form.model]);
 
   const update = (field: TextKey) => (value: string) =>
     setForm((current) => ({ ...current, [field]: value }));
 
-  // Switching kind must not throw away what is already typed: the two shapes
-  // of the same answer are converted into each other instead.
   function pickKind(kind: string) {
     setForm((current) => {
       if (kind === current.kind) return current;
 
-      if (current.kind === CAR) {
-        return { ...current, kind, name: current.name || composeName(current) };
-      }
+      const leaving = CATALOGS[current.kind];
+      const entering = CATALOGS[kind];
 
-      return { ...current, kind, ...(kind === CAR ? toCarFields(current.name) : {}) };
+      // What is already filled in has to survive the switch — but an answer
+      // from one catalogue means nothing in another, because a Mazda is not a
+      // make of motorcycle.
+      const name = leaving ? current.name || composeName(current) : current.name;
+      const fields = entering && !leaving ? entering.fields(name) : NO_FIELDS;
+
+      return { ...current, kind, name, ...fields };
     });
   }
 
@@ -203,7 +209,7 @@ export function MyVehicleForm({
         onChange={pickKind}
       />
 
-      {isCar ? (
+      {catalog ? (
         <>
           <SelectField
             label="Марка *"
@@ -289,7 +295,7 @@ export function MyVehicleForm({
         value={form.make}
         emptyText="Такої марки немає в списку"
         allowCustom
-        match={makeMatches}
+        match={catalog?.matches}
         onPick={pickMake}
         onCancel={() => setPicker(null)}
       />
