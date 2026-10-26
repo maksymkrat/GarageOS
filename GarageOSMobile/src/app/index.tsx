@@ -39,7 +39,7 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.tagline}>
-        <Text style={styles.taglineLine}>Весь гараж —</Text>
+        <Text style={styles.taglineLine}>Керуй роботою —</Text>
         <Text style={[styles.taglineLine, styles.taglineAccent]}>в одному застосунку</Text>
       </View>
 
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   tagline: {
-    marginTop: spacing.xl,
+    marginTop: 40,
   },
   taglineLine: {
     fontSize: 26,
