@@ -159,6 +159,20 @@ export function CarGlyph({ size = 120, color = colors.onAccent }: IconProps) {
   );
 }
 
+export function ExitIcon({ size = 18, color = colors.textMuted }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path
+        d="M14 4H6a2 2 0 00-2 2v12a2 2 0 002 2h8"
+        stroke={color}
+        strokeWidth={1.8}
+        {...STROKE}
+      />
+      <Path d="M17 8l4 4-4 4M21 12H10" stroke={color} strokeWidth={1.8} {...STROKE} />
+    </Svg>
+  );
+}
+
 export function TelegramIcon({ size = 18, color = colors.cream }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">

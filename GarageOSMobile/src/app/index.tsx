@@ -1,11 +1,10 @@
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { ArrowUpRightIcon } from '@/components/icons';
+import { ArrowUpRightIcon, ExitIcon } from '@/components/icons';
 import { LogoMark } from '@/components/logo-mark';
 import { Screen } from '@/components/ui/screen';
 import { mockDueCount } from '@/lib/due-mock';
-import { vocative } from '@/lib/format';
 import { useSession } from '@/lib/session';
 import { useClientVehicles } from '@/queries/use-client-vehicles';
 import { useMyVehicles } from '@/queries/use-vehicles';
@@ -13,7 +12,7 @@ import { colors, radius, spacing } from '@/theme/tokens';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { session, signOut } = useSession();
+  const { signOut } = useSession();
   const clientVehicles = useClientVehicles();
   const vehicles = useMyVehicles();
 
@@ -24,29 +23,20 @@ export default function HomeScreen() {
     clientVehicles.data?.filter((vehicle) => vehicle.status === 'ready').length ?? 0;
   const vehicleCount = vehicles.data?.length ?? 0;
   const dueCount = mockDueCount(vehicles.data);
-  const firstName = vocative(session?.user.firstName ?? '');
 
   return (
     <Screen style={styles.screen}>
       <View style={styles.brandRow}>
         <LogoMark size={40} onDark />
-        <View style={styles.brandText}>
-          <Text style={styles.kicker}>WORKSPACE</Text>
-          <Text style={styles.greeting}>Добрий день, {firstName}</Text>
-        </View>
         <Pressable
           accessibilityRole="button"
+          accessibilityLabel="Вийти"
           hitSlop={8}
           onPress={signOut}
           style={({ pressed }) => [styles.signOut, pressed && styles.pressed]}>
-          <Text style={styles.signOutLabel}>Вийти</Text>
+          <ExitIcon color={colors.amber} />
         </Pressable>
       </View>
-
-      <Text style={styles.title}>
-        Що відкриваємо{'\n'}
-        <Text style={styles.titleAccent}>сьогодні?</Text>
-      </Text>
 
       <View style={styles.cards}>
         <Pressable
@@ -57,14 +47,13 @@ export default function HomeScreen() {
           <View style={[styles.ring, styles.ringInner]} />
 
           <View style={styles.cardHead}>
-            <Text style={styles.serviceKicker}>01 · SERVICE</Text>
+            <Text style={styles.serviceKicker}>01</Text>
             <View style={styles.arrow}>
               <ArrowUpRightIcon color={colors.cream} />
             </View>
           </View>
 
           <Text style={styles.serviceTitle}>Сервіс</Text>
-          <Text style={styles.serviceBody}>Клієнтські авто, наряди, гроші та нагадування</Text>
 
           <View style={[styles.stats, styles.serviceStats]}>
             <Stat value={clientVehicleCount} label="авто" onDark />
@@ -78,16 +67,13 @@ export default function HomeScreen() {
           onPress={() => router.push('/personal')}
           style={({ pressed }) => [styles.card, styles.personalCard, pressed && styles.pressed]}>
           <View style={styles.cardHead}>
-            <Text style={styles.personalKicker}>02 · MY GARAGE</Text>
+            <Text style={styles.personalKicker}>02</Text>
             <View style={styles.arrow}>
               <ArrowUpRightIcon color={colors.cream} />
             </View>
           </View>
 
-          <Text style={styles.personalTitle}>Мій гараж</Text>
-          <Text style={styles.personalBody}>
-            Особиста техніка: що, коли й на якому пробігу замінено
-          </Text>
+          <Text style={styles.personalTitle}>Гараж</Text>
 
           <View style={[styles.stats, styles.personalStats]}>
             <Stat value={vehicleCount} label="одиниці" />
@@ -129,51 +115,26 @@ const styles = StyleSheet.create({
   brandRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    justifyContent: 'space-between',
   },
-  brandText: {
-    flex: 1,
-  },
+  // The square of the Back and Home buttons on every other screen.
   signOut: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: radius.pill,
-    backgroundColor: colors.fill,
-  },
-  signOutLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: colors.textMuted,
-  },
-  kicker: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 2,
-    color: colors.textFaint,
-  },
-  greeting: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  title: {
-    marginTop: 40,
-    fontSize: 34,
-    lineHeight: 36,
-    fontWeight: '700',
-    letterSpacing: -0.5,
-    color: colors.text,
-  },
-  titleAccent: {
-    color: colors.orange,
+    width: 36,
+    height: 36,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   cards: {
-    marginTop: spacing.xxxl,
+    marginTop: spacing.xl,
     gap: spacing.md,
   },
   card: {
-    borderRadius: radius.sheet,
-    padding: spacing.xl,
+    borderRadius: radius.xxl,
+    padding: spacing.lg,
     overflow: 'hidden',
   },
   pressed: {
@@ -234,34 +195,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   serviceTitle: {
-    marginTop: 40,
-    fontSize: 26,
+    marginTop: spacing.lg,
+    fontSize: 22,
     fontWeight: '700',
     color: colors.text,
   },
   personalTitle: {
-    marginTop: 40,
-    fontSize: 26,
+    marginTop: spacing.lg,
+    fontSize: 22,
     fontWeight: '700',
     color: colors.ink,
-  },
-  serviceBody: {
-    marginTop: spacing.sm,
-    fontSize: 13,
-    maxWidth: 220,
-    color: 'rgba(237, 232, 223, 0.6)',
-  },
-  personalBody: {
-    marginTop: spacing.sm,
-    fontSize: 13,
-    maxWidth: 220,
-    color: colors.warmBody,
   },
   stats: {
     flexDirection: 'row',
     gap: spacing.lg,
-    marginTop: spacing.xl,
-    paddingTop: spacing.lg,
+    marginTop: spacing.lg,
+    paddingTop: spacing.md,
     borderTopWidth: 1,
   },
   serviceStats: {
