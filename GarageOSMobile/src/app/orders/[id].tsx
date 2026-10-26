@@ -11,10 +11,12 @@ import {
   View,
 } from 'react-native';
 
+import { MoneyIcon } from '@/components/icons';
 import { OrderPhotos } from '@/components/order-photos';
 import { StatusPicker } from '@/components/status-picker';
 import { BackButton } from '@/components/ui/back-button';
 import { Card } from '@/components/ui/card';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { PlateTag } from '@/components/ui/plate-tag';
 import { QueryState } from '@/components/ui/query-state';
 import { Screen } from '@/components/ui/screen';
@@ -186,7 +188,11 @@ export default function OrderDetailScreen() {
                     <Text style={styles.neutralLabel}>Статус</Text>
                   </Pressable>
 
-                  <PayButton orderId={order.id} paid={orderPaid(order)} />
+                  <PayButton
+                    orderId={order.id}
+                    paid={orderPaid(order)}
+                    debt={orderDebt(order)}
+                  />
 
                   <Pressable
                     accessibilityRole="button"
@@ -210,32 +216,48 @@ export default function OrderDetailScreen() {
 
 // Its own component because the mutation hook cannot be called inside
 // QueryState's render callback — the same reason StatusPicker takes an id.
-function PayButton({ orderId, paid }: { orderId: number; paid: boolean }) {
+function PayButton({ orderId, paid, debt }: { orderId: number; paid: boolean; debt: number }) {
   const pay = usePayOrder(orderId);
   const off = paid || pay.isPending;
 
+  const [asking, setAsking] = useState(false);
+
   return (
-    <Pressable
-      accessibilityRole="button"
-      disabled={off}
-      onPress={() =>
-        pay.mutate(undefined, {
-          onError: (error) =>
-            Alert.alert('Оплата', error instanceof Error ? error.message : 'Не вдалося'),
-        })
-      }
-      style={({ pressed }) => [
-        styles.actionButton,
-        styles.payButton,
-        off && styles.buttonOff,
-        pressed && { opacity: 0.8 },
-      ]}>
-      {pay.isPending ? (
-        <ActivityIndicator color={colors.onAccent} />
-      ) : (
-        <Text style={styles.primaryLabel}>{paid ? 'Оплачено' : 'Оплата'}</Text>
-      )}
-    </Pressable>
+    <>
+      <Pressable
+        accessibilityRole="button"
+        disabled={off}
+        onPress={() => setAsking(true)}
+        style={({ pressed }) => [
+          styles.actionButton,
+          styles.payButton,
+          off && styles.buttonOff,
+          pressed && { opacity: 0.8 },
+        ]}>
+        {pay.isPending ? (
+          <ActivityIndicator color={colors.onAccent} />
+        ) : (
+          <Text style={styles.primaryLabel}>{paid ? 'Оплачено' : 'Оплата'}</Text>
+        )}
+      </Pressable>
+
+      <ConfirmDialog
+        visible={asking}
+        tone="accent"
+        icon={<MoneyIcon size={22} color={colors.amberOnDark} />}
+        title="Прийняти оплату?"
+        body={`${formatMoney(debt)} по цьому наряду стануть оплаченими. Скасувати це в застосунку не можна.`}
+        confirmLabel="Прийняти"
+        onCancel={() => setAsking(false)}
+        onConfirm={() => {
+          setAsking(false);
+          pay.mutate(undefined, {
+            onError: (error) =>
+              Alert.alert('Оплата', error instanceof Error ? error.message : 'Не вдалося'),
+          });
+        }}
+      />
+    </>
   );
 }
 

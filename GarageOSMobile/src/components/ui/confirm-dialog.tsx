@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { TrashIcon } from '@/components/icons';
@@ -9,6 +10,10 @@ interface ConfirmDialogProps {
   body: string;
   confirmLabel: string;
   cancelLabel?: string;
+  // Deleting is not the only thing worth a question — money moves once too,
+  // and a red bin over "прийняти оплату" would say the wrong thing.
+  tone?: 'danger' | 'accent';
+  icon?: ReactNode;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -19,9 +24,12 @@ export function ConfirmDialog({
   body,
   confirmLabel,
   cancelLabel = 'Скасувати',
+  tone = 'danger',
+  icon,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  const accent = tone === 'accent';
   return (
     <Modal
       visible={visible}
@@ -40,8 +48,8 @@ export function ConfirmDialog({
         />
 
         <View accessibilityViewIsModal style={styles.card}>
-          <View style={styles.badge}>
-            <TrashIcon size={22} />
+          <View style={[styles.badge, accent && styles.badgeAccent]}>
+            {icon ?? <TrashIcon size={22} />}
           </View>
 
           <Text style={styles.title}>{title}</Text>
@@ -58,7 +66,11 @@ export function ConfirmDialog({
             <Pressable
               accessibilityRole="button"
               onPress={onConfirm}
-              style={({ pressed }) => [styles.confirm, pressed && styles.pressed]}>
+              style={({ pressed }) => [
+                styles.confirm,
+                accent && styles.confirmAccent,
+                pressed && styles.pressed,
+              ]}>
               <Text style={styles.confirmLabel}>{confirmLabel}</Text>
             </Pressable>
           </View>
@@ -104,6 +116,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: onInk.dangerBorder,
   },
+  badgeAccent: {
+    backgroundColor: onInk.warnFill,
+    borderColor: onInk.warnBorder,
+  },
   title: {
     fontSize: 18,
     fontWeight: '700',
@@ -141,6 +157,9 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderRadius: radius.md,
     backgroundColor: colors.danger,
+  },
+  confirmAccent: {
+    backgroundColor: colors.amber,
   },
   confirmLabel: {
     fontSize: 14,

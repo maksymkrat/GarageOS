@@ -13,9 +13,18 @@ import {
 } from 'react-native';
 
 import { clientVehiclePhotoSource } from '@/api/client-vehicles';
-import { CameraIcon, CarGlyph, ChevronRightIcon, MessageIcon, PhoneIcon, PlusIcon } from '@/components/icons';
+import {
+  CameraIcon,
+  CarGlyph,
+  ChevronRightIcon,
+  MessageIcon,
+  MoneyIcon,
+  PhoneIcon,
+  PlusIcon,
+} from '@/components/icons';
 import { BackButton } from '@/components/ui/back-button';
 import { Card, PressableCard } from '@/components/ui/card';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { PickerDialog } from '@/components/ui/picker-dialog';
 import { QueryState } from '@/components/ui/query-state';
 import { Screen } from '@/components/ui/screen';
@@ -116,7 +125,7 @@ export default function ClientVehicleDetailScreen() {
                     <Text style={styles.debtLabel}>Борг</Text>
                     <Text style={styles.debtValue}>{formatMoney(vehicle.debt)}</Text>
                   </View>
-                  <AcceptPaymentButton vehicleId={vehicle.id} />
+                  <AcceptPaymentButton vehicleId={vehicle.id} debt={vehicle.debt} />
                 </View>
               )}
 
@@ -251,29 +260,44 @@ function VehiclePhoto({ vehicle }: { vehicle: ClientVehicle }) {
 
 // Its own component because the mutation hook cannot be called inside
 // QueryState's render callback — the same reason StatusPicker takes an id.
-function AcceptPaymentButton({ vehicleId }: { vehicleId: number }) {
+function AcceptPaymentButton({ vehicleId, debt }: { vehicleId: number; debt: number }) {
   const pay = usePayClientVehicle(vehicleId);
+  const [asking, setAsking] = useState(false);
 
   return (
-    <Pressable
-      accessibilityRole="button"
-      disabled={pay.isPending}
-      onPress={() =>
-        pay.mutate(undefined, {
-          onError: (error) =>
-            Alert.alert('Оплата', error instanceof Error ? error.message : 'Не вдалося'),
-        })
-      }
-      style={({ pressed }) => [
-        styles.debtButton,
-        (pressed || pay.isPending) && { opacity: 0.85 },
-      ]}>
-      {pay.isPending ? (
-        <ActivityIndicator color={colors.onAccent} />
-      ) : (
-        <Text style={styles.debtButtonLabel}>Прийняти оплату</Text>
-      )}
-    </Pressable>
+    <>
+      <Pressable
+        accessibilityRole="button"
+        disabled={pay.isPending}
+        onPress={() => setAsking(true)}
+        style={({ pressed }) => [
+          styles.debtButton,
+          (pressed || pay.isPending) && { opacity: 0.85 },
+        ]}>
+        {pay.isPending ? (
+          <ActivityIndicator color={colors.onAccent} />
+        ) : (
+          <Text style={styles.debtButtonLabel}>Прийняти оплату</Text>
+        )}
+      </Pressable>
+
+      <ConfirmDialog
+        visible={asking}
+        tone="accent"
+        icon={<MoneyIcon size={22} color={colors.amberOnDark} />}
+        title="Прийняти оплату?"
+        body={`${formatMoney(debt)} по всіх нарядах цього авто стануть оплаченими. Скасувати це в застосунку не можна.`}
+        confirmLabel="Прийняти"
+        onCancel={() => setAsking(false)}
+        onConfirm={() => {
+          setAsking(false);
+          pay.mutate(undefined, {
+            onError: (error) =>
+              Alert.alert('Оплата', error instanceof Error ? error.message : 'Не вдалося'),
+          });
+        }}
+      />
+    </>
   );
 }
 
