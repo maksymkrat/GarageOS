@@ -39,8 +39,8 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.tagline}>
-        <Text style={styles.taglineLine}>Своя майстерня —</Text>
-        <Text style={[styles.taglineLine, styles.taglineAccent]}>у твоєму телефоні</Text>
+        <Text style={styles.taglineLine}>Весь гараж —</Text>
+        <Text style={[styles.taglineLine, styles.taglineAccent]}>в одному застосунку</Text>
       </View>
 
       <View style={styles.cards}>
