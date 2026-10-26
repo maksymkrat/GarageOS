@@ -44,8 +44,6 @@ import {
 import { colors, fontFamily, radius, spacing } from '@/theme/tokens';
 import type { ClientVehicle } from '@/types/domain';
 
-const HEADER_HEIGHT = 200;
-
 export default function ClientVehicleDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
@@ -58,14 +56,6 @@ export default function ClientVehicleDetailScreen() {
         {({ vehicle, orders, sameOwnerCount }) => (
           <View style={styles.root}>
             <View style={styles.header}>
-              <VehiclePhoto vehicle={vehicle} />
-
-              {vehicle.photoId === undefined && (
-                <View style={styles.watermark}>
-                  <CarGlyph size={120} />
-                </View>
-              )}
-
               <View style={styles.headerTop}>
                 <BackButton fallback="/garage" />
                 <Pressable
@@ -85,12 +75,16 @@ export default function ClientVehicleDetailScreen() {
                 />
               </View>
 
-              <View style={styles.headerBottom}>
-                <Text style={styles.plate}>{vehicle.plate}</Text>
-                <Text style={styles.model}>
-                  {vehicle.make} {vehicle.model}
-                  {vehicle.year === undefined ? '' : `, ${vehicle.year}`}
-                </Text>
+              <View style={styles.hero}>
+                <VehiclePhoto vehicle={vehicle} />
+
+                <View style={styles.heroInfo}>
+                  <Text style={styles.plate}>{vehicle.plate}</Text>
+                  <Text style={styles.model}>
+                    {vehicle.make} {vehicle.model}
+                    {vehicle.year === undefined ? '' : `, ${vehicle.year}`}
+                  </Text>
+                </View>
               </View>
             </View>
 
@@ -195,10 +189,8 @@ export default function ClientVehicleDetailScreen() {
   );
 }
 
-// Lives in the header: the photo is the header's background and the camera
-// button sits in its corner, so adding and seeing a photo are the same place.
-// Its own component for the usual reason — the mutation hooks cannot be called
-// inside QueryState's render callback.
+// Its own component for the usual reason — the mutation hooks cannot be
+// called inside QueryState's render callback.
 function VehiclePhoto({ vehicle }: { vehicle: ClientVehicle }) {
   const save = useSetClientVehiclePhoto(vehicle.id);
   const remove = useDeleteClientVehiclePhoto(vehicle.id);
@@ -209,24 +201,20 @@ function VehiclePhoto({ vehicle }: { vehicle: ClientVehicle }) {
   );
 
   return (
-    <>
+    <View style={styles.photoSlot}>
+      <View style={[styles.photo, vehicle.photoId === undefined && styles.photoEmpty]}>
+        <CarGlyph size={48} color={colors.placeholder} />
+      </View>
+
       {vehicle.photoId !== undefined && (
-        <>
-          <Image
-            // The URL carries the photo id, so a replacement is a different URL
-            // and the cached copy cannot linger.
-            source={clientVehiclePhotoSource(vehicle.id, vehicle.photoId, 'full')}
-            contentFit="cover"
-            // No fade here either, for the reason spelled out in VehicleImage:
-            // a picture that loads while this screen is not on top would stay
-            // at alpha 0 waiting for an animation that never runs.
-            cachePolicy="memory-disk"
-            style={styles.headerPhoto}
-          />
-          {/* The plate and the status badge have to stay readable over any
-              picture, so they sit on a scrim rather than straight on it. */}
-          <View style={styles.headerScrim} />
-        </>
+        <Image
+          // The URL carries the photo id, so a replacement is a different URL
+          // and the cached copy cannot linger.
+          source={clientVehiclePhotoSource(vehicle.id, vehicle.photoId, 'full')}
+          contentFit="cover"
+          cachePolicy="memory-disk"
+          style={styles.photoImage}
+        />
       )}
 
       <Pressable
@@ -254,7 +242,7 @@ function VehiclePhoto({ vehicle }: { vehicle: ClientVehicle }) {
         onPick={photo.run}
         onCancel={photo.close}
       />
-    </>
+    </View>
   );
 }
 
@@ -356,18 +344,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    height: HEADER_HEIGHT,
-    backgroundColor: colors.surface,
-  },
-  watermark: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    opacity: 0.1,
+    paddingBottom: spacing.lg,
   },
   headerTop: {
     flexDirection: 'row',
@@ -376,22 +353,51 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.lg,
   },
-  headerBottom: {
+  hero: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.lg,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
+  },
+  heroInfo: {
+    flex: 1,
+  },
+  photoSlot: {
+    width: '40%',
+  },
+  photo: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: radius.lg,
+    backgroundColor: colors.fill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  photoEmpty: {
+    borderWidth: 1,
+    borderColor: colors.borderSoft,
+  },
+  photoImage: {
     position: 'absolute',
-    bottom: spacing.lg,
-    left: spacing.lg,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: radius.lg,
   },
   plate: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '700',
-    letterSpacing: 2.5,
-    color: colors.onAccent,
+    letterSpacing: 2,
+    color: colors.text,
     fontFamily: fontFamily.mono,
   },
   model: {
-    marginTop: 2,
+    marginTop: 4,
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: colors.textMuted,
   },
   body: {
     flex: 1,
@@ -549,35 +555,17 @@ const styles = StyleSheet.create({
   },
   // The stored photo is square (ADR-0026) and the header is wide, so `cover`
   // crops the top and bottom. That is the trade for a full-bleed header.
-  headerPhoto: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  headerScrim: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(26, 23, 20, 0.45)',
-  },
   photoButton: {
     position: 'absolute',
-    right: spacing.lg,
-    bottom: spacing.lg,
-    width: 38,
-    height: 38,
+    right: spacing.sm,
+    bottom: spacing.sm,
+    width: 32,
+    height: 32,
     borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(26, 23, 20, 0.55)',
     borderWidth: 1,
     borderColor: colors.border,
-    // Above the plate block, which is absolutely positioned in the same corner
-    // region and painted later.
-    zIndex: 2,
   },
 });
