@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 
 import type { UploadFile } from '@/api/client';
 import {
@@ -16,7 +16,12 @@ import {
 } from '@/api/vehicles';
 import { warmPhotoCache } from '@/lib/photo-cache';
 import { queryKeys } from '@/queries/keys';
-import type { CreateLogEntryInput, UpdateLogEntryInput, UpdateMyVehicleInput } from '@/types/domain';
+import type {
+  CreateLogEntryInput,
+  MyVehicle,
+  UpdateLogEntryInput,
+  UpdateMyVehicleInput,
+} from '@/types/domain';
 
 export function useMyVehicles(includeLog = true) {
   return useQuery({
@@ -42,6 +47,25 @@ export function useCreateMyVehicle() {
   });
 }
 
+// Writes the new photo id into every cached copy of the vehicle, so the screen
+// shows the picture as soon as the upload answers instead of waiting for the
+// re-read. Only the id: the write loads the vehicle without its log, so the
+// card that comes back has an empty one, and storing it whole would blank the
+// log already on screen. The list and the detail both live under the
+// `vehicles` prefix and exist once per `includeLog`, hence setQueriesData.
+function patchPhotoId(client: QueryClient, id: number, photoId: string | undefined) {
+  const patch = (vehicle: MyVehicle) => (vehicle.id === id ? { ...vehicle, photoId } : vehicle);
+
+  client.setQueriesData<MyVehicle | MyVehicle[]>(
+    { queryKey: queryKeys.vehiclesAll },
+    (current) => {
+      if (current === undefined) return current;
+
+      return Array.isArray(current) ? current.map(patch) : patch(current);
+    }
+  );
+}
+
 // The photo id travels inside the vehicle, and the vehicle appears both in the
 // list and on its own screen, so the whole `vehicles` prefix is dropped.
 export function useSetMyVehiclePhoto(id: number) {
@@ -50,6 +74,8 @@ export function useSetMyVehiclePhoto(id: number) {
   return useMutation({
     mutationFn: (file: UploadFile) => setMyVehiclePhoto(id, file),
     onSuccess: (vehicle) => {
+      patchPhotoId(client, id, vehicle.photoId);
+
       if (vehicle.photoId !== undefined) {
         warmPhotoCache(myVehiclePhotoSource(id, vehicle.photoId, 'full'));
       }
@@ -64,7 +90,11 @@ export function useDeleteMyVehiclePhoto(id: number) {
 
   return useMutation({
     mutationFn: () => deleteMyVehiclePhoto(id),
-    onSuccess: () => client.invalidateQueries({ queryKey: queryKeys.vehiclesAll }),
+    onSuccess: (vehicle) => {
+      patchPhotoId(client, id, vehicle.photoId);
+
+      client.invalidateQueries({ queryKey: queryKeys.vehiclesAll });
+    },
   });
 }
 

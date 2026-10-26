@@ -106,11 +106,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  // Stretched rather than sized in percentages: one caller's frame takes its
-  // height from `aspectRatio`, and a percentage height has nothing definite to
-  // resolve against there.
+  // Pinned to the frame rather than sized: callers hand over frames of every
+  // kind — a fixed 72 square in a list row, a full-width one that takes its
+  // height from `aspectRatio` — and insets resolve against all of them. A
+  // flex child would depend on the frame having a definite main axis, and an
+  // image view that ends up zero-sized is one expo-image clears.
   fill: {
-    flex: 1,
-    alignSelf: 'stretch',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });
