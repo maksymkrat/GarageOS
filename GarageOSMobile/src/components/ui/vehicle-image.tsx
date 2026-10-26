@@ -1,7 +1,13 @@
 import { Image, type ImageErrorEventData } from 'expo-image';
 import { useIsFocused } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  type LayoutChangeEvent,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 
 import { CarGlyph } from '@/components/icons';
 import { colors } from '@/theme/tokens';
@@ -22,16 +28,33 @@ interface VehicleImageProps {
   glyph?: number;
 }
 
-// The frame is a View, the car glyph lies on the bottom of it, and the photo is
-// an ordinary child that fills it. The glyph is the layer that floats, not the
-// photo: an absolutely positioned image has no size of its own until a layout
-// pass, and the Android image view would rather have one before it starts
-// loading. `overflow: hidden` is what makes the caller's radius clip the photo.
+// The frame is a View, the car glyph floats behind it, and the photo is an
+// ordinary child sized from the frame's measured box. `overflow: hidden` is
+// what makes the caller's border radius clip the photo.
 export function VehicleImage({ source, style, glyph = 48 }: VehicleImageProps) {
   // The URL that failed, not a flag: the same slot shows the next photo after
   // a replacement, so the failure has to fall away with the picture it belongs
   // to instead of hiding the one that took its place.
   const [failed, setFailed] = useState<string | null>(null);
+
+  // The frame's measured box, and the image is sized from it in pixels. Not a
+  // detail: callers build frames every which way — a fixed 72 square in a list
+  // row, a full-width one whose height comes from `aspectRatio`, a flex child
+  // — and a style that fills the frame has to resolve against whatever that
+  // frame turned out to be. An image view that ends up without a size is one
+  // expo-image clears instead of drawing (`cleanIfNeeded`), which is a grey
+  // box where the photo should be. Measuring leaves nothing to resolve.
+  const [box, setBox] = useState<{ width: number; height: number } | null>(null);
+
+  function onLayout({ nativeEvent }: LayoutChangeEvent) {
+    const { width, height } = nativeEvent.layout;
+
+    // Same box, same object: a new one on every layout pass would re-render
+    // the image for nothing.
+    setBox((current) =>
+      current?.width === width && current?.height === height ? current : { width, height }
+    );
+  }
 
   // Part of the image's identity below, not a cosmetic detail. A screen that
   // is not on top is detached by react-native-screens: its views stop being
@@ -55,7 +78,9 @@ export function VehicleImage({ source, style, glyph = 48 }: VehicleImageProps) {
   }
 
   return (
-    <View style={[styles.frame, (source === null || broken) && styles.empty, style]}>
+    <View
+      onLayout={onLayout}
+      style={[styles.frame, (source === null || broken) && styles.empty, style]}>
       {/* Behind the photo, and drawn even when there is one: hiding the glyph
           as soon as a source exists left a blank grey square for as long as the
           bytes took to arrive, which reads as "the photo did not load". */}
@@ -63,7 +88,7 @@ export function VehicleImage({ source, style, glyph = 48 }: VehicleImageProps) {
         <CarGlyph size={glyph} color={colors.placeholder} />
       </View>
 
-      {source !== null && !broken && (
+      {source !== null && !broken && box !== null && (
         <Image
           // Keyed by the URL *and* by focus: a different picture gets a
           // different view instead of a new source handed to the one that
@@ -81,7 +106,7 @@ export function VehicleImage({ source, style, glyph = 48 }: VehicleImageProps) {
           // only one of them would make that warm-up a download all over again.
           cachePolicy="memory-disk"
           onError={(event) => onError(source.uri, event)}
-          style={styles.fill}
+          style={box}
         />
       )}
     </View>
@@ -105,17 +130,5 @@ const styles = StyleSheet.create({
     bottom: 0,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  // Pinned to the frame rather than sized: callers hand over frames of every
-  // kind — a fixed 72 square in a list row, a full-width one that takes its
-  // height from `aspectRatio` — and insets resolve against all of them. A
-  // flex child would depend on the frame having a definite main axis, and an
-  // image view that ends up zero-sized is one expo-image clears.
-  fill: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
   },
 });
