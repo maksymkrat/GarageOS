@@ -2,10 +2,10 @@ import { useRouter } from 'expo-router';
 import { FlatList, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ChevronRightIcon, PhoneIcon } from '@/components/icons';
-import { ModeHeader } from '@/components/mode-header';
 import { Card } from '@/components/ui/card';
 import { EmptyState, QueryState } from '@/components/ui/query-state';
 import { PlateTag } from '@/components/ui/plate-tag';
+import { HomeButton } from '@/components/ui/nav-button';
 import { Screen } from '@/components/ui/screen';
 import { useReminders } from '@/queries/use-reminders';
 import { colors, radius, spacing } from '@/theme/tokens';
@@ -16,11 +16,12 @@ export default function RemindersTab() {
 
   return (
     <Screen edges={['top']}>
-      <ModeHeader title="Service" />
-
       <View style={styles.header}>
-        <Text style={styles.kicker}>ПЛАНОВІ</Text>
-        <Text style={styles.title}>Нагадування</Text>
+        <HomeButton />
+        <View>
+          <Text style={styles.kicker}>ПЛАНОВІ</Text>
+          <Text style={styles.title}>Нагадування</Text>
+        </View>
       </View>
 
       <QueryState query={reminders}>
@@ -77,6 +78,9 @@ export default function RemindersTab() {
 
 const styles = StyleSheet.create({
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
     paddingBottom: spacing.md,

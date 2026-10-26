@@ -4,8 +4,7 @@ import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-na
 
 import { ClientVehicleCard } from '@/components/client-vehicle-card';
 import { PlusIcon, SearchIcon } from '@/components/icons';
-import { LogoMark } from '@/components/logo-mark';
-import { ModeHeader } from '@/components/mode-header';
+import { HomeButton } from '@/components/ui/nav-button';
 import { EmptyState, QueryState } from '@/components/ui/query-state';
 import { Screen } from '@/components/ui/screen';
 import { useClientVehicles } from '@/queries/use-client-vehicles';
@@ -51,16 +50,11 @@ export default function GarageTab() {
 
   return (
     <Screen edges={['top']}>
-      <ModeHeader title="Service" />
-
       <View style={styles.header}>
         <View style={styles.titleRow}>
           <View style={styles.brand}>
-            <LogoMark size={36} />
-            <View>
-              <Text style={styles.kicker}>АВТО · СЕРВІС</Text>
-              <Text style={styles.title}>ГАРАЖ</Text>
-            </View>
+            <HomeButton />
+            <Text style={styles.title}>Сервіс</Text>
           </View>
 
           <Pressable
@@ -147,11 +141,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-  },
-  kicker: {
-    fontSize: 11,
-    letterSpacing: 1.4,
-    color: colors.textFaint,
   },
   title: {
     fontSize: 20,

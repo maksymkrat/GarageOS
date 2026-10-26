@@ -1,9 +1,9 @@
 import { useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { ModeHeader } from '@/components/mode-header';
 import { PressableCard } from '@/components/ui/card';
 import { EmptyState, QueryState } from '@/components/ui/query-state';
+import { HomeButton } from '@/components/ui/nav-button';
 import { Screen } from '@/components/ui/screen';
 import { useWorkBoard, type WorkBoardRow } from '@/queries/use-work-board';
 import { colors, fontFamily, radius, spacing } from '@/theme/tokens';
@@ -22,11 +22,12 @@ export default function WorkTab() {
 
   return (
     <Screen edges={['top']}>
-      <ModeHeader title="Service" />
-
       <View style={styles.header}>
-        <Text style={styles.kicker}>ПОТОЧНИЙ СТАН</Text>
-        <Text style={styles.title}>В роботі</Text>
+        <HomeButton />
+        <View>
+          <Text style={styles.kicker}>ПОТОЧНИЙ СТАН</Text>
+          <Text style={styles.title}>В роботі</Text>
+        </View>
       </View>
 
       <QueryState query={{ ...board, data: board.rowsByStatus }}>
@@ -100,6 +101,9 @@ function WorkRow({ row }: { row: WorkBoardRow }) {
 
 const styles = StyleSheet.create({
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
     paddingBottom: spacing.md,

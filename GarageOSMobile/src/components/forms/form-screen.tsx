@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '@/components/ui/nav-button';
 import { Screen } from '@/components/ui/screen';
 import { colors, spacing } from '@/theme/tokens';
 

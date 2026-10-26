@@ -17,7 +17,7 @@ import {
 
 import type { UploadFile } from '@/api/client';
 import { CameraIcon } from '@/components/icons';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '@/components/ui/nav-button';
 import { PickerDialog } from '@/components/ui/picker-dialog';
 import { Screen } from '@/components/ui/screen';
 import { TextField } from '@/components/ui/text-field';

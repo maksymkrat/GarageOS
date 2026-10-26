@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { PlusIcon } from '@/components/icons';
-import { ModeHeader } from '@/components/mode-header';
+import { HomeButton } from '@/components/ui/nav-button';
 import { PressableCard } from '@/components/ui/card';
 import { EmptyState, QueryState } from '@/components/ui/query-state';
 import { Screen } from '@/components/ui/screen';
@@ -17,12 +17,10 @@ export default function PersonalGarageScreen() {
 
   return (
     <Screen edges={['top', 'bottom']}>
-      <ModeHeader title="My Garage" />
-
       <View style={styles.header}>
-        <View>
-          <Text style={styles.kicker}>MY GARAGE</Text>
-          <Text style={styles.title}>Моя техніка</Text>
+        <View style={styles.brand}>
+          <HomeButton />
+          <Text style={styles.title}>Гараж</Text>
         </View>
 
         <Pressable
@@ -88,20 +86,19 @@ export default function PersonalGarageScreen() {
 const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.sm,
     paddingBottom: spacing.lg,
   },
-  kicker: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 2,
-    color: colors.textFaint,
+  brand: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
   },
   title: {
-    fontSize: 26,
+    fontSize: 22,
     fontWeight: '700',
     color: colors.text,
   },

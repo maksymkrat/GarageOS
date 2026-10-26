@@ -22,7 +22,7 @@ import {
   PhoneIcon,
   PlusIcon,
 } from '@/components/icons';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '@/components/ui/nav-button';
 import { Card, PressableCard } from '@/components/ui/card';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { PickerDialog } from '@/components/ui/picker-dialog';
@@ -67,7 +67,7 @@ export default function ClientVehicleDetailScreen() {
               )}
 
               <View style={styles.headerTop}>
-                <BackButton fallback="/garage" color={colors.amberOnDark} />
+                <BackButton fallback="/garage" />
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel="Змінити стан авто"

@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { ChevronRightIcon } from '@/components/icons';
-import { ModeHeader } from '@/components/mode-header';
 import { PressableCard } from '@/components/ui/card';
 import { QueryState } from '@/components/ui/query-state';
+import { HomeButton } from '@/components/ui/nav-button';
 import { Screen } from '@/components/ui/screen';
 import { SectionTitle } from '@/components/ui/section-title';
 import { formatMoney, formatNumber } from '@/lib/format';
@@ -26,11 +26,12 @@ export default function MoneyTab() {
 
   return (
     <Screen edges={['top']}>
-      <ModeHeader title="Service" />
-
       <View style={styles.header}>
-        <Text style={styles.kicker}>ФІНАНСИ</Text>
-        <Text style={styles.title}>Гроші</Text>
+        <HomeButton />
+        <View>
+          <Text style={styles.kicker}>ФІНАНСИ</Text>
+          <Text style={styles.title}>Гроші</Text>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.body}>
@@ -112,6 +113,9 @@ function StatTile({ label, value, accent }: StatTileProps) {
 
 const styles = StyleSheet.create({
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.md,
     paddingBottom: spacing.md,

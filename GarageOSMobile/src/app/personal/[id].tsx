@@ -4,9 +4,8 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from
 
 import { myVehiclePhotoSource } from '@/api/vehicles';
 import { CameraIcon, CarGlyph } from '@/components/icons';
-import { ModeHeader } from '@/components/mode-header';
 import { PressableCard } from '@/components/ui/card';
-import { BackButton } from '@/components/ui/back-button';
+import { BackButton } from '@/components/ui/nav-button';
 import { PickerDialog } from '@/components/ui/picker-dialog';
 import { QueryState } from '@/components/ui/query-state';
 import { Screen } from '@/components/ui/screen';
@@ -30,8 +29,6 @@ export default function MyVehicleScreen() {
 
   return (
     <Screen>
-      <ModeHeader title="My Garage" />
-
       <QueryState query={vehicle}>
         {(item) => {
           const spent = item.log.reduce((sum, entry) => sum + entry.cost, 0);
