@@ -21,8 +21,13 @@ export default function RootLayout() {
 }
 
 function RootNavigator() {
-  const { session } = useSession();
+  const { session, restoring } = useSession();
   const signedIn = !!session;
+
+  // Nothing until the stored session has been checked: a frame of the
+  // sign-in screen in front of somebody who signed in this morning reads as
+  // being thrown out.
+  if (restoring) return null;
 
   return (
     <>

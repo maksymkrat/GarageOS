@@ -103,7 +103,12 @@ public class AuthService(
             throw new UnauthorizedException(BadCode);
         }
 
-        return await IssueSessionAsync(user, now, notify: true, ct);
+        return await IssueSessionAsync(
+            user,
+            now,
+            endsAt: now + jwtOptions.Value.RefreshLifetime,
+            notify: true,
+            ct);
     }
 
     public async Task<SessionDto> RefreshAsync(RefreshRequest request, CancellationToken ct = default)
@@ -118,7 +123,9 @@ public class AuthService(
             throw new UnauthorizedException(SessionGone);
         }
 
-        return await IssueSessionAsync(user, now, notify: false, ct);
+        // The end of the session comes from the sign-in, not from this call:
+        // refreshing keeps a day's work going, it does not start a new day.
+        return await IssueSessionAsync(user, now, endsAt: user.RefreshExpiresAt.Value, notify: false, ct);
     }
 
     public BotInfoDto GetBotInfo() => new(telegramOptions.Value.BotUsername);
@@ -137,13 +144,14 @@ public class AuthService(
     private async Task<SessionDto> IssueSessionAsync(
         UserEntity user,
         DateTime now,
+        DateTime endsAt,
         bool notify,
         CancellationToken ct)
     {
         var refreshToken = Secrets.NewRefreshToken();
 
         user.RefreshTokenHash = Secrets.Hash(refreshToken);
-        user.RefreshExpiresAt = now + jwtOptions.Value.RefreshLifetime;
+        user.RefreshExpiresAt = endsAt;
 
         await uow.SaveChangesAsync(ct);
 

@@ -77,6 +77,28 @@ export function setAccessToken(token: string | null): void {
   accessToken = token;
 }
 
+// Set by the session: swaps an expired access token for a fresh one and
+// answers with it, or with null when the session itself is over.
+type UnauthorizedHandler = () => Promise<string | null>;
+
+let onUnauthorized: UnauthorizedHandler | null = null;
+
+export function setUnauthorizedHandler(handler: UnauthorizedHandler | null): void {
+  onUnauthorized = handler;
+}
+
+// A 401 on the way in is worth one silent retry — the access token lives
+// fifteen minutes and the session fourteen hours, so most of them mean
+// nothing more than "the token aged". The auth endpoints are excluded: a
+// refresh that answers 401 is the session ending, and retrying it would
+// only ask again (ADR-0028).
+async function renewed(path: string, status: number, retried: boolean): Promise<string | null> {
+  if (status !== 401 || retried || onUnauthorized === null) return null;
+  if (path.startsWith('/auth/')) return null;
+
+  return onUnauthorized();
+}
+
 // expo-image fetches the URL itself, so a protected image needs the token
 // inside the source rather than around it.
 export function authorizedSource(path: string): { uri: string; headers?: Record<string, string> } {
@@ -86,7 +108,7 @@ export function authorizedSource(path: string): { uri: string; headers?: Record<
   };
 }
 
-export async function request<T>(endpoint: string, body?: unknown): Promise<T> {
+export async function request<T>(endpoint: string, body?: unknown, retried = false): Promise<T> {
   const { method, path } = split(endpoint);
 
   let response: Response;
@@ -105,7 +127,13 @@ export async function request<T>(endpoint: string, body?: unknown): Promise<T> {
     throw transportError(cause, endpoint);
   }
 
-  if (!response.ok) throw await toApiError(response, endpoint);
+  if (!response.ok) {
+    if ((await renewed(path, response.status, retried)) !== null) {
+      return request<T>(endpoint, body, true);
+    }
+
+    throw await toApiError(response, endpoint);
+  }
 
   if (response.status === 204 || response.headers.get('content-length') === '0') {
     return undefined as T;
@@ -118,7 +146,7 @@ export async function request<T>(endpoint: string, body?: unknown): Promise<T> {
 // Multipart, not JSON: the body is a file. The Content-Type header is left to
 // fetch on purpose — setting it by hand drops the multipart boundary, and the
 // server then reads an empty form.
-export async function upload<T>(endpoint: string, file: UploadFile): Promise<T> {
+export async function upload<T>(endpoint: string, file: UploadFile, retried = false): Promise<T> {
   const { method, path } = split(endpoint);
 
   const form = new FormData();
@@ -148,7 +176,13 @@ export async function upload<T>(endpoint: string, file: UploadFile): Promise<T> 
     throw transportError(cause, endpoint);
   }
 
-  if (!response.ok) throw await toApiError(response, endpoint);
+  if (!response.ok) {
+    if ((await renewed(path, response.status, retried)) !== null) {
+      return upload<T>(endpoint, file, true);
+    }
+
+    throw await toApiError(response, endpoint);
+  }
 
   const text = await response.text();
   return (text ? JSON.parse(text) : undefined) as T;
