@@ -38,6 +38,11 @@ export default function HomeScreen() {
         </Pressable>
       </View>
 
+      <View style={styles.tagline}>
+        <Text style={styles.taglineLine}>Своя майстерня —</Text>
+        <Text style={[styles.taglineLine, styles.taglineAccent]}>у твоєму телефоні</Text>
+      </View>
+
       <View style={styles.cards}>
         <Pressable
           accessibilityRole="button"
@@ -125,6 +130,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
+  },
+  tagline: {
+    marginTop: spacing.xl,
+  },
+  taglineLine: {
+    fontSize: 26,
+    lineHeight: 32,
+    fontWeight: '700',
+    letterSpacing: -0.4,
+    color: colors.text,
+  },
+  taglineAccent: {
+    color: colors.orange,
   },
   cards: {
     flex: 1,
