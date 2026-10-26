@@ -68,19 +68,19 @@ export default function MoneyTab() {
               </View>
 
               <View style={styles.debtors}>
-                {debtors.map((car) => (
+                {debtors.map((vehicle) => (
                   <PressableCard
-                    key={car.id}
-                    onPress={() => router.push(`/cars/${car.id}`)}
-                    accessibilityLabel={`${car.plate}, борг ${car.debt}`}
+                    key={vehicle.id}
+                    onPress={() => router.push(`/client-vehicles/${vehicle.id}`)}
+                    accessibilityLabel={`${vehicle.plate}, борг ${vehicle.debt}`}
                     style={styles.debtor}>
                     <View style={styles.debtorRow}>
                       <View>
-                        <Text style={styles.debtorPlate}>{car.plate}</Text>
-                        <Text style={styles.debtorOwner}>{car.owner}</Text>
+                        <Text style={styles.debtorPlate}>{vehicle.plate}</Text>
+                        <Text style={styles.debtorOwner}>{vehicle.owner}</Text>
                       </View>
                       <View style={styles.debtorAmount}>
-                        <Text style={styles.debtorValue}>{formatMoney(car.debt)}</Text>
+                        <Text style={styles.debtorValue}>{formatMoney(vehicle.debt)}</Text>
                         <ChevronRightIcon />
                       </View>
                     </View>
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   tileValueAccent: {
-    color: colors.surface,
+    color: colors.onAccent,
   },
   debtHead: {
     flexDirection: 'row',
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   debtTotal: {
     fontSize: 14,
     fontWeight: '700',
-    color: colors.dangerDark,
+    color: colors.dangerOnInk,
   },
   debtors: {
     gap: spacing.sm,
@@ -234,6 +234,6 @@ const styles = StyleSheet.create({
   debtorValue: {
     fontSize: 15,
     fontWeight: '700',
-    color: colors.dangerDark,
+    color: colors.dangerOnInk,
   },
 });

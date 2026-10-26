@@ -12,18 +12,17 @@ public static class DependencyInjection
     {
         services.AddDbContext<GarageDbContext>(options => options
             .UseNpgsql(connectionString)
-            // Таблиці й колонки в snake_case — інакше в psql усе доведеться
-            // брати в лапки через PascalCase.
             .UseSnakeCaseNamingConvention());
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IClientRepository, ClientRepository>();
-        services.AddScoped<ICarRepository, CarRepository>();
+        services.AddScoped<IClientVehicleRepository, ClientVehicleRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IReminderRepository, ReminderRepository>();
         services.AddScoped<IMyVehicleRepository, MyVehicleRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IFinanceRepository, FinanceRepository>();
+        services.AddScoped<ILoginCodeRepository, LoginCodeRepository>();
 
         return services;
     }

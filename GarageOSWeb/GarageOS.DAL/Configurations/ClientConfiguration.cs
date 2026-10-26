@@ -12,7 +12,6 @@ public class ClientConfiguration : IEntityTypeConfiguration<ClientEntity>
         builder.Property(x => x.Name).HasMaxLength(200).IsRequired();
         builder.Property(x => x.Phone).HasMaxLength(10).IsRequired();
 
-        // Номер — природний ключ клієнта: за ним контракт рахує sameOwnerCount.
         builder.HasIndex(x => x.Phone).IsUnique();
 
         builder.HasOne(x => x.User)

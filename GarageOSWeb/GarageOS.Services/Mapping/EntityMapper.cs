@@ -3,13 +3,12 @@ using GarageOS.Domain.Models;
 
 namespace GarageOS.Services.Mapping;
 
-/// <summary>Перший з двох мапінгів: EF-сутність у доменну модель.</summary>
 public static class EntityMapper
 {
     public static Client ToModel(this ClientEntity e) =>
         new() { Id = e.Id, Name = e.Name, Phone = e.Phone, UserId = e.UserId };
 
-    public static Car ToModel(this CarEntity e) => new()
+    public static ClientVehicle ToModel(this ClientVehicleEntity e) => new()
     {
         Id = e.Id,
         ClientId = e.ClientId,
@@ -18,28 +17,46 @@ public static class EntityMapper
         Model = e.Model,
         Year = e.Year,
         Status = e.Status,
-        Debt = e.Debt,
         Mileage = e.Mileage,
+        MileageUnit = e.MileageUnit,
         LastVisit = e.LastVisit,
         NextService = e.NextService,
+        PhotoId = e.PhotoId,
         Client = e.Client?.ToModel()
     };
 
-    public static OrderWork ToModel(this OrderWorkEntity e) =>
-        new() { Id = e.Id, OrderId = e.OrderId, Name = e.Name, Price = e.Price };
+    public static OrderPhoto ToModel(this OrderPhotoEntity e) => new()
+    {
+        Id = e.Id,
+        OrderId = e.OrderId,
+        PhotoId = e.PhotoId
+    };
 
-    public static OrderPart ToModel(this OrderPartEntity e) =>
-        new() { Id = e.Id, OrderId = e.OrderId, Name = e.Name, Qty = e.Qty, Buy = e.Buy, Sell = e.Sell };
+    public static OrderWork ToModel(this OrderWorkEntity e) => new()
+    {
+        Id = e.Id,
+        OrderId = e.OrderId,
+        Description = e.Description,
+        Price = e.Price,
+        PaymentStatus = e.PaymentStatus
+    };
+
+    public static OrderPart ToModel(this OrderPartEntity e) => new()
+    {
+        Id = e.Id,
+        OrderId = e.OrderId,
+        Description = e.Description,
+        Buy = e.Buy,
+        Sell = e.Sell,
+        PaymentStatus = e.PaymentStatus
+    };
 
     public static Order ToModel(this OrderEntity e) => new()
     {
         Id = e.Id,
-        CarId = e.CarId,
-        Date = e.Date,
+        ClientVehicleId = e.ClientVehicleId,
+        CreatedAt = e.CreatedAt,
         Description = e.Description,
-        Status = e.Status,
-        Paid = e.Paid,
-        DaysWaiting = e.DaysWaiting,
         Works = [.. e.Works.Select(ToModel)],
         Parts = [.. e.Parts.Select(ToModel)]
     };
@@ -47,23 +64,23 @@ public static class EntityMapper
     public static Reminder ToModel(this ReminderEntity e) => new()
     {
         Id = e.Id,
-        CarId = e.CarId,
+        ClientVehicleId = e.ClientVehicleId,
         DueDate = e.DueDate,
         DueMileage = e.DueMileage,
         Message = e.Message,
-        Car = e.Car?.ToModel()
+        ClientVehicle = e.ClientVehicle?.ToModel()
     };
 
     public static LogEntry ToModel(this LogEntryEntity e) => new()
     {
         Id = e.Id,
         VehicleId = e.VehicleId,
-        Date = e.Date,
-        Mileage = e.Mileage,
-        Title = e.Title,
+        CreatedAt = e.CreatedAt,
         Note = e.Note,
         Cost = e.Cost,
-        Kind = e.Kind
+        Kind = e.Kind,
+        Mileage = e.Mileage,
+        MileageUnit = e.MileageUnit
     };
 
     public static MyVehicle ToModel(this MyVehicleEntity e) => new()
@@ -74,17 +91,17 @@ public static class EntityMapper
         Name = e.Name,
         Year = e.Year,
         Mileage = e.Mileage,
-        Unit = e.Unit,
-        Due = e.Due,
+        MileageUnit = e.MileageUnit,
+        PhotoId = e.PhotoId,
         Log = [.. e.Log.Select(ToModel)]
     };
 
     public static User ToModel(this UserEntity e) => new()
     {
         Id = e.Id,
-        FirebaseUid = e.FirebaseUid,
-        Email = e.Email,
-        Name = e.Name,
+        TelegramId = e.TelegramId,
+        FirstName = e.FirstName,
+        LastName = e.LastName,
         Phone = e.Phone,
         SubscriptionId = e.SubscriptionId
     };

@@ -26,6 +26,13 @@
     "plugins": [
       "expo-router",
       [
+        "expo-image-picker",
+        {
+          "photosPermission": "GarageOS потрібен доступ до фото, щоб узяти знімок авто з галереї.",
+          "cameraPermission": "GarageOS потрібен доступ до камери, щоб зняти авто на картку."
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "backgroundColor": "#208AEF",

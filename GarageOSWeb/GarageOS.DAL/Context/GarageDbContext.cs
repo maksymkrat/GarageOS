@@ -6,16 +6,17 @@ namespace GarageOS.DAL.Context;
 public class GarageDbContext(DbContextOptions<GarageDbContext> options) : DbContext(options)
 {
     public DbSet<ClientEntity> Clients => Set<ClientEntity>();
-    public DbSet<CarEntity> Cars => Set<CarEntity>();
+    public DbSet<ClientVehicleEntity> ClientVehicles => Set<ClientVehicleEntity>();
     public DbSet<OrderEntity> Orders => Set<OrderEntity>();
     public DbSet<OrderWorkEntity> OrderWorks => Set<OrderWorkEntity>();
     public DbSet<OrderPartEntity> OrderParts => Set<OrderPartEntity>();
-    public DbSet<PaymentEntity> Payments => Set<PaymentEntity>();
+    public DbSet<OrderPhotoEntity> OrderPhotos => Set<OrderPhotoEntity>();
     public DbSet<ReminderEntity> Reminders => Set<ReminderEntity>();
     public DbSet<UserEntity> Users => Set<UserEntity>();
     public DbSet<SubscriptionEntity> Subscriptions => Set<SubscriptionEntity>();
     public DbSet<MyVehicleEntity> MyVehicles => Set<MyVehicleEntity>();
     public DbSet<LogEntryEntity> LogEntries => Set<LogEntryEntity>();
+    public DbSet<LoginCodeEntity> LoginCodes => Set<LoginCodeEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -35,10 +36,6 @@ public class GarageDbContext(DbContextOptions<GarageDbContext> options) : DbCont
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, ct);
     }
 
-    /// <summary>
-    /// Поля аудиту проставляються тут, а не в прикладному коді: інакше їх забудуть
-    /// у першому ж місці, де сутність створюють повз сервіс.
-    /// </summary>
     private void StampAudit()
     {
         var now = DateTime.UtcNow;

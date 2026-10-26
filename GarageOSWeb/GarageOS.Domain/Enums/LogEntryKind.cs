@@ -1,6 +1,5 @@
 namespace GarageOS.Domain.Enums;
 
-/// <summary>Тип запису в журналі ТО. Контракт: 'oil' | 'brakes' | 'tires' | 'filter' | 'other'.</summary>
 public enum LogEntryKind
 {
     Oil = 0,

@@ -4,7 +4,6 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ChevronLeftIcon } from '@/components/icons';
 import { colors, radius, spacing } from '@/theme/tokens';
 
-/** "Home" chip plus the current workspace label, shared by both app modes. */
 export function ModeHeader({ title }: { title: string }) {
   const router = useRouter();
 
@@ -15,7 +14,7 @@ export function ModeHeader({ title }: { title: string }) {
         accessibilityLabel="На головну"
         onPress={() => router.dismissTo('/')}
         style={({ pressed }) => [styles.chip, pressed && { opacity: 0.7 }]}>
-        <ChevronLeftIcon size={12} color={colors.warmBody} />
+        <ChevronLeftIcon size={12} color={colors.textMuted} />
         <Text style={styles.chipLabel}>Home</Text>
       </Pressable>
       <Text style={styles.mode}>{title.toUpperCase()}</Text>
@@ -38,12 +37,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: radius.pill,
-    backgroundColor: colors.warmSurface,
+    backgroundColor: colors.fill,
   },
   chipLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: colors.warmBody,
+    color: colors.textMuted,
   },
   mode: {
     fontSize: 11,

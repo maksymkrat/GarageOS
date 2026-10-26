@@ -11,9 +11,9 @@ public class ReminderConfiguration : IEntityTypeConfiguration<ReminderEntity>
         builder.ToTable("reminders");
         builder.Property(x => x.Message).HasMaxLength(300).IsRequired();
 
-        builder.HasOne(x => x.Car)
+        builder.HasOne(x => x.ClientVehicle)
             .WithMany(x => x.Reminders)
-            .HasForeignKey(x => x.CarId)
+            .HasForeignKey(x => x.ClientVehicleId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

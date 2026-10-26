@@ -4,8 +4,13 @@ namespace GarageOS.DAL.Repositories.Abstractions;
 
 public interface IUserRepository
 {
-    /// <summary>Пошук профілю за claim <c>sub</c> з ID-токена Firebase (ADR-0005).</summary>
-    Task<UserEntity?> GetByFirebaseUidAsync(string firebaseUid, CancellationToken ct = default);
+    Task<UserEntity?> GetByTelegramIdAsync(long telegramId, CancellationToken ct = default);
+
+    Task<UserEntity?> GetByPhoneAsync(string phone, CancellationToken ct = default);
+
+    Task<UserEntity?> GetByIdAsync(int id, CancellationToken ct = default);
+
+    Task<UserEntity?> GetByRefreshTokenHashAsync(string refreshTokenHash, CancellationToken ct = default);
 
     void Add(UserEntity user);
 }

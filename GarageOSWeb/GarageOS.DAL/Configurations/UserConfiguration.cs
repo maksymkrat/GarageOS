@@ -9,13 +9,17 @@ public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
     public void Configure(EntityTypeBuilder<UserEntity> builder)
     {
         builder.ToTable("users");
-        builder.Property(x => x.FirebaseUid).HasMaxLength(128).IsRequired();
-        builder.Property(x => x.Email).HasMaxLength(320).IsRequired();
-        builder.Property(x => x.Name).HasMaxLength(200).IsRequired();
-        builder.Property(x => x.Phone).HasMaxLength(10);
+        builder.Property(x => x.Phone).HasMaxLength(10).IsRequired();
+        builder.Property(x => x.FirstName).HasMaxLength(128).IsRequired();
+        builder.Property(x => x.LastName).HasMaxLength(128);
 
-        // Профіль шукають саме за UID на кожному автентифікованому запиті.
-        builder.HasIndex(x => x.FirebaseUid).IsUnique();
+        builder.Property(x => x.RefreshTokenHash).HasMaxLength(64);
+
+        builder.HasIndex(x => x.TelegramId).IsUnique();
+
+        builder.HasIndex(x => x.Phone).IsUnique();
+
+        builder.HasIndex(x => x.RefreshTokenHash);
 
         builder.HasOne(x => x.Subscription)
             .WithMany(x => x.Users)

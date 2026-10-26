@@ -6,8 +6,8 @@ import { ModeHeader } from '@/components/mode-header';
 import { PressableCard } from '@/components/ui/card';
 import { EmptyState, QueryState } from '@/components/ui/query-state';
 import { Screen } from '@/components/ui/screen';
+import { mockDue } from '@/lib/due-mock';
 import { formatMileage } from '@/lib/format';
-import { showPrototypeNotice } from '@/lib/prototype';
 import { useMyVehicles } from '@/queries/use-vehicles';
 import { colors, fontFamily, radius, spacing } from '@/theme/tokens';
 
@@ -28,9 +28,9 @@ export default function PersonalGarageScreen() {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Додати техніку"
-          onPress={() => showPrototypeNotice('Додати техніку')}
+          onPress={() => router.push('/personal/new')}
           style={({ pressed }) => [styles.add, pressed && { opacity: 0.85 }]}>
-          <PlusIcon color={colors.cream} />
+          <PlusIcon color={colors.text} />
         </Pressable>
       </View>
 
@@ -45,6 +45,7 @@ export default function PersonalGarageScreen() {
               contentContainerStyle={styles.list}
               renderItem={({ item }) => {
                 const last = item.log[0];
+                const due = mockDue(item);
 
                 return (
                   <PressableCard
@@ -59,20 +60,20 @@ export default function PersonalGarageScreen() {
                         <Text style={styles.cardTitle}>{item.name}</Text>
                       </View>
                       <Text style={styles.mileage}>
-                        {formatMileage(item.mileage, item.unit)}
+                        {formatMileage(item.mileage, item.mileageUnit)}
                       </Text>
                     </View>
 
                     {!!last && (
                       <View style={styles.cardFooter}>
                         <Text style={styles.lastLabel} numberOfLines={1}>
-                          Останнє: {last.title}
+                          Останнє: {last.note}
                         </Text>
                         <Text style={styles.lastDate}>{last.date}</Text>
                       </View>
                     )}
 
-                    {!!item.due && <Text style={styles.due}>● {item.due}</Text>}
+                    {!!due && <Text style={styles.due}>● {due}</Text>}
                   </PressableCard>
                 );
               }}
@@ -97,18 +98,20 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 2,
-    color: colors.warmMuted,
+    color: colors.textFaint,
   },
   title: {
     fontSize: 26,
     fontWeight: '700',
-    color: colors.ink,
+    color: colors.text,
   },
   add: {
     width: 40,
     height: 40,
     borderRadius: radius.pill,
-    backgroundColor: colors.ink,
+    backgroundColor: colors.fill,
+    borderWidth: 1,
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -129,17 +132,17 @@ const styles = StyleSheet.create({
   cardKicker: {
     fontSize: 11,
     fontWeight: '600',
-    color: colors.warmMuted,
+    color: colors.textFaint,
   },
   cardTitle: {
     fontSize: 17,
     fontWeight: '700',
-    color: colors.ink,
+    color: colors.text,
   },
   mileage: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.ink,
+    color: colors.text,
     fontFamily: fontFamily.mono,
   },
   cardFooter: {
@@ -149,21 +152,21 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     paddingTop: spacing.md,
     borderTopWidth: 1,
-    borderTopColor: colors.warmDivider,
+    borderTopColor: colors.borderSoft,
   },
   lastLabel: {
     flex: 1,
     fontSize: 12,
-    color: colors.warmBody,
+    color: colors.textMuted,
   },
   lastDate: {
     fontSize: 12,
-    color: colors.warmMuted,
+    color: colors.textFaint,
   },
   due: {
     marginTop: spacing.sm,
     fontSize: 12,
     fontWeight: '500',
-    color: colors.amber,
+    color: colors.warningOnInk,
   },
 });

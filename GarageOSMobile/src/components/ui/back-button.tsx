@@ -5,11 +5,6 @@ import { ChevronLeftIcon } from '@/components/icons';
 import { colors } from '@/theme/tokens';
 
 interface BackButtonProps {
-  /**
-   * Where to go when the stack has nothing to pop — reached by a deep link, or
-   * after a reload drops the history. Without it `router.back()` dispatches a
-   * GO_BACK no navigator can handle and the screen just sits there.
-   */
   fallback: Href;
   label?: string;
   color?: string;

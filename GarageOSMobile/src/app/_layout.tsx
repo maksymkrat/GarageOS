@@ -2,15 +2,10 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router/stack';
 import { StatusBar } from 'expo-status-bar';
 
+import { SessionProvider, useSession } from '@/lib/session';
 import { queryClient } from '@/queries/client';
 import { colors } from '@/theme/tokens';
 
-/**
- * Expo Router sorts explicitly declared `Stack.Screen` children ahead of the
- * file-system ones, so declaring `cars/new` on its own made it `routeNames[0]`
- * — the stack's initial route — and the app booted straight into the modal.
- * `index` is declared first, and anchored, so home is always the entry screen.
- */
 export const unstable_settings = {
   anchor: 'index',
 };
@@ -18,15 +13,48 @@ export const unstable_settings = {
 export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
-      <StatusBar style="dark" />
+      <SessionProvider>
+        <RootNavigator />
+      </SessionProvider>
+    </QueryClientProvider>
+  );
+}
+
+function RootNavigator() {
+  const { session } = useSession();
+  const signedIn = !!session;
+
+  return (
+    <>
+      <StatusBar style={signedIn ? 'dark' : 'light'} />
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: colors.bg },
+          contentStyle: { backgroundColor: signedIn ? colors.bg : colors.ink },
         }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="cars/new" options={{ presentation: 'modal' }} />
+        <Stack.Protected guard={signedIn}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="(service)" />
+          <Stack.Screen name="client-vehicles/[id]" />
+          <Stack.Screen name="client-vehicles/new" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="orders/[id]" />
+          <Stack.Screen name="orders/new" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="orders/edit" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="orders/work" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="orders/part" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="personal/index" />
+          <Stack.Screen name="personal/[id]" />
+          <Stack.Screen name="personal/new" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="personal/edit" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="personal/log/new" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="personal/log/edit" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="explore" />
+        </Stack.Protected>
+
+        <Stack.Protected guard={!signedIn}>
+          <Stack.Screen name="(auth)" />
+        </Stack.Protected>
       </Stack>
-    </QueryClientProvider>
+    </>
   );
 }

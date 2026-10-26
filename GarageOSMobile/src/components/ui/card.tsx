@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { colors, radius, shadows } from '@/theme/tokens';
+import { colors, radius } from '@/theme/tokens';
 
 interface CardProps {
   children: ReactNode;
@@ -17,7 +17,6 @@ interface PressableCardProps extends CardProps {
   accessibilityLabel?: string;
 }
 
-/** Card that dips slightly on touch, matching the design's press feedback. */
 export function PressableCard({
   children,
   style,
@@ -43,6 +42,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    ...shadows.card,
+    borderWidth: 1,
+    borderColor: colors.borderSoft,
   },
 });

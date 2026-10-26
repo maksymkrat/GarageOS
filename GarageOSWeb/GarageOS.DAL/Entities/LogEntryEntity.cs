@@ -7,10 +7,10 @@ public class LogEntryEntity : BaseEntity
     public int VehicleId { get; set; }
     public MyVehicleEntity Vehicle { get; set; } = null!;
 
-    public DateOnly Date { get; set; }
-    public int Mileage { get; set; }
-    public required string Title { get; set; }
-    public string? Note { get; set; }
+    public required string Note { get; set; }
     public decimal Cost { get; set; }
     public LogEntryKind Kind { get; set; }
+
+    public int? Mileage { get; set; }
+    public MileageUnit MileageUnit { get; set; }
 }

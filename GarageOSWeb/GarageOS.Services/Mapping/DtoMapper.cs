@@ -3,46 +3,56 @@ using GarageOS.Services.Dtos;
 
 namespace GarageOS.Services.Mapping;
 
-/// <summary>
-/// Другий мапінг: доменна модель у форму контракту. Саме тут нормалізована БД
-/// знову стає плоскою — власник і телефон приїжджають у сам об'єкт авто, а
-/// роботи й запчастини вкладаються в наряд.
-/// </summary>
 public static class DtoMapper
 {
-    public static CarDto ToDto(this Car car) => new(
-        car.Id,
-        car.Plate,
-        car.Make,
-        car.Model,
-        car.Year,
-        car.Client?.Name ?? string.Empty,
-        car.Client?.Phone ?? string.Empty,
-        ContractFormat.Status(car.Status),
-        car.Debt,
-        car.Mileage,
-        ContractFormat.Date(car.LastVisit),
-        ContractFormat.Date(car.NextService));
+    public static ClientVehicleDto ToDto(this ClientVehicle vehicle, decimal debt) => new(
+        vehicle.Id,
+        vehicle.Plate,
+        vehicle.Make,
+        vehicle.Model,
+        vehicle.Year,
+        vehicle.Client?.Name ?? string.Empty,
+        vehicle.Client?.Phone ?? string.Empty,
+        ContractFormat.Status(vehicle.Status),
+        debt,
+        vehicle.Mileage,
+        ContractFormat.Unit(vehicle.MileageUnit),
+        ContractFormat.Date(vehicle.LastVisit),
+        ContractFormat.Date(vehicle.NextService),
+        vehicle.PhotoId?.ToString("N"));
 
-    public static OrderDto ToDto(this Order order) => new(
+    public static OrderDto ToDto(this Order order, DateOnly today) => new(
         order.Id,
-        order.CarId,
-        ContractFormat.Date(order.Date),
+        order.ClientVehicleId,
+        ContractFormat.Date(order.CreatedAt),
         order.Description,
-        [.. order.Works.Select(w => new OrderWorkDto(w.Name, w.Price))],
-        [.. order.Parts.Select(p => new OrderPartDto(p.Name, p.Qty, p.Buy, p.Sell))],
-        ContractFormat.Status(order.Status),
-        order.Paid,
-        order.DaysWaiting);
+        [.. order.Works.Select(ToDto)],
+        [.. order.Parts.Select(ToDto)],
+        ContractFormat.DaysWaiting(order.CreatedAt, today));
+
+    public static OrderPhotoDto ToDto(this OrderPhoto photo) => new(photo.Id);
+
+    public static OrderWorkDto ToDto(this OrderWork work) => new(
+        work.Id,
+        work.Description,
+        work.Price,
+        ContractFormat.Payment(work.PaymentStatus));
+
+    public static OrderPartDto ToDto(this OrderPart part) => new(
+        part.Id,
+        part.Description,
+        part.Buy,
+        part.Sell,
+        ContractFormat.Payment(part.PaymentStatus));
 
     public static LogEntryDto ToDto(this LogEntry entry) => new(
         entry.Id,
-        ContractFormat.Date(entry.Date),
-        entry.Mileage,
-        entry.Title,
+        ContractFormat.Date(entry.CreatedAt),
         entry.Note,
         entry.Cost,
-        ContractFormat.Kind(entry.Kind));
+        ContractFormat.Kind(entry.Kind),
+        entry.Mileage,
+        ContractFormat.Unit(entry.MileageUnit));
 
     public static MyVehicleDto ToDto(this MyVehicle vehicle) => new(
         vehicle.Id,
@@ -50,16 +60,16 @@ public static class DtoMapper
         vehicle.Name,
         vehicle.Year,
         vehicle.Mileage,
-        vehicle.Unit,
-        vehicle.Due,
-        [.. vehicle.Log.Select(ToDto)]);
+        ContractFormat.Unit(vehicle.MileageUnit),
+        [.. vehicle.Log.Select(ToDto)],
+        vehicle.PhotoId?.ToString("N"));
 
     public static ReminderItemDto ToDto(this Reminder reminder, DateOnly today) => new(
         reminder.Id,
-        reminder.CarId,
-        reminder.Car?.Plate ?? string.Empty,
-        reminder.Car?.Client?.Name ?? string.Empty,
-        reminder.Car?.Client?.Phone ?? string.Empty,
+        reminder.ClientVehicleId,
+        reminder.ClientVehicle?.Plate ?? string.Empty,
+        reminder.ClientVehicle?.Client?.Name ?? string.Empty,
+        reminder.ClientVehicle?.Client?.Phone ?? string.Empty,
         reminder.Message,
         reminder.IsOverdue(today));
 }

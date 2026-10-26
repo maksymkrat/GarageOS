@@ -10,14 +10,13 @@ public class OrderConfiguration : IEntityTypeConfiguration<OrderEntity>
     {
         builder.ToTable("orders");
         builder.Property(x => x.Description).HasMaxLength(1000).IsRequired();
-        builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(32).IsRequired();
-        builder.Property(x => x.Paid).HasPrecision(10, 2);
 
-        builder.HasIndex(x => x.CarId);
+        builder.HasIndex(x => x.ClientVehicleId);
+        builder.HasIndex(x => x.CreatedAt);
 
-        builder.HasOne(x => x.Car)
+        builder.HasOne(x => x.ClientVehicle)
             .WithMany(x => x.Orders)
-            .HasForeignKey(x => x.CarId)
+            .HasForeignKey(x => x.ClientVehicleId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

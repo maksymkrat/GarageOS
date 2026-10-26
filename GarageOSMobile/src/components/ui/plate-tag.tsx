@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: radius.sm / 2,
     borderWidth: 1,
-    borderColor: colors.placeholder,
+    borderColor: colors.border,
     backgroundColor: colors.surface,
   },
   text: {

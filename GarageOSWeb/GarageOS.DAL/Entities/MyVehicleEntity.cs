@@ -1,3 +1,5 @@
+using GarageOS.Domain.Enums;
+
 namespace GarageOS.DAL.Entities;
 
 public class MyVehicleEntity : BaseEntity
@@ -9,10 +11,10 @@ public class MyVehicleEntity : BaseEntity
     public required string Name { get; set; }
     public int Year { get; set; }
     public int Mileage { get; set; }
-    public required string Unit { get; set; }
+    public MileageUnit MileageUnit { get; set; }
 
-    /// <summary>Вільний текст, не дата.</summary>
-    public string? Due { get; set; }
+    // Id of the current photo, null when there is none (ADR-0026).
+    public Guid? PhotoId { get; set; }
 
     public ICollection<LogEntryEntity> Log { get; set; } = [];
 }

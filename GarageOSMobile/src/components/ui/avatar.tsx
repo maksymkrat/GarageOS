@@ -16,13 +16,13 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: radius.pill,
-    backgroundColor: colors.warmChip,
+    backgroundColor: colors.fill,
     alignItems: 'center',
     justifyContent: 'center',
   },
   text: {
     fontSize: 11,
     fontWeight: '700',
-    color: colors.amber,
+    color: colors.warningOnInk,
   },
 });

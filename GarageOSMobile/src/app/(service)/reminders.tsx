@@ -47,7 +47,7 @@ export default function RemindersTab() {
                       <Pressable
                         accessibilityRole="button"
                         accessibilityLabel="Відкрити авто"
-                        onPress={() => router.push(`/cars/${item.carId}`)}
+                        onPress={() => router.push(`/client-vehicles/${item.clientVehicleId}`)}
                         style={({ pressed }) => [styles.action, pressed && { opacity: 0.7 }]}>
                         <ChevronRightIcon size={15} color={colors.textBody} />
                       </Pressable>
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     color: colors.textBody,
   },
   overdueText: {
-    color: colors.dangerDark,
+    color: colors.dangerOnInk,
   },
   actions: {
     flexDirection: 'row',

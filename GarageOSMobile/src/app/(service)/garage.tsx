@@ -2,17 +2,17 @@ import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { CarCard } from '@/components/car-card';
+import { ClientVehicleCard } from '@/components/client-vehicle-card';
 import { PlusIcon, SearchIcon } from '@/components/icons';
 import { LogoMark } from '@/components/logo-mark';
 import { ModeHeader } from '@/components/mode-header';
 import { EmptyState, QueryState } from '@/components/ui/query-state';
 import { Screen } from '@/components/ui/screen';
-import { useCars } from '@/queries/use-cars';
+import { useClientVehicles } from '@/queries/use-client-vehicles';
 import { colors, radius, shadows, spacing } from '@/theme/tokens';
-import type { Car, CarStatus } from '@/types/domain';
+import type { ClientVehicle, ClientVehicleStatus } from '@/types/domain';
 
-type Filter = 'all' | CarStatus | 'debt';
+type Filter = 'all' | ClientVehicleStatus | 'debt';
 
 const FILTERS: { label: string; value: Filter }[] = [
   { label: 'Усі', value: 'all' },
@@ -22,31 +22,31 @@ const FILTERS: { label: string; value: Filter }[] = [
   { label: 'З боргом', value: 'debt' },
 ];
 
-function matches(car: Car, search: string, filter: Filter): boolean {
+function matches(vehicle: ClientVehicle, search: string, filter: Filter): boolean {
   const query = search.trim().toLowerCase();
   const matchesSearch =
     !query ||
-    car.plate.toLowerCase().includes(query) ||
-    car.make.toLowerCase().includes(query) ||
-    car.model.toLowerCase().includes(query) ||
-    car.owner.toLowerCase().includes(query) ||
-    car.phone.includes(query);
+    vehicle.plate.toLowerCase().includes(query) ||
+    vehicle.make.toLowerCase().includes(query) ||
+    vehicle.model.toLowerCase().includes(query) ||
+    vehicle.owner.toLowerCase().includes(query) ||
+    vehicle.phone.includes(query);
 
   const matchesFilter =
-    filter === 'all' || (filter === 'debt' ? car.debt > 0 : car.status === filter);
+    filter === 'all' || (filter === 'debt' ? vehicle.debt > 0 : vehicle.status === filter);
 
   return matchesSearch && matchesFilter;
 }
 
 export default function GarageTab() {
   const router = useRouter();
-  const cars = useCars();
+  const vehicles = useClientVehicles();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
 
   const visible = useMemo(
-    () => (cars.data ?? []).filter((car) => matches(car, search, filter)),
-    [cars.data, search, filter]
+    () => (vehicles.data ?? []).filter((vehicle) => matches(vehicle, search, filter)),
+    [vehicles.data, search, filter]
   );
 
   return (
@@ -66,7 +66,7 @@ export default function GarageTab() {
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Додати авто"
-            onPress={() => router.push('/cars/new')}
+            onPress={() => router.push('/client-vehicles/new')}
             style={({ pressed }) => [styles.fab, pressed && { transform: [{ scale: 0.95 }] }]}>
             <PlusIcon />
           </Pressable>
@@ -108,17 +108,20 @@ export default function GarageTab() {
         />
       </View>
 
-      <QueryState query={cars}>
+      <QueryState query={vehicles}>
         {() =>
           visible.length === 0 ? (
             <EmptyState text="Нічого не знайдено" />
           ) : (
             <FlatList
               data={visible}
-              keyExtractor={(car) => String(car.id)}
+              keyExtractor={(vehicle) => String(vehicle.id)}
               contentContainerStyle={styles.list}
               renderItem={({ item }) => (
-                <CarCard car={item} onPress={() => router.push(`/cars/${item.id}`)} />
+                <ClientVehicleCard
+                  vehicle={item}
+                  onPress={() => router.push(`/client-vehicles/${item.id}`)}
+                />
               )}
             />
           )
@@ -205,7 +208,7 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
   },
   chipLabelActive: {
-    color: colors.surface,
+    color: colors.onAccent,
   },
   list: {
     paddingHorizontal: spacing.lg,

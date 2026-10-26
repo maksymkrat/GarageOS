@@ -70,6 +70,6 @@ const styles = StyleSheet.create({
   },
   error: {
     fontSize: 11,
-    color: colors.dangerDark,
+    color: colors.dangerOnInk,
   },
 });

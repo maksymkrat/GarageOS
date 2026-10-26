@@ -7,7 +7,6 @@ interface LogoMarkProps {
   onDark?: boolean;
 }
 
-/** Garage facade with a car in the doorway — the brand mark from the design. */
 export function LogoMark({ size = 40, onDark = false }: LogoMarkProps) {
   const wall = onDark ? '#F0EAE0' : colors.cream;
   const outline = onDark ? 'rgba(240, 234, 224, 0.7)' : 'rgba(26, 23, 20, 0.75)';

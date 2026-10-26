@@ -20,6 +20,9 @@ TestResults/
 *.nupkg
 *.snupkg
 
+# ---- local photo storage (Storage:PhotosRoot default, ADR-0026) ----
+_data/
+
 # ---- secrets / local env ----
 .env
 .env.*.local

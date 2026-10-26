@@ -4,29 +4,43 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ArrowUpRightIcon } from '@/components/icons';
 import { LogoMark } from '@/components/logo-mark';
 import { Screen } from '@/components/ui/screen';
-import { useCars } from '@/queries/use-cars';
+import { mockDueCount } from '@/lib/due-mock';
+import { vocative } from '@/lib/format';
+import { useSession } from '@/lib/session';
+import { useClientVehicles } from '@/queries/use-client-vehicles';
 import { useMyVehicles } from '@/queries/use-vehicles';
 import { colors, radius, spacing } from '@/theme/tokens';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const cars = useCars();
+  const { session, signOut } = useSession();
+  const clientVehicles = useClientVehicles();
   const vehicles = useMyVehicles();
 
-  const carCount = cars.data?.length ?? 0;
-  const inWorkCount = cars.data?.filter((car) => car.status === 'in_work').length ?? 0;
-  const readyCount = cars.data?.filter((car) => car.status === 'ready').length ?? 0;
+  const clientVehicleCount = clientVehicles.data?.length ?? 0;
+  const inWorkCount =
+    clientVehicles.data?.filter((vehicle) => vehicle.status === 'in_work').length ?? 0;
+  const readyCount =
+    clientVehicles.data?.filter((vehicle) => vehicle.status === 'ready').length ?? 0;
   const vehicleCount = vehicles.data?.length ?? 0;
-  const dueCount = vehicles.data?.filter((vehicle) => !!vehicle.due).length ?? 0;
+  const dueCount = mockDueCount(vehicles.data);
+  const firstName = vocative(session?.user.firstName ?? '');
 
   return (
     <Screen style={styles.screen}>
       <View style={styles.brandRow}>
-        <LogoMark size={40} />
-        <View>
+        <LogoMark size={40} onDark />
+        <View style={styles.brandText}>
           <Text style={styles.kicker}>WORKSPACE</Text>
-          <Text style={styles.greeting}>Добрий день, Андрію</Text>
+          <Text style={styles.greeting}>Добрий день, {firstName}</Text>
         </View>
+        <Pressable
+          accessibilityRole="button"
+          hitSlop={8}
+          onPress={signOut}
+          style={({ pressed }) => [styles.signOut, pressed && styles.pressed]}>
+          <Text style={styles.signOutLabel}>Вийти</Text>
+        </Pressable>
       </View>
 
       <Text style={styles.title}>
@@ -45,7 +59,7 @@ export default function HomeScreen() {
           <View style={styles.cardHead}>
             <Text style={styles.serviceKicker}>01 · SERVICE</Text>
             <View style={styles.arrow}>
-              <ArrowUpRightIcon />
+              <ArrowUpRightIcon color={colors.cream} />
             </View>
           </View>
 
@@ -53,7 +67,7 @@ export default function HomeScreen() {
           <Text style={styles.serviceBody}>Клієнтські авто, наряди, гроші та нагадування</Text>
 
           <View style={[styles.stats, styles.serviceStats]}>
-            <Stat value={carCount} label="авто" onDark />
+            <Stat value={clientVehicleCount} label="авто" onDark />
             <Stat value={inWorkCount} label="в роботі" onDark />
             <Stat value={readyCount} label="готові" onDark accent />
           </View>
@@ -66,7 +80,7 @@ export default function HomeScreen() {
           <View style={styles.cardHead}>
             <Text style={styles.personalKicker}>02 · MY GARAGE</Text>
             <View style={styles.arrow}>
-              <ArrowUpRightIcon />
+              <ArrowUpRightIcon color={colors.cream} />
             </View>
           </View>
 
@@ -117,16 +131,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
   },
+  brandText: {
+    flex: 1,
+  },
+  signOut: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: radius.pill,
+    backgroundColor: colors.fill,
+  },
+  signOutLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.textMuted,
+  },
   kicker: {
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 2,
-    color: colors.warmMuted,
+    color: colors.textFaint,
   },
   greeting: {
     fontSize: 15,
     fontWeight: '600',
-    color: colors.ink,
+    color: colors.text,
   },
   title: {
     marginTop: 40,
@@ -134,7 +162,7 @@ const styles = StyleSheet.create({
     lineHeight: 36,
     fontWeight: '700',
     letterSpacing: -0.5,
-    color: colors.ink,
+    color: colors.text,
   },
   titleAccent: {
     color: colors.orange,
@@ -152,7 +180,9 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.985 }],
   },
   serviceCard: {
-    backgroundColor: colors.ink,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   personalCard: {
     backgroundColor: colors.warmSurface,
@@ -207,7 +237,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
     fontSize: 26,
     fontWeight: '700',
-    color: colors.cream,
+    color: colors.text,
   },
   personalTitle: {
     marginTop: 40,
@@ -256,6 +286,6 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     textAlign: 'center',
     fontSize: 11,
-    color: colors.warmFaint,
+    color: colors.textFaint,
   },
 });

@@ -15,7 +15,6 @@ interface QueryStateProps<T> {
   children: (data: T) => ReactNode;
 }
 
-/** Renders the shared pending / failed states so screens only describe success. */
 export function QueryState<T>({ query, children }: QueryStateProps<T>) {
   if (query.isPending) {
     return (
@@ -84,7 +83,7 @@ const styles = StyleSheet.create({
   retryLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.surface,
+    color: colors.onAccent,
   },
   empty: {
     fontSize: 14,

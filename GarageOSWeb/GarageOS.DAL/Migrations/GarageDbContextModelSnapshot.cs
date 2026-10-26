@@ -22,84 +22,6 @@ namespace GarageOS.DAL.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("GarageOS.DAL.Entities.CarEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ClientId")
-                        .HasColumnType("integer")
-                        .HasColumnName("client_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<decimal>("Debt")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)")
-                        .HasColumnName("debt");
-
-                    b.Property<DateOnly>("LastVisit")
-                        .HasColumnType("date")
-                        .HasColumnName("last_visit");
-
-                    b.Property<string>("Make")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("make");
-
-                    b.Property<int>("Mileage")
-                        .HasColumnType("integer")
-                        .HasColumnName("mileage");
-
-                    b.Property<string>("Model")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("model");
-
-                    b.Property<DateOnly?>("NextService")
-                        .HasColumnType("date")
-                        .HasColumnName("next_service");
-
-                    b.Property<string>("Plate")
-                        .IsRequired()
-                        .HasMaxLength(16)
-                        .HasColumnType("character varying(16)")
-                        .HasColumnName("plate");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
-                        .HasColumnName("status");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("integer")
-                        .HasColumnName("year");
-
-                    b.HasKey("Id")
-                        .HasName("pk_cars");
-
-                    b.HasIndex("ClientId")
-                        .HasDatabaseName("ix_cars_client_id");
-
-                    b.HasIndex("Plate")
-                        .HasDatabaseName("ix_cars_plate");
-
-                    b.ToTable("cars", (string)null);
-                });
-
             modelBuilder.Entity("GarageOS.DAL.Entities.ClientEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -146,6 +68,89 @@ namespace GarageOS.DAL.Migrations
                     b.ToTable("clients", (string)null);
                 });
 
+            modelBuilder.Entity("GarageOS.DAL.Entities.ClientVehicleEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("integer")
+                        .HasColumnName("client_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateOnly>("LastVisit")
+                        .HasColumnType("date")
+                        .HasColumnName("last_visit");
+
+                    b.Property<string>("Make")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("make");
+
+                    b.Property<int?>("Mileage")
+                        .HasColumnType("integer")
+                        .HasColumnName("mileage");
+
+                    b.Property<string>("MileageUnit")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("mileage_unit");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("model");
+
+                    b.Property<DateOnly?>("NextService")
+                        .HasColumnType("date")
+                        .HasColumnName("next_service");
+
+                    b.Property<Guid?>("PhotoId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("photo_id");
+
+                    b.Property<string>("Plate")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("plate");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int?>("Year")
+                        .HasColumnType("integer")
+                        .HasColumnName("year");
+
+                    b.HasKey("Id")
+                        .HasName("pk_client_vehicles");
+
+                    b.HasIndex("ClientId")
+                        .HasDatabaseName("ix_client_vehicles_client_id");
+
+                    b.HasIndex("Plate")
+                        .HasDatabaseName("ix_client_vehicles_plate");
+
+                    b.ToTable("client_vehicles", (string)null);
+                });
+
             modelBuilder.Entity("GarageOS.DAL.Entities.LogEntryEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -164,30 +169,27 @@ namespace GarageOS.DAL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date")
-                        .HasColumnName("date");
-
                     b.Property<string>("Kind")
                         .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)")
                         .HasColumnName("kind");
 
-                    b.Property<int>("Mileage")
+                    b.Property<int?>("Mileage")
                         .HasColumnType("integer")
                         .HasColumnName("mileage");
 
+                    b.Property<string>("MileageUnit")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("mileage_unit");
+
                     b.Property<string>("Note")
+                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
                         .HasColumnName("note");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("title");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -206,6 +208,59 @@ namespace GarageOS.DAL.Migrations
                     b.ToTable("log_entries", (string)null);
                 });
 
+            modelBuilder.Entity("GarageOS.DAL.Entities.LoginCodeEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("integer")
+                        .HasColumnName("attempts");
+
+                    b.Property<string>("CodeHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("code_hash");
+
+                    b.Property<DateTime?>("ConsumedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("consumed_at");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_login_codes");
+
+                    b.HasIndex("ExpiresAt")
+                        .HasDatabaseName("ix_login_codes_expires_at");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_login_codes_user_id_active")
+                        .HasFilter("consumed_at IS NULL");
+
+                    b.ToTable("login_codes", (string)null);
+                });
+
             modelBuilder.Entity("GarageOS.DAL.Entities.MyVehicleEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -219,11 +274,6 @@ namespace GarageOS.DAL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<string>("Due")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
-                        .HasColumnName("due");
-
                     b.Property<string>("Kind")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -234,17 +284,21 @@ namespace GarageOS.DAL.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("mileage");
 
+                    b.Property<string>("MileageUnit")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("mileage_unit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("name");
 
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("unit");
+                    b.Property<Guid?>("PhotoId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("photo_id");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -276,38 +330,19 @@ namespace GarageOS.DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CarId")
+                    b.Property<int>("ClientVehicleId")
                         .HasColumnType("integer")
-                        .HasColumnName("car_id");
+                        .HasColumnName("client_vehicle_id");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date")
-                        .HasColumnName("date");
-
-                    b.Property<int>("DaysWaiting")
-                        .HasColumnType("integer")
-                        .HasColumnName("days_waiting");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
                         .HasColumnName("description");
-
-                    b.Property<decimal>("Paid")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)")
-                        .HasColumnName("paid");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)")
-                        .HasColumnName("status");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -316,8 +351,11 @@ namespace GarageOS.DAL.Migrations
                     b.HasKey("Id")
                         .HasName("pk_orders");
 
-                    b.HasIndex("CarId")
-                        .HasDatabaseName("ix_orders_car_id");
+                    b.HasIndex("ClientVehicleId")
+                        .HasDatabaseName("ix_orders_client_vehicle_id");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("ix_orders_created_at");
 
                     b.ToTable("orders", (string)null);
                 });
@@ -340,19 +378,21 @@ namespace GarageOS.DAL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
+                        .HasColumnName("description");
 
                     b.Property<int>("OrderId")
                         .HasColumnType("integer")
                         .HasColumnName("order_id");
 
-                    b.Property<int>("Qty")
-                        .HasColumnType("integer")
-                        .HasColumnName("qty");
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("payment_status");
 
                     b.Property<decimal>("Sell")
                         .HasPrecision(10, 2)
@@ -372,6 +412,40 @@ namespace GarageOS.DAL.Migrations
                     b.ToTable("order_parts", (string)null);
                 });
 
+            modelBuilder.Entity("GarageOS.DAL.Entities.OrderPhotoEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer")
+                        .HasColumnName("order_id");
+
+                    b.Property<Guid>("PhotoId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("photo_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_order_photos");
+
+                    b.HasIndex("OrderId")
+                        .HasDatabaseName("ix_order_photos_order_id");
+
+                    b.ToTable("order_photos", (string)null);
+                });
+
             modelBuilder.Entity("GarageOS.DAL.Entities.OrderWorkEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -385,15 +459,21 @@ namespace GarageOS.DAL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
+                        .HasColumnName("description");
 
                     b.Property<int>("OrderId")
                         .HasColumnType("integer")
                         .HasColumnName("order_id");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("payment_status");
 
                     b.Property<decimal>("Price")
                         .HasPrecision(10, 2)
@@ -413,51 +493,6 @@ namespace GarageOS.DAL.Migrations
                     b.ToTable("order_works", (string)null);
                 });
 
-            modelBuilder.Entity("GarageOS.DAL.Entities.PaymentEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("numeric(10,2)")
-                        .HasColumnName("amount");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date")
-                        .HasColumnName("date");
-
-                    b.Property<string>("Method")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("method");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("integer")
-                        .HasColumnName("order_id");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("Id")
-                        .HasName("pk_payments");
-
-                    b.HasIndex("OrderId")
-                        .HasDatabaseName("ix_payments_order_id");
-
-                    b.ToTable("payments", (string)null);
-                });
-
             modelBuilder.Entity("GarageOS.DAL.Entities.ReminderEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -467,9 +502,9 @@ namespace GarageOS.DAL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CarId")
+                    b.Property<int>("ClientVehicleId")
                         .HasColumnType("integer")
-                        .HasColumnName("car_id");
+                        .HasColumnName("client_vehicle_id");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -496,8 +531,8 @@ namespace GarageOS.DAL.Migrations
                     b.HasKey("Id")
                         .HasName("pk_reminders");
 
-                    b.HasIndex("CarId")
-                        .HasDatabaseName("ix_reminders_car_id");
+                    b.HasIndex("ClientVehicleId")
+                        .HasDatabaseName("ix_reminders_client_vehicle_id");
 
                     b.ToTable("reminders", (string)null);
                 });
@@ -553,32 +588,39 @@ namespace GarageOS.DAL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(320)
-                        .HasColumnType("character varying(320)")
-                        .HasColumnName("email");
-
-                    b.Property<string>("FirebaseUid")
+                    b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)")
-                        .HasColumnName("firebase_uid");
+                        .HasColumnName("first_name");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
+                    b.Property<string>("LastName")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("last_name");
 
                     b.Property<string>("Phone")
+                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("phone");
 
+                    b.Property<DateTime?>("RefreshExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("refresh_expires_at");
+
+                    b.Property<string>("RefreshTokenHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("refresh_token_hash");
+
                     b.Property<int?>("SubscriptionId")
                         .HasColumnType("integer")
                         .HasColumnName("subscription_id");
+
+                    b.Property<long>("TelegramId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("telegram_id");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -587,26 +629,21 @@ namespace GarageOS.DAL.Migrations
                     b.HasKey("Id")
                         .HasName("pk_users");
 
-                    b.HasIndex("FirebaseUid")
+                    b.HasIndex("Phone")
                         .IsUnique()
-                        .HasDatabaseName("ix_users_firebase_uid");
+                        .HasDatabaseName("ix_users_phone");
+
+                    b.HasIndex("RefreshTokenHash")
+                        .HasDatabaseName("ix_users_refresh_token_hash");
 
                     b.HasIndex("SubscriptionId")
                         .HasDatabaseName("ix_users_subscription_id");
 
+                    b.HasIndex("TelegramId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_telegram_id");
+
                     b.ToTable("users", (string)null);
-                });
-
-            modelBuilder.Entity("GarageOS.DAL.Entities.CarEntity", b =>
-                {
-                    b.HasOne("GarageOS.DAL.Entities.ClientEntity", "Client")
-                        .WithMany("Cars")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("fk_cars_clients_client_id");
-
-                    b.Navigation("Client");
                 });
 
             modelBuilder.Entity("GarageOS.DAL.Entities.ClientEntity", b =>
@@ -620,6 +657,18 @@ namespace GarageOS.DAL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("GarageOS.DAL.Entities.ClientVehicleEntity", b =>
+                {
+                    b.HasOne("GarageOS.DAL.Entities.ClientEntity", "Client")
+                        .WithMany("Vehicles")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_client_vehicles_clients_client_id");
+
+                    b.Navigation("Client");
+                });
+
             modelBuilder.Entity("GarageOS.DAL.Entities.LogEntryEntity", b =>
                 {
                     b.HasOne("GarageOS.DAL.Entities.MyVehicleEntity", "Vehicle")
@@ -630,6 +679,18 @@ namespace GarageOS.DAL.Migrations
                         .HasConstraintName("fk_log_entries_my_vehicles_vehicle_id");
 
                     b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("GarageOS.DAL.Entities.LoginCodeEntity", b =>
+                {
+                    b.HasOne("GarageOS.DAL.Entities.UserEntity", "User")
+                        .WithMany("LoginCodes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_login_codes_users_user_id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GarageOS.DAL.Entities.MyVehicleEntity", b =>
@@ -646,14 +707,14 @@ namespace GarageOS.DAL.Migrations
 
             modelBuilder.Entity("GarageOS.DAL.Entities.OrderEntity", b =>
                 {
-                    b.HasOne("GarageOS.DAL.Entities.CarEntity", "Car")
+                    b.HasOne("GarageOS.DAL.Entities.ClientVehicleEntity", "ClientVehicle")
                         .WithMany("Orders")
-                        .HasForeignKey("CarId")
+                        .HasForeignKey("ClientVehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_orders_cars_car_id");
+                        .HasConstraintName("fk_orders_client_vehicles_client_vehicle_id");
 
-                    b.Navigation("Car");
+                    b.Navigation("ClientVehicle");
                 });
 
             modelBuilder.Entity("GarageOS.DAL.Entities.OrderPartEntity", b =>
@@ -664,6 +725,18 @@ namespace GarageOS.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_order_parts_orders_order_id");
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("GarageOS.DAL.Entities.OrderPhotoEntity", b =>
+                {
+                    b.HasOne("GarageOS.DAL.Entities.OrderEntity", "Order")
+                        .WithMany("Photos")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_order_photos_orders_order_id");
 
                     b.Navigation("Order");
                 });
@@ -680,28 +753,16 @@ namespace GarageOS.DAL.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("GarageOS.DAL.Entities.PaymentEntity", b =>
-                {
-                    b.HasOne("GarageOS.DAL.Entities.OrderEntity", "Order")
-                        .WithMany("Payments")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_payments_orders_order_id");
-
-                    b.Navigation("Order");
-                });
-
             modelBuilder.Entity("GarageOS.DAL.Entities.ReminderEntity", b =>
                 {
-                    b.HasOne("GarageOS.DAL.Entities.CarEntity", "Car")
+                    b.HasOne("GarageOS.DAL.Entities.ClientVehicleEntity", "ClientVehicle")
                         .WithMany("Reminders")
-                        .HasForeignKey("CarId")
+                        .HasForeignKey("ClientVehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_reminders_cars_car_id");
+                        .HasConstraintName("fk_reminders_client_vehicles_client_vehicle_id");
 
-                    b.Navigation("Car");
+                    b.Navigation("ClientVehicle");
                 });
 
             modelBuilder.Entity("GarageOS.DAL.Entities.UserEntity", b =>
@@ -715,16 +776,16 @@ namespace GarageOS.DAL.Migrations
                     b.Navigation("Subscription");
                 });
 
-            modelBuilder.Entity("GarageOS.DAL.Entities.CarEntity", b =>
+            modelBuilder.Entity("GarageOS.DAL.Entities.ClientEntity", b =>
+                {
+                    b.Navigation("Vehicles");
+                });
+
+            modelBuilder.Entity("GarageOS.DAL.Entities.ClientVehicleEntity", b =>
                 {
                     b.Navigation("Orders");
 
                     b.Navigation("Reminders");
-                });
-
-            modelBuilder.Entity("GarageOS.DAL.Entities.ClientEntity", b =>
-                {
-                    b.Navigation("Cars");
                 });
 
             modelBuilder.Entity("GarageOS.DAL.Entities.MyVehicleEntity", b =>
@@ -736,7 +797,7 @@ namespace GarageOS.DAL.Migrations
                 {
                     b.Navigation("Parts");
 
-                    b.Navigation("Payments");
+                    b.Navigation("Photos");
 
                     b.Navigation("Works");
                 });
@@ -748,6 +809,8 @@ namespace GarageOS.DAL.Migrations
 
             modelBuilder.Entity("GarageOS.DAL.Entities.UserEntity", b =>
                 {
+                    b.Navigation("LoginCodes");
+
                     b.Navigation("Vehicles");
                 });
 #pragma warning restore 612, 618

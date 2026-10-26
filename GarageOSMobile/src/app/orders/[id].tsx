@@ -1,7 +1,18 @@
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
+import { OrderPhotos } from '@/components/order-photos';
+import { StatusPicker } from '@/components/status-picker';
 import { BackButton } from '@/components/ui/back-button';
 import { Card } from '@/components/ui/card';
 import { PlateTag } from '@/components/ui/plate-tag';
@@ -10,53 +21,59 @@ import { Screen } from '@/components/ui/screen';
 import { SectionTitle } from '@/components/ui/section-title';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { formatMoney } from '@/lib/format';
-import { orderDebt, orderTotals, partsProfit } from '@/lib/order';
+import { orderDebt, orderEarnings, orderPaid, orderTotals } from '@/lib/order';
 import { showPrototypeNotice } from '@/lib/prototype';
-import { useOrderDetail } from '@/queries/use-orders';
-import { colors, radius, spacing } from '@/theme/tokens';
-import type { Car } from '@/types/domain';
+import { useOrderDetail, usePayOrder } from '@/queries/use-orders';
+import { colors, fontFamily, radius, spacing } from '@/theme/tokens';
+import type { ClientVehicle } from '@/types/domain';
 
 const MESSENGERS = ['Viber', 'Telegram', 'SMS'];
 
 export default function OrderDetailScreen() {
+  const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const detail = useOrderDetail(Number(id));
   const [composerOpen, setComposerOpen] = useState(false);
+  const [statusOpen, setStatusOpen] = useState(false);
 
   return (
     <Screen edges={['top']}>
       <QueryState query={detail}>
-        {({ order, car }) => {
+        {({ order, vehicle, photos }) => {
           const totals = orderTotals(order);
           const debt = orderDebt(order);
-          const profit = partsProfit(order);
+          const earnings = orderEarnings(order);
 
           return (
             <View style={styles.root}>
               <View style={styles.header}>
-                <BackButton fallback={`/cars/${car.id}`} />
+                <View style={styles.topRow}>
+                  <BackButton fallback={`/client-vehicles/${vehicle.id}`} />
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => router.push(`/orders/edit?orderId=${order.id}`)}
+                    style={({ pressed }) => pressed && { opacity: 0.7 }}>
+                    <Text style={styles.editOrder}>Змінити</Text>
+                  </Pressable>
+                </View>
                 <View style={styles.headerRow}>
                   <View>
-                    <PlateTag plate={car.plate} />
+                    <PlateTag plate={vehicle.plate} />
                     <Text style={styles.date}>{order.date}</Text>
                   </View>
-                  <StatusBadge status={order.status} />
+                  <StatusBadge status={vehicle.status} />
                 </View>
               </View>
 
               <ScrollView contentContainerStyle={styles.body}>
                 <View style={styles.summary}>
-                  <Text style={styles.summaryLabel}>Підсумок</Text>
-                  <Text style={styles.summaryTotal}>{formatMoney(totals.total)}</Text>
+                  <Text style={styles.summaryLabel}>Заробіток</Text>
+                  <Text style={styles.summaryEarnings}>+{formatMoney(earnings)}</Text>
 
                   <View style={styles.breakdown}>
                     <Breakdown label="Роботи" value={formatMoney(totals.works)} />
                     <Breakdown label="Деталі" value={formatMoney(totals.parts)} />
-                    <Breakdown
-                      label="Заробіток"
-                      value={`+${formatMoney(profit)}`}
-                      color={colors.profit}
-                    />
+                    <Breakdown label="Підсумок" value={formatMoney(totals.total)} />
                   </View>
 
                   {debt > 0 && (
@@ -76,46 +93,91 @@ export default function OrderDetailScreen() {
                   <SectionTitle style={styles.blockTitle}>Роботи</SectionTitle>
                   {order.works.length === 0 && <Text style={styles.empty}>Робіт ще немає</Text>}
                   {order.works.map((work, index) => (
-                    <View
-                      key={work.name}
-                      style={[styles.line, index === order.works.length - 1 && styles.lastLine]}>
-                      <Text style={styles.lineLabel}>{work.name}</Text>
+                    <Pressable
+                      key={work.id}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Змінити роботу: ${work.description}`}
+                      onPress={() =>
+                        router.push(`/orders/work?orderId=${order.id}&workId=${work.id}`)
+                      }
+                      style={({ pressed }) => [
+                        styles.line,
+                        index === order.works.length - 1 && styles.lastLine,
+                        pressed && { opacity: 0.7 },
+                      ]}>
+                      <View style={styles.lineMain}>
+                        <Text style={styles.lineLabel}>{work.description}</Text>
+                        {work.paymentStatus === 'unpaid' && (
+                          <Text style={styles.unpaid}>не оплачено</Text>
+                        )}
+                      </View>
                       <Text style={styles.lineValue}>{formatMoney(work.price)}</Text>
-                    </View>
+                    </Pressable>
                   ))}
+
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => router.push(`/orders/work?orderId=${order.id}`)}
+                    style={({ pressed }) => [styles.addLine, pressed && { opacity: 0.7 }]}>
+                    <Text style={styles.addLineLabel}>+ Робота</Text>
+                  </Pressable>
                 </Card>
 
                 <Card style={styles.block}>
                   <SectionTitle style={styles.blockTitle}>Запчастини</SectionTitle>
                   {order.parts.length === 0 && <Text style={styles.empty}>Деталей ще немає</Text>}
                   {order.parts.map((part, index) => (
-                    <View
-                      key={part.name}
-                      style={[styles.partRow, index === order.parts.length - 1 && styles.lastLine]}>
+                    <Pressable
+                      key={part.id}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Змінити деталь: ${part.description}`}
+                      onPress={() =>
+                        router.push(`/orders/part?orderId=${order.id}&partId=${part.id}`)
+                      }
+                      style={({ pressed }) => [
+                        styles.partRow,
+                        index === order.parts.length - 1 && styles.lastLine,
+                        pressed && { opacity: 0.7 },
+                      ]}>
                       <View style={styles.line}>
-                        <Text style={styles.lineLabel}>
-                          {part.name} ×{part.qty}
-                        </Text>
-                        <Text style={styles.lineValue}>{formatMoney(part.sell * part.qty)}</Text>
+                        <View style={styles.lineMain}>
+                          <Text style={styles.lineLabel}>{part.description}</Text>
+                          {part.paymentStatus === 'unpaid' && (
+                            <Text style={styles.unpaid}>не оплачено</Text>
+                          )}
+                        </View>
+                        <Text style={styles.lineValue}>{formatMoney(part.sell)}</Text>
                       </View>
                       <View style={styles.partMeta}>
-                        <Text style={styles.partBuy}>
-                          Закупка: {formatMoney(part.buy * part.qty)}
-                        </Text>
-                        <Text style={styles.partProfit}>
-                          +{formatMoney((part.sell - part.buy) * part.qty)}
-                        </Text>
+                        <Text style={styles.partBuy}>Закупка: {formatMoney(part.buy)}</Text>
+                        <Text style={styles.partProfit}>+{formatMoney(part.sell - part.buy)}</Text>
                       </View>
-                    </View>
+                    </Pressable>
                   ))}
+
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={() => router.push(`/orders/part?orderId=${order.id}`)}
+                    style={({ pressed }) => [styles.addLine, pressed && { opacity: 0.7 }]}>
+                    <Text style={styles.addLineLabel}>+ Деталь</Text>
+                  </Pressable>
                 </Card>
 
-                {composerOpen && <MessageComposer car={car} debt={debt} />}
+                <OrderPhotos orderId={order.id} photos={photos} />
+
+                {composerOpen && <MessageComposer vehicle={vehicle} debt={debt} />}
+
+                <StatusPicker
+                  vehicleId={vehicle.id}
+                  status={vehicle.status}
+                  visible={statusOpen}
+                  onClose={() => setStatusOpen(false)}
+                />
 
                 <View style={styles.actions}>
                   <Pressable
                     accessibilityRole="button"
-                    onPress={() => showPrototypeNotice('Зміна статусу')}
+                    onPress={() => setStatusOpen(true)}
                     style={({ pressed }) => [
                       styles.actionButton,
                       styles.neutralButton,
@@ -124,16 +186,7 @@ export default function OrderDetailScreen() {
                     <Text style={styles.neutralLabel}>Статус</Text>
                   </Pressable>
 
-                  <Pressable
-                    accessibilityRole="button"
-                    onPress={() => showPrototypeNotice('Оплата')}
-                    style={({ pressed }) => [
-                      styles.actionButton,
-                      styles.payButton,
-                      pressed && { opacity: 0.8 },
-                    ]}>
-                    <Text style={styles.primaryLabel}>Оплата</Text>
-                  </Pressable>
+                  <PayButton orderId={order.id} paid={orderPaid(order)} />
 
                   <Pressable
                     accessibilityRole="button"
@@ -155,23 +208,54 @@ export default function OrderDetailScreen() {
   );
 }
 
-function Breakdown({ label, value, color }: { label: string; value: string; color?: string }) {
+// Its own component because the mutation hook cannot be called inside
+// QueryState's render callback — the same reason StatusPicker takes an id.
+function PayButton({ orderId, paid }: { orderId: number; paid: boolean }) {
+  const pay = usePayOrder(orderId);
+  const off = paid || pay.isPending;
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      disabled={off}
+      onPress={() =>
+        pay.mutate(undefined, {
+          onError: (error) =>
+            Alert.alert('Оплата', error instanceof Error ? error.message : 'Не вдалося'),
+        })
+      }
+      style={({ pressed }) => [
+        styles.actionButton,
+        styles.payButton,
+        off && styles.buttonOff,
+        pressed && { opacity: 0.8 },
+      ]}>
+      {pay.isPending ? (
+        <ActivityIndicator color={colors.onAccent} />
+      ) : (
+        <Text style={styles.primaryLabel}>{paid ? 'Оплачено' : 'Оплата'}</Text>
+      )}
+    </Pressable>
+  );
+}
+
+function Breakdown({ label, value }: { label: string; value: string }) {
   return (
     <View>
       <Text style={styles.breakdownLabel}>{label}</Text>
-      <Text style={[styles.breakdownValue, !!color && { color }]}>{value}</Text>
+      <Text style={styles.breakdownValue}>{value}</Text>
     </View>
   );
 }
 
 interface ComposerProps {
-  car: Car;
+  vehicle: ClientVehicle;
   debt: number;
 }
 
-function MessageComposer({ car, debt }: ComposerProps) {
+function MessageComposer({ vehicle, debt }: ComposerProps) {
   const [message, setMessage] = useState(
-    `Добрий день, ${car.owner}!\nВаш ${car.make} ${car.plate} готовий.\nДо сплати: ${formatMoney(
+    `Добрий день, ${vehicle.owner}!\nВаш ${vehicle.make} ${vehicle.plate} готовий.\nДо сплати: ${formatMoney(
       debt > 0 ? debt : 0
     )}.\nЧекаємо вас!`
   );
@@ -210,6 +294,30 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.md,
     backgroundColor: colors.bg,
   },
+  addLine: {
+    marginTop: spacing.md,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    paddingVertical: spacing.sm,
+    alignItems: 'center',
+  },
+  addLineLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.textMuted,
+  },
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  editOrder: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.amber,
+  },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -227,52 +335,64 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   summary: {
-    backgroundColor: colors.text,
-    borderRadius: radius.lg,
-    padding: spacing.lg,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.xxl,
+    padding: spacing.xl,
   },
   summaryLabel: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.5)',
-    marginBottom: 4,
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    color: colors.orange,
+    marginBottom: 6,
   },
-  summaryTotal: {
+  summaryEarnings: {
     fontSize: 32,
     fontWeight: '700',
-    color: colors.surface,
+    color: colors.profit,
+    fontFamily: fontFamily.mono,
   },
   breakdown: {
     flexDirection: 'row',
-    gap: spacing.lg,
-    marginTop: spacing.sm,
+    gap: spacing.xl,
+    marginTop: spacing.lg,
+    paddingTop: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.borderSoft,
   },
   breakdownLabel: {
     fontSize: 10,
-    color: 'rgba(255, 255, 255, 0.4)',
+    color: colors.textFaint,
   },
   breakdownValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: colors.textBody,
   },
   debtRow: {
     marginTop: spacing.md,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(220, 38, 38, 0.2)',
+    backgroundColor: colors.dangerBg,
+    borderWidth: 1,
+    borderColor: colors.dangerBorder,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   debtLabel: {
     fontSize: 14,
-    color: '#FCA5A5',
+    color: colors.dangerOnInk,
   },
   debtValue: {
     fontSize: 14,
     fontWeight: '700',
-    color: colors.surface,
+    color: colors.dangerOnInk,
+    fontFamily: fontFamily.mono,
   },
   block: {
     borderRadius: radius.lg,
@@ -299,6 +419,14 @@ const styles = StyleSheet.create({
   },
   lastLine: {
     borderBottomWidth: 0,
+  },
+  lineMain: {
+    flex: 1,
+    gap: 2,
+  },
+  unpaid: {
+    fontSize: 11,
+    color: colors.dangerOnInk,
   },
   lineLabel: {
     flex: 1,
@@ -362,7 +490,7 @@ const styles = StyleSheet.create({
   composerButtonLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: colors.surface,
+    color: colors.onAccent,
   },
   actions: {
     flexDirection: 'row',
@@ -380,6 +508,9 @@ const styles = StyleSheet.create({
   payButton: {
     backgroundColor: colors.amber,
   },
+  buttonOff: {
+    opacity: 0.5,
+  },
   notifyButton: {
     backgroundColor: colors.blueDark,
   },
@@ -391,6 +522,6 @@ const styles = StyleSheet.create({
   primaryLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.surface,
+    color: colors.onAccent,
   },
 });

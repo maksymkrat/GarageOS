@@ -5,17 +5,17 @@
 
 ```mermaid
 flowchart LR
-    cars["<b>Cars</b><br/>картотека авто клієнтів<br/><i>src/api/cars.ts</i>"]
+    vehicles["<b>ClientVehicles</b><br/>картотека авто клієнтів<br/><i>src/api/client-vehicles.ts</i>"]
     orders["<b>Orders</b><br/>замовлення-наряди<br/><i>src/api/orders.ts</i>"]
     finance["<b>Finance</b><br/>виторг і борги<br/><i>src/api/finance.ts</i>"]
     reminders["<b>Reminders</b><br/>нагадування про ТО<br/><i>src/api/reminders.ts</i>"]
     personal["<b>Personal garage</b><br/>власна техніка<br/><i>src/api/vehicles.ts</i>"]
     board["<i>Work board</i><br/>read-model на клієнті<br/><i>src/queries/use-work-board.ts</i>"]
 
-    orders -->|carId| cars
-    finance -->|debt, статуси| cars
-    reminders -->|carId| cars
-    board --> cars
+    orders -->|clientVehicleId| vehicles
+    finance -->|debt, статуси| vehicles
+    reminders -->|clientVehicleId| vehicles
+    board --> vehicles
     board --> orders
 
     personal:::isolated
@@ -26,44 +26,51 @@ flowchart LR
 
 | Домен | Відповідальність | Сутності | Залежить від | Ендпойнти |
 |-------|------------------|----------|--------------|-----------|
-| **Cars** | авто клієнта як довготривала картка: власник, контакт, пробіг, статус, борг | `Car`, `CreateCarInput`, `CarDetail` | — | `GET /cars`, `GET /cars/{id}`, `POST /cars` |
-| **Orders** | конкретний візит: скарга, роботи, деталі, оплата | `Order`, `OrderWork`, `OrderPart`, `OrderDetail` | Cars (`carId`) | `GET /orders`, `GET /orders/{id}` |
-| **Finance** | агрегат за період + хто винен гроші | `FinanceStats`, `FinancePeriod`, `FinanceOverview` | Cars (`debt`) | `GET /finance?period=` |
-| **Reminders** | що і коли треба обслужити, чи прострочено | `ReminderItem` | Cars | `GET /reminders` |
-| **Personal garage** | своя техніка та журнал обслуговування | `MyVehicle`, `LogEntry`, `LogEntryKind` | — (ізольований) | `GET /my-vehicles`, `GET /my-vehicles/{id}` |
+| **ClientVehicles** | авто клієнта як довготривала картка: власник, контакт, пробіг, статус, борг | `ClientVehicle`, `CreateClientVehicleInput`, `UpdateClientVehicleStatusInput`, `ClientVehicleDetail`, `PhotoSize` | — | `GET /client-vehicles`, `GET /client-vehicles/{id}`, `POST /client-vehicles`, `PUT /client-vehicles/{id}/status`, `POST /client-vehicles/{id}/pay`, три `/photo` |
+| **Orders** | конкретний візит: скарга, роботи, деталі, оплата рядків | `Order`, `OrderWork`, `OrderPart`, `OrderPhoto`, `OrderWorkInput`, `OrderPartInput`, `PaymentStatus`, `OrderDetail`, `CreateOrderInput`, `UpdateOrderInput` | ClientVehicles (`clientVehicleId`) | `GET /orders`, `GET /orders/{id}`, `POST`/`PUT`/`DELETE` на `/orders` та на рядках `/works` і `/parts`, `POST /orders/{id}/pay`, три `/photos` |
+| **Finance** | агрегат за період + хто винен гроші | `FinanceStats`, `FinancePeriod`, `FinanceOverview` | ClientVehicles (`debt`), Orders (рядки) | `GET /finance?period=` |
+| **Reminders** | що і коли треба обслужити, чи прострочено | `ReminderItem` | ClientVehicles | `GET /reminders` |
+| **Personal garage** | своя техніка та журнал обслуговування | `MyVehicle`, `CreateMyVehicleInput`, `UpdateMyVehicleInput`, `LogEntry`, `CreateLogEntryInput`, `UpdateLogEntryInput`, `LogEntryKind`, `MileageUnit` | — (ізольований) | одинадцять `/my-vehicles*`: читання, `POST`/`PUT`/`DELETE` техніки та записів журналу, три `/photo` |
 
 ## Зв'язки та правила
 
-**Cars — ядро.** Три з п'яти доменів посилаються на авто. `Car.status` типу
-`CarStatus` (`in_work` / `waiting_part` / `ready` / `has_debt`) — це стан, який
-читає дошка робіт, а `Car.debt` — те, з чого Finance збирає боржників.
+**ClientVehicles — ядро.** Три з п'яти доменів посилаються на авто.
+`ClientVehicle.status` типу `ClientVehicleStatus` (`in_work` /
+`waiting_part` / `ready` / `has_debt`) — це стан, який читає дошка робіт, а
+`ClientVehicle.debt` — те, з чого Finance збирає боржників.
 
-**Orders дублює статус.** `Order.status` має той самий тип `CarStatus`, що й
-`Car.status`. У моку вони виставляються узгоджено, але **інваріант ніде не
-забезпечений**. Це перше, що бекенд мусить вирішити: хто власник статусу —
-авто чи наряд. Див. [03-data-model.md](03-data-model.md#відкриті-питання-моделі).
+**Статус тепер в одному місці.** Доти той самий `CarStatus` стояв і в авто, і в
+наряді, а інваріант не забезпечувало ніщо. Питання «хто власник статусу»
+закрите на користь авто: наряд статусу не має
+([ADR-0017](adr/0017-order-without-own-status-and-date.md)).
 
-**Personal garage ізольований.** `MyVehicle` не має `carId` і не перетинається
+**Оплата — властивість рядка наряду, не суми.** `OrderWork` і `OrderPart`
+несуть `paymentStatus`; борг авто й виторг за період — похідні від рядків
+([ADR-0016](adr/0016-order-line-payment.md)).
+
+**Personal garage ізольований.** `MyVehicle` не має `clientVehicleId` і не перетинається
 з картотекою СТО: інша сутність, інший режим, свій журнал. Об'єднувати їх не
 треба — у них різні власники даних.
 
-**Work board — не домен.** Це read-model, зібраний на клієнті з `Cars` і
-`Orders`. Серверного ендпойнта для нього немає свідомо
+**Work board — не домен.** Це read-model, зібраний на клієнті з
+`ClientVehicles` і `Orders`. Серверного ендпойнта для нього немає свідомо
 ([04-api-surface.md](04-api-surface.md#композиція-на-клієнті)).
 
 ## Проєкція на структуру `GarageOSWeb`
 
 ```
-GarageOS.Domain/     Models/ (11 моделей) Enums/ (CarStatus, LogEntryKind, FinancePeriod)
+GarageOS.Domain/     Models/ (10 моделей) Enums/ (ClientVehicleStatus, MileageUnit,
+                     PaymentStatus, LogEntryKind, FinancePeriod)
 GarageOS.DAL/        Entities/ Configurations/ Context/ Repositories/ Migrations/
-GarageOS.Services/   CarService, OrderService, FinanceService, ReminderService,
+GarageOS.Services/   ClientVehicleService, OrderService, FinanceService, ReminderService,
                      MyVehicleService + Dtos/ Mapping/
-GarageOS.Api/        Controllers/ (Cars, Orders, Finance, Reminders, MyVehicles)
+GarageOS.Api/        Controllers/ (ClientVehicles, Orders, Finance, Reminders, MyVehicles)
 ```
 
 Поділ за шарами, а не за фічами. Межа домену на сервері проходить не папкою, а
-трійкою «сервіс + репозиторій + контролер» з однаковою назвою: домен `Cars` —
-це `CarService`, `CarRepository` і `CarsController`. Див.
+трійкою «сервіс + репозиторій + контролер» з однаковою назвою: домен
+`ClientVehicles` — це `ClientVehicleService`, `ClientVehicleRepository` і
+`ClientVehiclesController`. Див.
 [ADR-0006](adr/0006-backend-layering.md), який скасував попередній намір різати
 сервер за фічами.
 

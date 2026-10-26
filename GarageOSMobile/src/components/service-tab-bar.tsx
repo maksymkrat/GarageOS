@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: colors.surface,
     borderTopWidth: 1,
-    borderTopColor: colors.warmDivider,
+    borderTopColor: colors.borderSoft,
   },
   item: {
     flex: 1,

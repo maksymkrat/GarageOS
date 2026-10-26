@@ -10,9 +10,8 @@ public class ReminderService(IReminderRepository reminders, TimeProvider time) :
     public async Task<IReadOnlyList<ReminderItemDto>> GetRemindersAsync(CancellationToken ct = default)
     {
         var today = DateOnly.FromDateTime(time.GetLocalNow().DateTime);
-        var rows = await reminders.GetAllWithCarAsync(ct);
+        var rows = await reminders.GetAllWithVehicleAsync(ct);
 
-        // Нагадування без авто пропускаємо — так само, як flatMap на клієнті.
-        return [.. rows.Where(x => x.Car is not null).Select(x => x.ToModel().ToDto(today))];
+        return [.. rows.Where(x => x.ClientVehicle is not null).Select(x => x.ToModel().ToDto(today))];
     }
 }

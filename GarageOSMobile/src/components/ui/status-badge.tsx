@@ -2,9 +2,9 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { STATUS_META } from '@/theme/status';
 import { radius } from '@/theme/tokens';
-import type { CarStatus } from '@/types/domain';
+import type { ClientVehicleStatus } from '@/types/domain';
 
-export function StatusBadge({ status }: { status: CarStatus }) {
+export function StatusBadge({ status }: { status: ClientVehicleStatus }) {
   const meta = STATUS_META[status];
 
   return (

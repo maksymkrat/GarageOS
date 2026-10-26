@@ -3,7 +3,6 @@ import '@/global.css';
 import { Platform, type ViewStyle } from 'react-native';
 
 export const colors = {
-  // Brand
   ink: '#1A1714',
   inkSoft: '#1C1917',
   cream: '#EDE8DF',
@@ -12,19 +11,19 @@ export const colors = {
   brown: '#6B4F2A',
   facade: '#D4C9B8',
 
-  // Service surfaces — cool neutrals
-  bg: '#FAFAF8',
-  surface: '#FFFFFF',
-  text: '#111827',
-  textBody: '#374151',
-  textMuted: '#6B7280',
-  textFaint: '#9CA3AF',
-  border: '#E5E7EB',
-  borderSoft: '#F3F4F6',
-  fill: '#F3F4F6',
-  placeholder: '#D1D5DB',
+  bg: '#1A1714',
+  surface: 'rgba(237, 232, 223, 0.06)',
+  text: '#EDE8DF',
+  textBody: 'rgba(237, 232, 223, 0.80)',
+  textMuted: 'rgba(237, 232, 223, 0.55)',
+  textFaint: 'rgba(237, 232, 223, 0.40)',
+  border: 'rgba(237, 232, 223, 0.14)',
+  borderSoft: 'rgba(237, 232, 223, 0.10)',
+  fill: 'rgba(237, 232, 223, 0.06)',
+  placeholder: 'rgba(237, 232, 223, 0.20)',
 
-  // Home & personal surfaces — warm neutrals
+  onAccent: '#FFFFFF',
+
   warmSurface: '#EDE8DF',
   warmBorder: '#E0D8CB',
   warmDivider: '#F0EDE8',
@@ -33,25 +32,47 @@ export const colors = {
   warmFaint: '#B5ABA0',
   warmChip: '#F3EDE0',
 
-  // Semantic
+  blueOnInk: '#93C5FD',
+  warningOnInk: '#E9A94F',
+  successOnInk: '#34D399',
+  dangerOnInk: '#FCA5A5',
+
   blue: '#2563EB',
   blueDark: '#1D4ED8',
-  blueBg: '#EFF6FF',
+  blueBg: 'rgba(37, 99, 235, 0.15)',
   warning: '#D97706',
   warningDark: '#B45309',
-  warningBg: '#FEF3C7',
-  warningText: '#92400E',
+  warningBg: 'rgba(201, 123, 34, 0.12)',
+  warningText: '#E9A94F',
   success: '#059669',
   successDark: '#047857',
-  successBg: '#ECFDF5',
-  successSurface: '#F0FDF4',
-  successBorder: '#BBF7D0',
+  successBg: 'rgba(5, 150, 105, 0.15)',
+  successSurface: 'rgba(5, 150, 105, 0.15)',
+  successBorder: 'rgba(52, 211, 153, 0.25)',
   danger: '#DC2626',
   dangerDark: '#B91C1C',
-  dangerBg: '#FEF2F2',
-  dangerBorder: '#FECACA',
+  dangerBg: 'rgba(220, 38, 38, 0.12)',
+  dangerBorder: 'rgba(248, 113, 113, 0.25)',
   profit: '#34D399',
   amberOnDark: '#E9A94F',
+} as const;
+
+export const onInk = {
+  text: colors.cream,
+  body: 'rgba(237, 232, 223, 0.70)',
+  muted: 'rgba(237, 232, 223, 0.55)',
+  faint: 'rgba(237, 232, 223, 0.40)',
+  dim: 'rgba(237, 232, 223, 0.20)',
+  border: 'rgba(237, 232, 223, 0.14)',
+  divider: 'rgba(237, 232, 223, 0.10)',
+  fill: 'rgba(237, 232, 223, 0.06)',
+  ring: 'rgba(201, 123, 34, 0.25)',
+  ringFaint: 'rgba(201, 123, 34, 0.12)',
+  dangerFill: 'rgba(220, 38, 38, 0.12)',
+  dangerBorder: 'rgba(248, 113, 113, 0.25)',
+  dangerBorderStrong: 'rgba(248, 113, 113, 0.70)',
+  warnFill: 'rgba(201, 123, 34, 0.12)',
+  warnBorder: 'rgba(201, 123, 34, 0.30)',
 } as const;
 
 export const radius = {
@@ -104,6 +125,16 @@ export const shadows = {
     },
     { elevation: 4 },
     { boxShadow: '0 2px 8px rgba(180, 83, 9, 0.35)' }
+  ),
+  dialog: elevation(
+    {
+      shadowColor: '#000',
+      shadowOpacity: 0.45,
+      shadowRadius: 24,
+      shadowOffset: { width: 0, height: 12 },
+    },
+    { elevation: 12 },
+    { boxShadow: '0 12px 32px rgba(0, 0, 0, 0.45)' }
   ),
   submit: elevation(
     {

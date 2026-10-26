@@ -8,7 +8,7 @@ namespace GarageOS.Services;
 
 public class FinanceService(
     IFinanceRepository finance,
-    ICarRepository cars,
+    IClientVehicleRepository vehicles,
     TimeProvider time) : IFinanceService
 {
     public async Task<FinanceOverviewDto> GetOverviewAsync(string period, CancellationToken ct = default)
@@ -16,12 +16,13 @@ public class FinanceService(
         var today = DateOnly.FromDateTime(time.GetLocalNow().DateTime);
         var from = StartOf(ContractFormat.ParsePeriod(period), today);
 
-        var totals = await finance.GetTotalsAsync(from, today, ct);
-        var debtors = await cars.GetDebtorsAsync(ct);
+        var totals = await finance.GetTotalsAsync(
+            ContractFormat.StartOfDayUtc(from),
+            ContractFormat.StartOfDayUtc(today.AddDays(1)),
+            ct);
 
-        // «Заробили» = роботи плюс маржа на запчастинах. Закупівельна ціна в
-        // контракті існує саме для цього; у моках число було статичним, тож
-        // точна формула лишалася невизначеною — див. ADR-0006.
+        var debtors = await vehicles.GetDebtorsAsync(ct);
+
         var stats = new FinanceStatsDto(
             Earned: totals.Works + totals.PartsMargin,
             Works: totals.Works,
@@ -30,11 +31,10 @@ public class FinanceService(
 
         return new FinanceOverviewDto(
             stats,
-            [.. debtors.Select(x => x.ToModel().ToDto())],
+            [.. debtors.Select(x => x.Vehicle.ToModel().ToDto(x.Debt))],
             debtors.Sum(x => x.Debt));
     }
 
-    /// <summary>Вікна ковзні від сьогодні назад, не календарні.</summary>
     private static DateOnly StartOf(FinancePeriod period, DateOnly today) => period switch
     {
         FinancePeriod.Week => today.AddDays(-6),

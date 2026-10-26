@@ -7,9 +7,9 @@ import { EmptyState, QueryState } from '@/components/ui/query-state';
 import { Screen } from '@/components/ui/screen';
 import { useWorkBoard, type WorkBoardRow } from '@/queries/use-work-board';
 import { colors, fontFamily, radius, spacing } from '@/theme/tokens';
-import type { CarStatus } from '@/types/domain';
+import type { ClientVehicleStatus } from '@/types/domain';
 
-const GROUPS: { status: CarStatus; title: string; color: string }[] = [
+const GROUPS: { status: ClientVehicleStatus; title: string; color: string }[] = [
   { status: 'waiting_part', title: 'Чекає деталь', color: colors.warning },
   { status: 'in_work', title: 'В роботі', color: colors.blue },
   { status: 'ready', title: 'Готово, не забрали', color: colors.success },
@@ -52,7 +52,7 @@ export default function WorkTab() {
 
                   <View style={styles.rows}>
                     {group.rows.map((row) => (
-                      <WorkRow key={row.car.id} row={row} />
+                      <WorkRow key={row.vehicle.id} row={row} />
                     ))}
                   </View>
                 </View>
@@ -71,14 +71,14 @@ function WorkRow({ row }: { row: WorkBoardRow }) {
 
   return (
     <PressableCard
-      onPress={() => router.push(`/cars/${row.car.id}`)}
-      accessibilityLabel={row.car.plate}
+      onPress={() => router.push(`/client-vehicles/${row.vehicle.id}`)}
+      accessibilityLabel={row.vehicle.plate}
       style={styles.row}>
       <View style={styles.rowInner}>
         <View style={styles.rowMain}>
-          <Text style={styles.plate}>{row.car.plate}</Text>
+          <Text style={styles.plate}>{row.vehicle.plate}</Text>
           <Text style={styles.meta}>
-            {row.car.make} {row.car.model} · {row.car.owner}
+            {row.vehicle.make} {row.vehicle.model} · {row.vehicle.owner}
           </Text>
           {!!row.description && (
             <Text style={styles.description} numberOfLines={1}>
@@ -199,6 +199,6 @@ const styles = StyleSheet.create({
     color: colors.textFaint,
   },
   late: {
-    color: colors.dangerDark,
+    color: colors.dangerOnInk,
   },
 });
