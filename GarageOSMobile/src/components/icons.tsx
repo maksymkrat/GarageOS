@@ -83,6 +83,14 @@ export function ChevronRightIcon({ size = 16, color = colors.textFaint }: IconPr
   );
 }
 
+export function ChevronDownIcon({ size = 16, color = colors.textFaint }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M6 9l6 6 6-6" stroke={color} strokeWidth={2} {...STROKE} />
+    </Svg>
+  );
+}
+
 export function ArrowUpRightIcon({ size = 14, color = colors.ink }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
