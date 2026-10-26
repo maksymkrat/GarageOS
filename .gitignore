@@ -19,6 +19,7 @@ publish/
 TestResults/
 *.nupkg
 *.snupkg
+*.binlog
 
 # ---- local photo storage (Storage:PhotosRoot default, ADR-0026) ----
 _data/
@@ -36,3 +37,8 @@ web-build/
 *.tsbuildinfo
 npm-debug.*
 yarn-error.*
+
+# ---- сміття від злиття й перенаправлений вивід ----
+*.orig
+*.rej
+*.log
