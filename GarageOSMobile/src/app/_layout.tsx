@@ -1,6 +1,7 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router/stack';
 import { StatusBar } from 'expo-status-bar';
+import * as SystemUI from 'expo-system-ui';
 
 import { SessionProvider, useSession } from '@/lib/session';
 import { queryClient } from '@/queries/client';
@@ -9,6 +10,11 @@ import { colors } from '@/theme/tokens';
 export const unstable_settings = {
   anchor: 'index',
 };
+
+// The window behind the whole app. It is white by default, and the service
+// tab bar is painted in a 6% cream that lets it through — which on Android
+// reads as a white strip under the navigation buttons.
+void SystemUI.setBackgroundColorAsync(colors.ink);
 
 export default function RootLayout() {
   return (
@@ -31,7 +37,7 @@ function RootNavigator() {
 
   return (
     <>
-      <StatusBar style={signedIn ? 'dark' : 'light'} />
+      <StatusBar style="light" />
       <Stack
         screenOptions={{
           headerShown: false,
