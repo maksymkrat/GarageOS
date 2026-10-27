@@ -291,6 +291,7 @@ function AcceptPaymentButton({ vehicleId, debt }: { vehicleId: number; debt: num
 
 function SummaryRows({ vehicle }: { vehicle: ClientVehicle }) {
   const rows: [string, string][] = [
+    ['Вид', vehicle.kind],
     ['Власник', vehicle.owner],
     ['Телефон', formatPhone(vehicle.phone)],
   ];

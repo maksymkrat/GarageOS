@@ -13,6 +13,7 @@ public static class EntityMapper
         Id = e.Id,
         ClientId = e.ClientId,
         Plate = e.Plate,
+        Kind = e.Kind,
         Make = e.Make,
         Model = e.Model,
         Year = e.Year,

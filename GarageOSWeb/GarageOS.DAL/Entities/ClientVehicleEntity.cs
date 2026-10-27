@@ -8,6 +8,7 @@ public class ClientVehicleEntity : BaseEntity
     public ClientEntity Client { get; set; } = null!;
 
     public required string Plate { get; set; }
+    public required string Kind { get; set; }
     public required string Make { get; set; }
     public required string Model { get; set; }
     public int? Year { get; set; }

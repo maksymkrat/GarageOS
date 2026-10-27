@@ -187,6 +187,7 @@ public class ClientVehicleService(
         {
             Client = client,
             Plate = request.Plate.Trim().ToUpperInvariant(),
+            Kind = request.Kind.Trim(),
             Make = request.Make.Trim(),
             Model = request.Model.Trim(),
             Year = request.Year,

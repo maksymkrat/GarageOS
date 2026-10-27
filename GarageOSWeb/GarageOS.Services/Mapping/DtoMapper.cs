@@ -8,6 +8,7 @@ public static class DtoMapper
     public static ClientVehicleDto ToDto(this ClientVehicle vehicle, decimal debt) => new(
         vehicle.Id,
         vehicle.Plate,
+        vehicle.Kind,
         vehicle.Make,
         vehicle.Model,
         vehicle.Year,

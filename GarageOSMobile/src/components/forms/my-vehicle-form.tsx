@@ -6,30 +6,17 @@ import { SearchPickerDialog } from '@/components/ui/search-picker-dialog';
 import { SelectField } from '@/components/ui/select-field';
 import { TextField } from '@/components/ui/text-field';
 import { mileageUnitLabel } from '@/lib/format';
-import { CAR_CATALOG, MOTO_CATALOG, type MakeCatalog } from '@/lib/vehicle-catalog';
+import {
+  EARLIEST_YEAR,
+  VEHICLE_KINDS,
+  catalogFor,
+  latestYear,
+  vehicleYears,
+} from '@/lib/vehicle-catalog';
 import { colors, radius, shadows, spacing } from '@/theme/tokens';
 import type { MileageUnit } from '@/types/domain';
 
-// `kind` is free text in the contract, and these three are what the garage
-// already holds. Offering them as a choice keeps one kind from arriving under
-// three spellings.
-const CAR = 'Авто';
-
-const MOTO = 'Мото';
-
-const KINDS = [CAR, MOTO, 'Техніка'];
-
-// Cars and bikes are picked from a catalogue; everything else is still typed,
-// because there is no list of make and model worth the name for a trailer or
-// a tiller.
-const CATALOGS: Record<string, MakeCatalog | undefined> = {
-  [CAR]: CAR_CATALOG,
-  [MOTO]: MOTO_CATALOG,
-};
-
 const UNITS: MileageUnit[] = ['km', 'hours'];
-
-const EARLIEST_YEAR = 1900;
 
 export interface MyVehicleFormValues {
   kind: string;
@@ -63,28 +50,14 @@ function digitsOf(value: string): string {
   return value.replace(/\D/g, '');
 }
 
-function nextYear(): number {
-  return new Date().getFullYear() + 1;
-}
-
-// Newest first: a vehicle from this decade is what somebody is adding, and the
-// 1950s are a scroll away rather than the other way round.
-function yearOptions(): string[] {
-  const years: string[] = [];
-
-  for (let year = nextYear(); year >= EARLIEST_YEAR; year -= 1) years.push(String(year));
-
-  return years;
-}
-
 function composeName(form: FormState): string {
-  return CATALOGS[form.kind] ? `${form.make} ${form.model}`.trim() : form.name.trim();
+  return catalogFor(form.kind) ? `${form.make} ${form.model}`.trim() : form.name.trim();
 }
 
 function toFormState(initial?: MyVehicleFormValues): FormState {
   const name = initial?.name ?? '';
-  const kind = initial?.kind ?? KINDS[0];
-  const catalog = CATALOGS[kind];
+  const kind = initial?.kind ?? VEHICLE_KINDS[0];
+  const catalog = catalogFor(kind);
 
   return {
     kind,
@@ -98,10 +71,10 @@ function toFormState(initial?: MyVehicleFormValues): FormState {
 
 function validate(form: FormState): FormErrors {
   const errors: FormErrors = {};
-  const limit = nextYear();
+  const limit = latestYear();
   const year = Number(digitsOf(form.year));
 
-  if (CATALOGS[form.kind]) {
+  if (catalogFor(form.kind)) {
     if (!form.make.trim()) errors.make = 'Оберіть марку';
   } else if (!form.name.trim()) {
     errors.name = 'Вкажіть назву';
@@ -137,9 +110,9 @@ export function MyVehicleForm({
   const [errors, setErrors] = useState<FormErrors>({});
   const [picker, setPicker] = useState<Picker | null>(null);
 
-  const catalog = CATALOGS[form.kind];
+  const catalog = catalogFor(form.kind);
 
-  const years = useMemo(() => yearOptions(), []);
+  const years = useMemo(() => vehicleYears(), []);
 
   // A value saved earlier may be outside the catalogue; it still has to show as
   // the current choice instead of disappearing from its own list.
@@ -162,8 +135,8 @@ export function MyVehicleForm({
     setForm((current) => {
       if (kind === current.kind) return current;
 
-      const leaving = CATALOGS[current.kind];
-      const entering = CATALOGS[kind];
+      const leaving = catalogFor(current.kind);
+      const entering = catalogFor(kind);
 
       // What is already filled in has to survive the switch — but an answer
       // from one catalogue means nothing in another, because a Mazda is not a
@@ -204,7 +177,7 @@ export function MyVehicleForm({
     <>
       <ChipRow
         label="Вид"
-        options={KINDS.map((kind) => ({ value: kind, label: kind }))}
+        options={VEHICLE_KINDS.map((kind) => ({ value: kind, label: kind }))}
         value={form.kind}
         onChange={pickKind}
       />

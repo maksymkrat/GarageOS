@@ -9,6 +9,9 @@ public sealed class ClientVehicle
 
     public required string Plate { get; set; }
 
+    // Free text, the same three values as MyVehicle.Kind (ADR-0029).
+    public required string Kind { get; set; }
+
     public required string Make { get; set; }
     public required string Model { get; set; }
     public int? Year { get; set; }

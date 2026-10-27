@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -17,11 +17,15 @@ import {
 
 import type { UploadFile } from '@/api/client';
 import { CameraIcon } from '@/components/icons';
+import { ChipRow } from '@/components/ui/chip-row';
 import { BackButton } from '@/components/ui/nav-button';
 import { PickerDialog } from '@/components/ui/picker-dialog';
 import { Screen } from '@/components/ui/screen';
+import { SearchPickerDialog } from '@/components/ui/search-picker-dialog';
+import { SelectField } from '@/components/ui/select-field';
 import { TextField } from '@/components/ui/text-field';
 import { usePhotoActions, type PhotoAction } from '@/hooks/use-photo-actions';
+import { VEHICLE_KINDS, catalogFor, vehicleYears } from '@/lib/vehicle-catalog';
 import {
   useCreateClientVehicle,
   useSetNewClientVehiclePhoto,
@@ -29,6 +33,7 @@ import {
 import { colors, radius, shadows, spacing } from '@/theme/tokens';
 
 interface FormState {
+  kind: string;
   plate: string;
   make: string;
   model: string;
@@ -40,6 +45,7 @@ interface FormState {
 }
 
 const EMPTY_FORM: FormState = {
+  kind: VEHICLE_KINDS[0],
   plate: '',
   make: '',
   model: '',
@@ -49,6 +55,12 @@ const EMPTY_FORM: FormState = {
   phone: '',
   complaint: '',
 };
+
+// The year is optional here, so the list has to offer a way back out of it —
+// a picked year could otherwise never be unpicked.
+const UNSET_YEAR = 'Не вказано';
+
+type TextKey = 'plate' | 'mileage' | 'owner' | 'phone' | 'complaint';
 
 type FormErrors = Partial<Record<keyof FormState, string>>;
 
@@ -69,6 +81,7 @@ export default function NewClientVehicleScreen() {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
   const [withOrder, setWithOrder] = useState(true);
+  const [picker, setPicker] = useState<'make' | 'model' | 'year' | null>(null);
 
   // Held locally until the car exists: the upload endpoint is addressed by the
   // car's id, and there is no id before the POST comes back.
@@ -81,8 +94,53 @@ export default function NewClientVehicleScreen() {
     photo === null ? null : async () => setPhoto(null)
   );
 
-  const update = (field: keyof FormState) => (value: string) =>
+  const catalog = catalogFor(form.kind);
+
+  const years = useMemo(() => [UNSET_YEAR, ...vehicleYears()], []);
+
+  // A make saved earlier may sit outside the catalogue; it still has to show as
+  // the current choice instead of disappearing from its own list.
+  const makes = useMemo(() => {
+    const known = catalog?.names ?? [];
+
+    return !form.make || known.includes(form.make) ? known : [form.make, ...known];
+  }, [catalog, form.make]);
+
+  const models = useMemo(() => {
+    const known = catalog?.models(form.make) ?? [];
+
+    return !form.model || known.includes(form.model) ? known : [form.model, ...known];
+  }, [catalog, form.make, form.model]);
+
+  const update = (field: TextKey | 'make' | 'model') => (value: string) =>
     setForm((current) => ({ ...current, [field]: value }));
+
+  function pickKind(kind: string) {
+    setForm((current) => {
+      if (kind === current.kind) return current;
+
+      const leaving = catalogFor(current.kind);
+      const entering = catalogFor(kind);
+
+      // Moving between two catalogues drops the answer: a Mazda is not a make
+      // of motorcycle. Moving to or from free text keeps it, because a typed
+      // make is still a make.
+      const swap = leaving !== undefined && entering !== undefined && leaving !== entering;
+
+      return swap ? { ...current, kind, make: '', model: '' } : { ...current, kind };
+    });
+  }
+
+  function pickMake(make: string) {
+    // A model belongs to one make, so changing the make drops it.
+    setForm((current) => (current.make === make ? current : { ...current, make, model: '' }));
+    setPicker(null);
+  }
+
+  function pick(field: 'model' | 'year', value: string) {
+    setForm((current) => ({ ...current, [field]: value }));
+    setPicker(null);
+  }
 
   async function submit() {
     const found = validate(form);
@@ -91,6 +149,7 @@ export default function NewClientVehicleScreen() {
 
     const vehicle = await createVehicle.mutateAsync({
       plate: form.plate,
+      kind: form.kind,
       make: form.make,
       model: form.model,
       year: form.year ? Number(form.year) : undefined,
@@ -131,6 +190,13 @@ export default function NewClientVehicleScreen() {
         </View>
 
         <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
+          <ChipRow
+            label="Вид"
+            options={VEHICLE_KINDS.map((kind) => ({ value: kind, label: kind }))}
+            value={form.kind}
+            onChange={pickKind}
+          />
+
           <TextField
             label="Держномер *"
             placeholder="АА0000ВВ"
@@ -140,27 +206,53 @@ export default function NewClientVehicleScreen() {
             onChangeText={update('plate')}
             error={errors.plate}
           />
-          <TextField
-            label="Марка *"
-            placeholder="Volkswagen"
-            value={form.make}
-            onChangeText={update('make')}
-            error={errors.make}
-          />
-          <TextField
-            label="Модель *"
-            placeholder="Passat B7"
-            value={form.model}
-            onChangeText={update('model')}
-            error={errors.model}
-          />
-          <TextField
+
+          {catalog ? (
+            <>
+              <SelectField
+                label="Марка *"
+                placeholder="Оберіть марку"
+                value={form.make}
+                error={errors.make}
+                onPress={() => setPicker('make')}
+              />
+
+              <SelectField
+                label="Модель *"
+                placeholder={form.make ? 'Оберіть модель' : 'Спершу оберіть марку'}
+                value={form.model}
+                disabled={!form.make}
+                error={errors.model}
+                onPress={() => setPicker('model')}
+              />
+            </>
+          ) : (
+            <>
+              <TextField
+                label="Марка *"
+                placeholder="Кентавр"
+                value={form.make}
+                onChangeText={update('make')}
+                error={errors.make}
+              />
+
+              <TextField
+                label="Модель *"
+                placeholder="МБ-1081Д"
+                value={form.model}
+                onChangeText={update('model')}
+                error={errors.model}
+              />
+            </>
+          )}
+
+          <SelectField
             label="Рік"
-            placeholder="2018"
-            keyboardType="number-pad"
+            placeholder="Оберіть рік"
             value={form.year}
-            onChangeText={update('year')}
+            onPress={() => setPicker('year')}
           />
+
           <TextField
             label="Пробіг, км"
             placeholder="145 000"
@@ -260,6 +352,42 @@ export default function NewClientVehicleScreen() {
             )}
           </Pressable>
         </ScrollView>
+
+        <SearchPickerDialog
+          visible={picker === 'make'}
+          title="Марка"
+          searchPlaceholder="Почніть вводити марку…"
+          options={makes}
+          value={form.make}
+          emptyText="Такої марки немає в списку"
+          allowCustom
+          match={catalog?.matches}
+          onPick={pickMake}
+          onCancel={() => setPicker(null)}
+        />
+
+        <SearchPickerDialog
+          visible={picker === 'model'}
+          title={form.make || 'Модель'}
+          searchPlaceholder="Почніть вводити модель…"
+          options={models}
+          value={form.model}
+          emptyText="Такої моделі немає в списку"
+          allowCustom
+          onPick={(model) => pick('model', model)}
+          onCancel={() => setPicker(null)}
+        />
+
+        <SearchPickerDialog
+          visible={picker === 'year'}
+          title="Рік випуску"
+          searchPlaceholder="Наприклад, 2016"
+          options={years}
+          value={form.year}
+          emptyText="Такого року немає в списку"
+          onPick={(year) => pick('year', year === UNSET_YEAR ? '' : year)}
+          onCancel={() => setPicker(null)}
+        />
       </KeyboardAvoidingView>
     </Screen>
   );

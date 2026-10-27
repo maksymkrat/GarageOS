@@ -85,6 +85,12 @@ namespace GarageOS.DAL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("kind");
+
                     b.Property<DateOnly>("LastVisit")
                         .HasColumnType("date")
                         .HasColumnName("last_visit");

@@ -18,6 +18,7 @@ erDiagram
     CLIENT_VEHICLE {
         number id PK
         string plate "верхній регістр"
+        string kind "авто, мото, ..."
         string make
         string model
         number year "опційно"

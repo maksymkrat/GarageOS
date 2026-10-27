@@ -195,6 +195,41 @@ function buildCatalog(makes: readonly VehicleMake[]): MakeCatalog {
   };
 }
 
-export const CAR_CATALOG = buildCatalog(CAR_MAKES);
+const CAR_CATALOG = buildCatalog(CAR_MAKES);
 
-export const MOTO_CATALOG = buildCatalog(MOTO_MAKES);
+const MOTO_CATALOG = buildCatalog(MOTO_MAKES);
+
+// The kinds the garage keeps, the same three on both sides of it: a customer's
+// car and one's own are the same thing seen from different ends. `kind` is free
+// text in the contract, so offering a choice keeps one kind from arriving under
+// three spellings.
+export const VEHICLE_KINDS = ['Авто', 'Мото', 'Техніка'];
+
+const CATALOGS: Record<string, MakeCatalog | undefined> = {
+  Авто: CAR_CATALOG,
+  Мото: MOTO_CATALOG,
+};
+
+// A kind without a catalogue — «Техніка» — is typed by hand: there is no list
+// of make and model worth the name for a trailer or a tiller.
+export function catalogFor(kind: string): MakeCatalog | undefined {
+  return CATALOGS[kind];
+}
+
+// Older than anything that turns up in a garage with a plate on it.
+export const EARLIEST_YEAR = 1900;
+
+// Next year, not this one: a model year runs ahead of the calendar.
+export function latestYear(): number {
+  return new Date().getFullYear() + 1;
+}
+
+// Newest first: a vehicle from this decade is what somebody is adding, and the
+// 1950s are a scroll away rather than the other way round.
+export function vehicleYears(): string[] {
+  const years: string[] = [];
+
+  for (let year = latestYear(); year >= EARLIEST_YEAR; year -= 1) years.push(String(year));
+
+  return years;
+}

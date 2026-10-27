@@ -3,6 +3,7 @@ namespace GarageOS.Services.Dtos;
 public sealed record ClientVehicleDto(
     int Id,
     string Plate,
+    string Kind,
     string Make,
     string Model,
     int? Year,
@@ -89,6 +90,7 @@ public sealed record MyVehicleDto(
 
 public sealed record CreateClientVehicleRequest(
     string Plate,
+    string Kind,
     string Make,
     string Model,
     int? Year,

@@ -10,6 +10,7 @@ public class ClientVehicleConfiguration : IEntityTypeConfiguration<ClientVehicle
     {
         builder.ToTable("client_vehicles");
         builder.Property(x => x.Plate).HasMaxLength(16).IsRequired();
+        builder.Property(x => x.Kind).HasMaxLength(50).IsRequired();
         builder.Property(x => x.Make).HasMaxLength(100).IsRequired();
         builder.Property(x => x.Model).HasMaxLength(100).IsRequired();
         builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(32).IsRequired();

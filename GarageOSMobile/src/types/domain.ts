@@ -9,6 +9,11 @@ export type PhotoSize = 'full' | 'thumb';
 export interface ClientVehicle {
   id: number;
   plate: string;
+
+  // Free text, the same three values as `MyVehicle.kind`. It picks which
+  // catalogue of makes the form offers, and tells a bike from a car on a card
+  // where both are a plate and a model (ADR-0029).
+  kind: string;
   make: string;
   model: string;
   year?: number;
@@ -120,6 +125,7 @@ export interface MyVehicle {
 
 export interface CreateClientVehicleInput {
   plate: string;
+  kind: string;
   make: string;
   model: string;
   year?: number;
