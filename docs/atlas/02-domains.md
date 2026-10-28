@@ -59,12 +59,15 @@ flowchart LR
 ## Проєкція на структуру `GarageOSWeb`
 
 ```
-GarageOS.Domain/     Models/ (10 моделей) Enums/ (ClientVehicleStatus, MileageUnit,
-                     PaymentStatus, LogEntryKind, FinancePeriod)
-GarageOS.DAL/        Entities/ Configurations/ Context/ Repositories/ Migrations/
-GarageOS.Services/   ClientVehicleService, OrderService, FinanceService, ReminderService,
-                     MyVehicleService + Dtos/ Mapping/
-GarageOS.Api/        Controllers/ (ClientVehicles, Orders, Finance, Reminders, MyVehicles)
+GarageOS.Domain/        Models/ (11 моделей) Enums/ (ClientVehicleStatus, MileageUnit,
+                        PaymentStatus, LogEntryKind, FinancePeriod, PhotoSize)
+GarageOS.DAL/           Entities/ Configurations/ Context/ Repositories/ Migrations/
+GarageOS.Services/      ClientVehicleService, OrderService, FinanceService, ReminderService,
+                        MyVehicleService, AuthService, TelegramSignInService
+                        + Dtos/ Mapping/ Photos/ Security/ Exceptions/
+GarageOS.Telegram.Bot/  транспорт Telegram: BotUpdateHandler, BotTexts, TelegramNotifier
+GarageOS.Api/           Controllers/ (ClientVehicles, Orders, Finance, Reminders,
+                        MyVehicles, Auth) Infrastructure/
 ```
 
 Поділ за шарами, а не за фічами. Межа домену на сервері проходить не папкою, а
