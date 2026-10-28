@@ -8,6 +8,7 @@ import {
   Text,
   TextInput,
   View,
+  type TextInputInstance,
 } from 'react-native';
 
 import {
@@ -41,7 +42,7 @@ export default function CodeScreen() {
   const [focused, setFocused] = useState<number | null>(0);
   const [expiresAt, setExpiresAt] = useState(() => Date.now() + CODE_TTL_MS);
   const [msLeft, setMsLeft] = useState(CODE_TTL_MS);
-  const boxes = useRef<(TextInput | null)[]>([]);
+  const boxes = useRef<(TextInputInstance | null)[]>([]);
 
   const verify = useVerifyCode();
   const resend = useRequestCode();

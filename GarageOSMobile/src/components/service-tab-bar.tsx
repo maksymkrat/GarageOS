@@ -12,7 +12,7 @@ const TAB_META: Record<string, { label: string; Icon: ComponentType<IconProps> }
   reminders: { label: 'Нагадування', Icon: BellIcon },
 };
 
-export function ServiceTabBar({ state, navigation, insets }: BottomTabBarProps) {
+export function ServiceTabBar({ state, navigateToTab, insets }: BottomTabBarProps) {
   return (
     <View style={[styles.bar, { paddingBottom: insets.bottom }]}>
       {state.routes.map((route, index) => {
@@ -29,7 +29,8 @@ export function ServiceTabBar({ state, navigation, insets }: BottomTabBarProps) 
             accessibilityState={{ selected: focused }}
             accessibilityLabel={meta.label}
             onPress={() => {
-              if (!focused) navigation.navigate(route.name);
+              // The tab bar now moves by route key, not by name (Expo Router 58).
+              if (!focused) navigateToTab(route.key);
             }}
             style={styles.item}>
             <meta.Icon color={color} />

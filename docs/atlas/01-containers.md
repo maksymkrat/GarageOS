@@ -4,7 +4,7 @@
 
 ```mermaid
 flowchart TB
-    subgraph client["GarageOSMobile · Expo / React Native 0.86"]
+    subgraph client["GarageOSMobile · Expo / React Native 0.88"]
         screens["Екрани<br/><i>expo-router</i><br/>(auth): sign-in, phone, code<br/>(service): work, garage, money, reminders<br/>personal: index, [id]"]
         queries["Шар запитів<br/><i>@tanstack/react-query 5</i><br/>src/queries/*"]
         apimod["Модулі API<br/><i>src/api/*.ts</i><br/>client-vehicles, orders, finance, reminders, vehicles, auth"]
@@ -43,7 +43,7 @@ flowchart TB
 
 | Контейнер | Технологія | Відповідальність | Стан |
 |-----------|-----------|------------------|------|
-| **mobile** | Expo SDK 57, RN 0.86, React 19.2, TypeScript 6, expo-router | Весь UI, навігація, кеш і стани запитів, композиція read-моделей | працює проти справжнього API по HTTP |
+| **mobile** | Expo SDK 58, RN 0.88, React 19.3, TypeScript 6, expo-router | Весь UI, навігація, кеш і стани запитів, композиція read-моделей | працює проти справжнього API по HTTP |
 | **api** | .NET 10, ASP.NET Core, EF Core 10, OpenAPI | Реалізація контракту `src/api/*`, персистентність, доступ | 36 ендпойнтів контракту + 5 входу, `[Authorize]` на всіх контролерах; валідації вхідних даних немає (`TO-BE`) |
 | **bot** | `Telegram.Bot`, long polling у `TelegramBotHostedService` | Транспорт Telegram: розбір апдейтів, тексти чату, надсилання кодів | працює; у продакшні — вебхук із `X-Telegram-Bot-Api-Secret-Token` (`TO-BE`) |
 | **db** | PostgreSQL 18 (контейнер) | Збереження авто, нарядів, нагадувань, журналів, акаунтів і кодів входу | 12 таблиць, 11 міграцій (`payments` прибрано, [ADR-0016](adr/0016-order-line-payment.md)) |

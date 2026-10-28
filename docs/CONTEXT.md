@@ -40,7 +40,7 @@
 ## Карта репозиторію
 
 ```
-GarageOSMobile/          Expo SDK 57, RN 0.86, React 19.2, TS 6, expo-router, react-query 5
+GarageOSMobile/          Expo SDK 58, RN 0.88, React 19.3, TS 6, expo-router, react-query 5
   src/types/domain.ts    КОНТРАКТ: усі типи даних (215 рядків)
   src/api/*.ts           КОНТРАКТ: шляхи ендпойнтів рядком у request()
   src/api/client.ts      транспорт: baseUrl, ApiError, токен, upload, тихий refresh
@@ -270,7 +270,7 @@ Metro з Fast Refresh сам доставляє кожне збереження 
 [README](../README.md).
 
 Expo змінився: перед написанням коду клієнта читай версійні доки
-https://docs.expo.dev/versions/v57.0.0/.
+https://docs.expo.dev/versions/v58.0.0/.
 
 ## Чого ще немає
 
