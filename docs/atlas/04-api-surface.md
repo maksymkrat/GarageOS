@@ -36,7 +36,6 @@
 | `PUT /orders/{id}/parts/{partId}` | два `id` у шляху, `OrderPartInput` | `OrderPart` | `404` «Деталь не знайдено», `403` не майстер | `orders.ts` |
 | `DELETE /orders/{id}/parts/{partId}` | два `id` у шляху | `204`, тіла немає | `404` «Деталь не знайдено», `403` не майстер | `orders.ts` |
 | `GET /finance?period=` | `week` \| `month` \| `year` | `FinanceOverview` | — | `finance.ts` |
-| `GET /reminders` | — | `ReminderItem[]` | — | `reminders.ts` |
 | `GET /my-vehicles` | `includeLog` (bool, типово `false`) | `MyVehicle[]` | `401` без токена | `vehicles.ts` |
 | `GET /my-vehicles/{id}` | `id` у шляху, `includeLog` (bool, типово `false`) | `MyVehicle` | `404` «Техніку не знайдено», `401` без токена | `vehicles.ts` |
 | `POST /my-vehicles` | `CreateMyVehicleInput` | `MyVehicle` | `401` без токена (валідація TO-BE) | `vehicles.ts` |
@@ -49,19 +48,19 @@
 | `PUT /my-vehicles/{id}/log/{entryId}` | два `id` у шляху, `UpdateLogEntryInput` | `LogEntry` | `404` «Запис не знайдено», `401` без токена | `vehicles.ts` |
 | `DELETE /my-vehicles/{id}/log/{entryId}` | два `id` у шляху | `204`, тіла немає | `404` «Запис не знайдено», `401` без токена | `vehicles.ts` |
 
-Тридцять шість ендпойнтів, з них двадцять п'ять мутуючих. `id` — ціле число, не GUID. Поза цією
+Тридцять п'ять ендпойнтів, з них двадцять п'ять мутуючих. `id` — ціле число, не GUID. Поза цією
 таблицею — п'ять ендпойнтів входу, див. «Вхід» нижче.
 
 ## Доступ
 
-**Увесь контракт під токеном.** Без `Authorization: Bearer` жоден із тридцяти шести
+**Увесь контракт під токеном.** Без `Authorization: Bearer` жоден із тридцяти п'яти
 ендпойнтів не відповідає — лише `401`. Правила ті, що оголосив
 [ADR-0007](adr/0007-telegram-sign-in.md), успадкувавши їх з
 [ADR-0005](adr/0005-authentication.md), і тепер вони **діють**, а не плануються:
 
 | Ендпойнти | Кому | Як перевіряється |
 |-----------|------|------------------|
-| двадцять п'ять `/client-vehicles*`, `/orders*`, `/finance`, `/reminders` | лише майстер — один акаунт, за `Telegram:OwnerId` | `[Authorize(AuthPolicies.Master)]`, claim `master=true` |
+| двадцять чотири `/client-vehicles*`, `/orders*`, `/finance` | лише майстер — один акаунт, за `Telegram:OwnerId` | `[Authorize(AuthPolicies.Master)]`, claim `master=true` |
 | одинадцять `/my-vehicles*` | лише власник техніки | `[Authorize]`, `userId` з claim `sub` |
 
 `GET /my-vehicles` **залежить від суб'єкта**: той самий запит із двома різними
@@ -199,7 +198,6 @@ react-query, і окремий ендпойнт створив би третє �
 clientVehicles       ['client-vehicles']           clientVehicle(id) ['client-vehicles', id]
 orders(includeLines) ['orders', {includeLines}]    order(id)         ['orders', id]
 ordersAll            ['orders']
-reminders            ['reminders']
 finance(period)      ['finance', period]           financeAll        ['finance']
 vehicles(includeLog) ['vehicles', {includeLog}]    vehicle(id, log)  ['vehicles', id, {includeLog}]
 ```
@@ -224,7 +222,6 @@ vehicles(includeLog) ['vehicles', {includeLog}]    vehicle(id, log)  ['vehicles'
 Ці операції потрібні для робочого продукту, але **ще не оголошені** —
 додавати їх треба спершу в `src/api/*`, потім на сервер:
 
-- створення й закриття нагадування;
 - редагування та видалення авто клієнта;
 - часткова оплата: `pay` закриває наряд цілком
   ([ADR-0025](adr/0025-settle-order-in-one-action.md)), а оплата частини суми

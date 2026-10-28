@@ -7,7 +7,6 @@ export const queryKeys = {
   orders: (includeLines: boolean) => ['orders', { includeLines }] as const,
   ordersAll: ['orders'] as const,
   order: (id: number) => ['orders', id] as const,
-  reminders: ['reminders'] as const,
   finance: (period: FinancePeriod) => ['finance', period] as const,
   financeAll: ['finance'] as const,
   vehiclesAll: ['vehicles'] as const,

@@ -64,13 +64,4 @@ public static class DtoMapper
         ContractFormat.Unit(vehicle.MileageUnit),
         [.. vehicle.Log.Select(ToDto)],
         vehicle.PhotoId?.ToString("N"));
-
-    public static ReminderItemDto ToDto(this Reminder reminder, DateOnly today) => new(
-        reminder.Id,
-        reminder.ClientVehicleId,
-        reminder.ClientVehicle?.Plate ?? string.Empty,
-        reminder.ClientVehicle?.Client?.Name ?? string.Empty,
-        reminder.ClientVehicle?.Client?.Phone ?? string.Empty,
-        reminder.Message,
-        reminder.IsOverdue(today));
 }

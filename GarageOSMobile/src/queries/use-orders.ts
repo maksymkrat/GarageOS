@@ -45,7 +45,6 @@ export function invalidateOrderWorld(client: QueryClient) {
   client.invalidateQueries({ queryKey: queryKeys.ordersAll });
   client.invalidateQueries({ queryKey: queryKeys.clientVehicles });
   client.invalidateQueries({ queryKey: queryKeys.financeAll });
-  client.invalidateQueries({ queryKey: queryKeys.reminders });
 }
 
 export function useCreateOrder() {
@@ -90,7 +89,7 @@ export function usePayOrder(id: number) {
 }
 
 // Photos ride on the order detail, so only that one read has to be dropped —
-// no money moved, so the vehicle, finance and reminder caches stay put.
+// no money moved, so the vehicle and finance caches stay put.
 export function useAddOrderPhoto(orderId: number) {
   const client = useQueryClient();
 

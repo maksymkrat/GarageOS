@@ -8,7 +8,6 @@ export default function ServiceLayout() {
       <Tabs.Screen name="garage" />
       <Tabs.Screen name="work" />
       <Tabs.Screen name="money" />
-      <Tabs.Screen name="reminders" />
     </Tabs>
   );
 }

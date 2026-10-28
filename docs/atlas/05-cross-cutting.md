@@ -13,7 +13,7 @@ access-JWT і непрозорого refresh, таблиця `login_codes`. Рі
 ([ADR-0028](adr/0028-session-lasts-a-working-day.md)).
 
 **Авторизація діє на всьому контракті.** `[Authorize]` стоїть на кожному з
-п'яти контролерів: чотири сервісні — під політикою `Master` (claim
+п'яти контролерів: три сервісні — під політикою `Master` (claim
 `master=true`, який дістається лише акаунту з `Telegram:OwnerId`), а
 `MyVehiclesController` — під звичайним `[Authorize]`, бо техніка там своя в
 кожного ([ADR-0019](adr/0019-create-my-vehicle.md),

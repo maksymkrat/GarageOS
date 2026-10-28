@@ -62,16 +62,6 @@ public static class EntityMapper
         Parts = [.. e.Parts.Select(ToModel)]
     };
 
-    public static Reminder ToModel(this ReminderEntity e) => new()
-    {
-        Id = e.Id,
-        ClientVehicleId = e.ClientVehicleId,
-        DueDate = e.DueDate,
-        DueMileage = e.DueMileage,
-        Message = e.Message,
-        ClientVehicle = e.ClientVehicle?.ToModel()
-    };
-
     public static LogEntry ToModel(this LogEntryEntity e) => new()
     {
         Id = e.Id,

@@ -53,15 +53,6 @@ public sealed record OrderDetailDto(
     ClientVehicleDto Vehicle,
     IReadOnlyList<OrderPhotoDto> Photos);
 
-public sealed record ReminderItemDto(
-    int Id,
-    int ClientVehicleId,
-    string Plate,
-    string Owner,
-    string Phone,
-    string What,
-    bool Overdue);
-
 public sealed record FinanceStatsDto(decimal Earned, decimal Works, decimal Parts, int Visits);
 
 public sealed record FinanceOverviewDto(

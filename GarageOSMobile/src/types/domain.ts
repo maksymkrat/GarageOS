@@ -78,16 +78,6 @@ export interface Order {
   daysWaiting: number;
 }
 
-export interface ReminderItem {
-  id: number;
-  clientVehicleId: number;
-  plate: string;
-  owner: string;
-  phone: string;
-  what: string;
-  overdue: boolean;
-}
-
 export type FinancePeriod = 'week' | 'month' | 'year';
 
 export interface FinanceStats {

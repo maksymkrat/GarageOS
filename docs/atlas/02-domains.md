@@ -8,13 +8,11 @@ flowchart LR
     vehicles["<b>ClientVehicles</b><br/>картотека авто клієнтів<br/><i>src/api/client-vehicles.ts</i>"]
     orders["<b>Orders</b><br/>замовлення-наряди<br/><i>src/api/orders.ts</i>"]
     finance["<b>Finance</b><br/>виторг і борги<br/><i>src/api/finance.ts</i>"]
-    reminders["<b>Reminders</b><br/>нагадування про ТО<br/><i>src/api/reminders.ts</i>"]
     personal["<b>Personal garage</b><br/>власна техніка<br/><i>src/api/vehicles.ts</i>"]
     board["<i>Work board</i><br/>read-model на клієнті<br/><i>src/queries/use-work-board.ts</i>"]
 
     orders -->|clientVehicleId| vehicles
     finance -->|debt, статуси| vehicles
-    reminders -->|clientVehicleId| vehicles
     board --> vehicles
     board --> orders
 
@@ -29,7 +27,6 @@ flowchart LR
 | **ClientVehicles** | авто клієнта як довготривала картка: власник, контакт, пробіг, статус, борг | `ClientVehicle`, `CreateClientVehicleInput`, `UpdateClientVehicleStatusInput`, `ClientVehicleDetail`, `PhotoSize` | — | `GET /client-vehicles`, `GET /client-vehicles/{id}`, `POST /client-vehicles`, `PUT /client-vehicles/{id}/status`, `POST /client-vehicles/{id}/pay`, три `/photo` |
 | **Orders** | конкретний візит: скарга, роботи, деталі, оплата рядків | `Order`, `OrderWork`, `OrderPart`, `OrderPhoto`, `OrderWorkInput`, `OrderPartInput`, `PaymentStatus`, `OrderDetail`, `CreateOrderInput`, `UpdateOrderInput` | ClientVehicles (`clientVehicleId`) | `GET /orders`, `GET /orders/{id}`, `POST`/`PUT`/`DELETE` на `/orders` та на рядках `/works` і `/parts`, `POST /orders/{id}/pay`, три `/photos` |
 | **Finance** | агрегат за період + хто винен гроші | `FinanceStats`, `FinancePeriod`, `FinanceOverview` | ClientVehicles (`debt`), Orders (рядки) | `GET /finance?period=` |
-| **Reminders** | що і коли треба обслужити, чи прострочено | `ReminderItem` | ClientVehicles | `GET /reminders` |
 | **Personal garage** | своя техніка та журнал обслуговування | `MyVehicle`, `CreateMyVehicleInput`, `UpdateMyVehicleInput`, `LogEntry`, `CreateLogEntryInput`, `UpdateLogEntryInput`, `LogEntryKind`, `MileageUnit` | — (ізольований) | одинадцять `/my-vehicles*`: читання, `POST`/`PUT`/`DELETE` техніки та записів журналу, три `/photo` |
 
 ## Зв'язки та правила
@@ -62,11 +59,11 @@ flowchart LR
 GarageOS.Domain/        Models/ (11 моделей) Enums/ (ClientVehicleStatus, MileageUnit,
                         PaymentStatus, LogEntryKind, FinancePeriod, PhotoSize)
 GarageOS.DAL/           Entities/ Configurations/ Context/ Repositories/ Migrations/
-GarageOS.Services/      ClientVehicleService, OrderService, FinanceService, ReminderService,
+GarageOS.Services/      ClientVehicleService, OrderService, FinanceService,
                         MyVehicleService, AuthService, TelegramSignInService
                         + Dtos/ Mapping/ Photos/ Security/ Exceptions/
 GarageOS.Telegram.Bot/  транспорт Telegram: BotUpdateHandler, BotTexts, TelegramNotifier
-GarageOS.Api/           Controllers/ (ClientVehicles, Orders, Finance, Reminders,
+GarageOS.Api/           Controllers/ (ClientVehicles, Orders, Finance,
                         MyVehicles, Auth) Infrastructure/
 ```
 

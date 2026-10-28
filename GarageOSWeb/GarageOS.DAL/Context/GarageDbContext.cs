@@ -11,7 +11,6 @@ public class GarageDbContext(DbContextOptions<GarageDbContext> options) : DbCont
     public DbSet<OrderWorkEntity> OrderWorks => Set<OrderWorkEntity>();
     public DbSet<OrderPartEntity> OrderParts => Set<OrderPartEntity>();
     public DbSet<OrderPhotoEntity> OrderPhotos => Set<OrderPhotoEntity>();
-    public DbSet<ReminderEntity> Reminders => Set<ReminderEntity>();
     public DbSet<UserEntity> Users => Set<UserEntity>();
     public DbSet<SubscriptionEntity> Subscriptions => Set<SubscriptionEntity>();
     public DbSet<MyVehicleEntity> MyVehicles => Set<MyVehicleEntity>();

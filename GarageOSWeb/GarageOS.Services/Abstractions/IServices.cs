@@ -38,11 +38,6 @@ public interface IOrderService
     Task DeletePartAsync(int orderId, int partId, CancellationToken ct = default);
 }
 
-public interface IReminderService
-{
-    Task<IReadOnlyList<ReminderItemDto>> GetRemindersAsync(CancellationToken ct = default);
-}
-
 public interface IFinanceService
 {
     Task<FinanceOverviewDto> GetOverviewAsync(string period, CancellationToken ct = default);

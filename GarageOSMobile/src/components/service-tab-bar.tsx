@@ -2,14 +2,13 @@ import type { BottomTabBarProps } from 'expo-router/js-tabs';
 import type { ComponentType } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { BellIcon, HomeIcon, MoneyIcon, ToolboxIcon, type IconProps } from '@/components/icons';
+import { HomeIcon, MoneyIcon, ToolboxIcon, type IconProps } from '@/components/icons';
 import { colors } from '@/theme/tokens';
 
 const TAB_META: Record<string, { label: string; Icon: ComponentType<IconProps> }> = {
   garage: { label: 'Гараж', Icon: HomeIcon },
   work: { label: 'В роботі', Icon: ToolboxIcon },
   money: { label: 'Гроші', Icon: MoneyIcon },
-  reminders: { label: 'Нагадування', Icon: BellIcon },
 };
 
 export function ServiceTabBar({ state, navigateToTab, insets }: BottomTabBarProps) {

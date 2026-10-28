@@ -499,50 +499,6 @@ namespace GarageOS.DAL.Migrations
                     b.ToTable("order_works", (string)null);
                 });
 
-            modelBuilder.Entity("GarageOS.DAL.Entities.ReminderEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ClientVehicleId")
-                        .HasColumnType("integer")
-                        .HasColumnName("client_vehicle_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<DateOnly?>("DueDate")
-                        .HasColumnType("date")
-                        .HasColumnName("due_date");
-
-                    b.Property<int?>("DueMileage")
-                        .HasColumnType("integer")
-                        .HasColumnName("due_mileage");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
-                        .HasColumnName("message");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.HasKey("Id")
-                        .HasName("pk_reminders");
-
-                    b.HasIndex("ClientVehicleId")
-                        .HasDatabaseName("ix_reminders_client_vehicle_id");
-
-                    b.ToTable("reminders", (string)null);
-                });
-
             modelBuilder.Entity("GarageOS.DAL.Entities.SubscriptionEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -759,18 +715,6 @@ namespace GarageOS.DAL.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("GarageOS.DAL.Entities.ReminderEntity", b =>
-                {
-                    b.HasOne("GarageOS.DAL.Entities.ClientVehicleEntity", "ClientVehicle")
-                        .WithMany("Reminders")
-                        .HasForeignKey("ClientVehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_reminders_client_vehicles_client_vehicle_id");
-
-                    b.Navigation("ClientVehicle");
-                });
-
             modelBuilder.Entity("GarageOS.DAL.Entities.UserEntity", b =>
                 {
                     b.HasOne("GarageOS.DAL.Entities.SubscriptionEntity", "Subscription")
@@ -790,8 +734,6 @@ namespace GarageOS.DAL.Migrations
             modelBuilder.Entity("GarageOS.DAL.Entities.ClientVehicleEntity", b =>
                 {
                     b.Navigation("Orders");
-
-                    b.Navigation("Reminders");
                 });
 
             modelBuilder.Entity("GarageOS.DAL.Entities.MyVehicleEntity", b =>

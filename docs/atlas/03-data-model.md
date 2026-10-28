@@ -8,7 +8,6 @@
 ```mermaid
 erDiagram
     CLIENT_VEHICLE ||--o{ ORDER : "має візити"
-    CLIENT_VEHICLE ||--o{ REMINDER : "потребує ТО"
     ORDER ||--o{ ORDER_WORK : "містить роботи"
     ORDER ||--o{ ORDER_PART : "містить деталі"
     ORDER ||--o{ ORDER_PHOTO : "має фото"
@@ -54,13 +53,6 @@ erDiagram
         number buy "закупівельна"
         number sell "продажна, вона ж підсумок рядка"
         PaymentStatus paymentStatus
-    }
-
-    REMINDER {
-        number id PK
-        number clientVehicleId FK
-        string what
-        boolean overdue
     }
 
     MY_VEHICLE {
@@ -181,7 +173,7 @@ id тієї машини, і роздаються окремим ендпойн�
   `User.TelegramId`). Переносити авто іншому власнику чи техніку іншому
   акаунту — це **передача**, окрема операція зі своїми правилами, а не правка
   поля. Навігаційні властивості (`ClientVehicle.Client`,
-  `Reminder.ClientVehicle`) теж `init`: їх складає мапер, а не прикладний код.
+  `Order.ClientVehicle`) теж `init`: їх складає мапер, а не прикладний код.
 - **`set`** — усе, що майстер або власник справді міняє на екрані: статус,
   пробіг і його одиниця, дати, суми (`OrderWork.Price`,
   `OrderPart.Buy`/`Sell`, `LogEntry.Cost`), стан оплати рядка, описи й назви.
@@ -215,7 +207,6 @@ id тієї машини, і роздаються окремим ендпойн�
 | `ClientVehicleDetail` | `vehicle`, `orders: Order[]`, `sameOwnerCount: number` | `src/api/client-vehicles.ts` |
 | `OrderDetail` | `order`, `vehicle` | `src/api/orders.ts` |
 | `FinanceOverview` | `stats: FinanceStats`, `debtors: ClientVehicle[]`, `totalDebt: number` | `src/api/finance.ts` |
-| `ReminderItem` | `id`, `clientVehicleId`, `plate`, `owner`, `phone`, `what`, `overdue` | `src/api/reminders.ts` |
 | `FinanceStats` | `earned`, `works`, `parts`, `visits` | `domain.ts` |
 | `WorkBoardRow` | `vehicle`, `description?`, `daysWaiting` | `src/queries/use-work-board.ts` (лише клієнт) |
 

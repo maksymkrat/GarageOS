@@ -24,5 +24,4 @@ public class ClientVehicleEntity : BaseEntity
     public Guid? PhotoId { get; set; }
 
     public ICollection<OrderEntity> Orders { get; set; } = [];
-    public ICollection<ReminderEntity> Reminders { get; set; } = [];
 }

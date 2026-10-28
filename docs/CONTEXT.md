@@ -29,7 +29,7 @@
 Облік обслуговування техніки, два режими на спільному ядрі:
 
 - **сервісний** (`src/app/(service)/`) — інструмент СТО: дошка робіт, картотека
-  авто клієнтів, гроші й борги, нагадування про ТО;
+  авто клієнтів, гроші й борги;
 - **особистий** (`src/app/personal/`) — свій гараж: власна техніка з журналом
   обслуговування.
 
@@ -54,7 +54,7 @@ GarageOSWeb/             .NET 10, ASP.NET Core, EF Core 10, Postgres 18
   GarageOS.DAL/          Entities/ Configurations/ Context/ Repositories/ Migrations/
   GarageOS.Services/     сервіси, Dtos/ Mapping/ Photos/ Security/ Exceptions/
   GarageOS.Telegram.Bot/ транспорт Telegram, без рішень
-  GarageOS.Api/          Controllers/ (6) Infrastructure/ (політики, обробники помилок)
+  GarageOS.Api/          Controllers/ (5) Infrastructure/ (політики, обробники помилок)
 docs/atlas/              атлас + 29 ADR
 garage-erd.drawio        рукописна ER-схема (дублює Mermaid в атласі)
 garage-login-flow.drawio докладна схема входу (дублює Mermaid в ADR-0007)
@@ -85,7 +85,6 @@ garage-login-flow.drawio докладна схема входу (дублює Me
 | **ClientVehicles** | авто клієнта як довготривала картка: номер, власник, телефон, вид, пробіг, статус, борг | — (ядро) |
 | **Orders** | візит: скарга, роботи, деталі, фото, оплата рядків | ClientVehicles |
 | **Finance** | агрегат за період + боржники | ClientVehicles, Orders |
-| **Reminders** | що обслужити, чи прострочено | ClientVehicles |
 | **Personal garage** | своя техніка + журнал | — (ізольований) |
 
 `MyVehicle` не має `clientVehicleId` і з картотекою СТО не перетинається: інший
@@ -99,8 +98,8 @@ garage-login-flow.drawio докладна схема входу (дублює Me
 ## Дані
 
 Сутності: `ClientVehicle`, `Order`, `OrderWork`, `OrderPart`, `OrderPhoto`,
-`Reminder`, `MyVehicle`, `LogEntry`, `Client`, `User`, `Subscription`,
-`LoginCode` — 12 таблиць, 11 міграцій. `id` — ціле число, не GUID.
+`MyVehicle`, `LogEntry`, `Client`, `User`, `Subscription`, `LoginCode` —
+11 таблиць, 12 міграцій. `id` — ціле число, не GUID.
 
 Перелічення: `ClientVehicleStatus` (`in_work` / `waiting_part` / `ready` /
 `has_debt`), `MileageUnit` (`km` / `hours`), `PaymentStatus` (`unpaid` / `paid`),
@@ -124,8 +123,7 @@ garage-login-flow.drawio докладна схема входу (дублює Me
 
 Read-моделі, які сервер мусить склеювати сам: `ClientVehicleDetail`
 (`vehicle` + `orders` + `sameOwnerCount`), `OrderDetail` (`order` + `vehicle`),
-`FinanceOverview` (`stats` + `debtors` + `totalDebt`), `ReminderItem` (плоский,
-уже з даними авто).
+`FinanceOverview` (`stats` + `debtors` + `totalDebt`).
 
 У рядка деталі **немає кількості**: `sell` і є підсумком рядка. Оплата живе на
 рядку, не на наряді. Кожен рядок має свій `id` і свій шлях
@@ -133,7 +131,7 @@ Read-моделі, які сервер мусить склеювати сам: `
 
 ## API
 
-41 ендпойнт: 36 контракту + 5 входу. Конвенції:
+40 ендпойнтів: 35 контракту + 5 входу. Конвенції:
 
 - множина в шляху, kebab-case, **без** `/api` і `/v1`;
 - вкладена колекція — сегментом із назвою поля: `/my-vehicles/{id}/log`,
@@ -149,11 +147,11 @@ Read-моделі, які сервер мусить склеювати сам: `
 - помилки — **текстом українською**, бо показуються користувачеві як є.
 
 Групи шляхів: `/client-vehicles*` (8), `/orders*` (14), `/finance`,
-`/reminders`, `/my-vehicles*` (11), `/auth/*` (5). Повна таблиця з кодами — у
+`/my-vehicles*` (11), `/auth/*` (5). Повна таблиця з кодами — у
 [04-api-surface.md](atlas/04-api-surface.md).
 
-**Доступ.** `[Authorize]` стоїть на всіх контролерах контракту. Чотири сервісні
-(`ClientVehicles`, `Orders`, `Finance`, `Reminders`) — під
+**Доступ.** `[Authorize]` стоїть на всіх контролерах контракту. Три сервісні
+(`ClientVehicles`, `Orders`, `Finance`) — під
 `[Authorize(AuthPolicies.Master)]`: claim `master=true` дістається лише акаунту
 з `Telegram:OwnerId`. `MyVehicles` — під звичайним `[Authorize]`, власник із
 claim `sub`, тож той самий `GET /my-vehicles` із різними токенами віддає різні
@@ -278,8 +276,7 @@ https://docs.expo.dev/versions/v58.0.0/.
   що відповіді сервера збігаються за формою з `domain.ts`;
 - **валідації вхідних даних** на сервері: рік 1066, від'ємна ціна й порожній
   масив рядків проходять; межі тримає лише форма на клієнті;
-- **у контракті**: створення й закриття нагадування, редагування та видалення
-  авто клієнта, часткова оплата, вибір одиниці пробігу у формі «нове авто»;
+- **у контракті**: редагування та видалення авто клієнта, часткова оплата, вибір одиниці пробігу у формі «нове авто»;
 - **структурованого логування** й кореляційного `X-Request-Id`;
 - **таблиці сесій** — поки один хеш refresh у `users`, тобто одна сесія на
   людину.

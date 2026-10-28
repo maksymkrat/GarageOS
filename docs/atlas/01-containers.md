@@ -5,15 +5,15 @@
 ```mermaid
 flowchart TB
     subgraph client["GarageOSMobile · Expo / React Native 0.88"]
-        screens["Екрани<br/><i>expo-router</i><br/>(auth): sign-in, phone, code<br/>(service): work, garage, money, reminders<br/>personal: index, [id]"]
+        screens["Екрани<br/><i>expo-router</i><br/>(auth): sign-in, phone, code<br/>(service): work, garage, money<br/>personal: index, [id]"]
         queries["Шар запитів<br/><i>@tanstack/react-query 5</i><br/>src/queries/*"]
-        apimod["Модулі API<br/><i>src/api/*.ts</i><br/>client-vehicles, orders, finance, reminders, vehicles, auth"]
+        apimod["Модулі API<br/><i>src/api/*.ts</i><br/>client-vehicles, orders, finance, vehicles, auth"]
         http["Транспорт<br/><i>src/api/client.ts</i><br/>адреса, токен, помилки, upload"]
         store["Сховище пристрою<br/><i>expo-secure-store</i><br/>пара токенів"]
     end
 
     subgraph server["GarageOSWeb · ASP.NET Core 10 · ADR-0006"]
-        ctrl["GarageOS.Api<br/><i>Controllers/</i><br/>client-vehicles, orders, finance,<br/>reminders, my-vehicles, auth"]
+        ctrl["GarageOS.Api<br/><i>Controllers/</i><br/>client-vehicles, orders,<br/>finance, my-vehicles, auth"]
         svc["GarageOS.Services<br/><i>бізнес-логіка + мапінг у DTO</i>"]
         dom["GarageOS.Domain<br/><i>моделі та enum, без залежностей</i>"]
         data["GarageOS.DAL<br/><i>EF Core, репозиторії, міграції</i>"]
@@ -44,9 +44,9 @@ flowchart TB
 | Контейнер | Технологія | Відповідальність | Стан |
 |-----------|-----------|------------------|------|
 | **mobile** | Expo SDK 58, RN 0.88, React 19.3, TypeScript 6, expo-router | Весь UI, навігація, кеш і стани запитів, композиція read-моделей | працює проти справжнього API по HTTP |
-| **api** | .NET 10, ASP.NET Core, EF Core 10, OpenAPI | Реалізація контракту `src/api/*`, персистентність, доступ | 36 ендпойнтів контракту + 5 входу, `[Authorize]` на всіх контролерах; валідації вхідних даних немає (`TO-BE`) |
+| **api** | .NET 10, ASP.NET Core, EF Core 10, OpenAPI | Реалізація контракту `src/api/*`, персистентність, доступ | 35 ендпойнтів контракту + 5 входу, `[Authorize]` на всіх контролерах; валідації вхідних даних немає (`TO-BE`) |
 | **bot** | `Telegram.Bot`, long polling у `TelegramBotHostedService` | Транспорт Telegram: розбір апдейтів, тексти чату, надсилання кодів | працює; у продакшні — вебхук із `X-Telegram-Bot-Api-Secret-Token` (`TO-BE`) |
-| **db** | PostgreSQL 18 (контейнер) | Збереження авто, нарядів, нагадувань, журналів, акаунтів і кодів входу | 12 таблиць, 11 міграцій (`payments` прибрано, [ADR-0016](adr/0016-order-line-payment.md)) |
+| **db** | PostgreSQL 18 (контейнер) | Збереження авто, нарядів, журналів, акаунтів і кодів входу | 11 таблиць, 12 міграцій (`payments` прибрано, [ADR-0016](adr/0016-order-line-payment.md)) |
 | **фото** | тека на диску, `Storage:PhotosRoot` | Файли знімків машин і нарядів; у базі лише `photo_id` | працює; у продакшні — змонтований том ([ADR-0026](adr/0026-vehicle-photo-storage.md)) |
 
 ## Ключова архітектурна точка: шов транспорту
@@ -78,7 +78,7 @@ export function getClientVehicles(): Promise<ClientVehicle[]> {
 без переписування екранів, і своє відпрацював. Умова, яку шов накладає на
 `GarageOSWeb`, лишилася: **відповіді мусять точно збігатися за формою** з
 `domain.ts`, включно зі склеєними read-моделями (`ClientVehicleDetail`,
-`OrderDetail`, `FinanceOverview`, `ReminderItem`).
+`OrderDetail` і `FinanceOverview`).
 
 Див. [ADR-0002](adr/0002-client-contract-source-of-truth.md).
 

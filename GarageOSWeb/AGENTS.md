@@ -115,8 +115,8 @@ access-JWT і непрозорого refresh, `login_codes`, бот на long po
 
 ## Доступ розмежований — не зніми його випадково
 
-`[Authorize]` стоїть на **всіх** контролерах контракту. Сервісні чотири —
-`ClientVehicles`, `Orders`, `Finance`, `Reminders` — під
+`[Authorize]` стоїть на **всіх** контролерах контракту. Сервісні три —
+`ClientVehicles`, `Orders`, `Finance` — під
 `[Authorize(AuthPolicies.Master)]`, тобто вимагають claim `master=true`, який
 видається лише акаунту з `Telegram:OwnerId`. `MyVehicles` — під звичайним
 `[Authorize]`, бо техніка там своя в кожного, і власник береться з claim `sub`
