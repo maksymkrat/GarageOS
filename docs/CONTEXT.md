@@ -45,7 +45,7 @@ GarageOSMobile/          Expo SDK 58, RN 0.88, React 19.3, TS 6, expo-router, re
   src/api/*.ts           КОНТРАКТ: шляхи ендпойнтів рядком у request()
   src/api/client.ts      транспорт: baseUrl, ApiError, токен, upload, тихий refresh
   src/queries/           react-query: хуки, keys.ts, use-work-board.ts (read-model)
-  src/app/               екрани (expo-router): (auth) 3, (service) 4, деталі й форми
+  src/app/               екрани (expo-router): (auth) 3, (service) 3, деталі й форми, +not-found
   src/components/        ui/ — спільні примітиви, forms/ — три форми
   src/lib/               format.ts, order.ts (похідні суми), vehicle-catalog.ts, session.tsx
   src/theme/             tokens.ts (палітра), status.ts (підписи статусів)
