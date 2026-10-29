@@ -93,23 +93,26 @@ export default function ClientVehicleDetailScreen() {
                 <QuickAction
                   label="Подзвонити"
                   background={colors.successBg}
-                  color={colors.success}
+                  border={colors.successBorder}
+                  color={colors.successOnInk}
                   onPress={() => Linking.openURL(`tel:${vehicle.phone}`)}
-                  icon={<PhoneIcon size={16} color={colors.success} />}
+                  icon={<PhoneIcon size={20} color={colors.successOnInk} />}
                 />
                 <QuickAction
                   label="Написати"
                   background={colors.blueBg}
-                  color={colors.blue}
+                  border={colors.blueBorder}
+                  color={colors.blueOnInk}
                   onPress={() => Linking.openURL(`sms:${vehicle.phone}`)}
-                  icon={<MessageIcon size={16} color={colors.blue} />}
+                  icon={<MessageIcon size={20} color={colors.blueOnInk} />}
                 />
                 <QuickAction
                   label="Новий наряд"
                   background={colors.warningBg}
-                  color={colors.amber}
+                  border={colors.warningBorder}
+                  color={colors.warningOnInk}
                   onPress={() => router.push(`/orders/new?vehicleId=${vehicle.id}`)}
-                  icon={<PlusIcon size={16} color={colors.amber} />}
+                  icon={<PlusIcon size={20} color={colors.warningOnInk} />}
                 />
               </View>
 
@@ -319,19 +322,21 @@ function SummaryRows({ vehicle }: { vehicle: ClientVehicle }) {
 interface QuickActionProps {
   label: string;
   background: string;
+  border: string;
   color: string;
   icon: ReactNode;
   onPress: () => void;
 }
 
-function QuickAction({ label, background, color, icon, onPress }: QuickActionProps) {
+function QuickAction({ label, background, border, color, icon, onPress }: QuickActionProps) {
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={label}
       onPress={onPress}
       style={({ pressed }) => [
         styles.quickAction,
-        { backgroundColor: background },
+        { backgroundColor: background, borderColor: border },
         pressed && { opacity: 0.75 },
       ]}>
       {icon}
@@ -412,16 +417,20 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     padding: spacing.lg,
   },
+  // Tinted fill plus a hairline of the same hue, and the on-ink variant of the
+  // colour for icon and label — the pair the status badges already use, because
+  // the plain `success`/`blue`/`amber` are mixed for dark ink to carry text.
   quickAction: {
     flex: 1,
     borderRadius: radius.md,
-    paddingVertical: 10,
+    borderWidth: 1,
+    paddingVertical: spacing.md,
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
   },
   quickLabel: {
-    fontSize: 10,
-    fontWeight: '500',
+    fontSize: 12,
+    fontWeight: '600',
   },
   debtBanner: {
     marginHorizontal: spacing.lg,
