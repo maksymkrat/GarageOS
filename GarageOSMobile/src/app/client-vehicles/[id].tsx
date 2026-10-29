@@ -192,8 +192,6 @@ export default function ClientVehicleDetailScreen() {
   );
 }
 
-// Its own component for the usual reason — the mutation hooks cannot be
-// called inside QueryState's render callback.
 function VehiclePhoto({ vehicle }: { vehicle: ClientVehicle }) {
   const save = useSetClientVehiclePhoto(vehicle.id);
   const remove = useDeleteClientVehiclePhoto(vehicle.id);
@@ -211,8 +209,6 @@ function VehiclePhoto({ vehicle }: { vehicle: ClientVehicle }) {
 
       {vehicle.photoId !== undefined && (
         <Image
-          // The URL carries the photo id, so a replacement is a different URL
-          // and the cached copy cannot linger.
           source={clientVehiclePhotoSource(vehicle.id, vehicle.photoId, 'full')}
           contentFit="cover"
           cachePolicy="memory-disk"
@@ -238,8 +234,6 @@ function VehiclePhoto({ vehicle }: { vehicle: ClientVehicle }) {
         visible={photo.open}
         title="Фото авто"
         options={photo.options}
-        // Nothing is ever selected here: this is a list of actions, not a choice
-        // of state, and PickerDialog highlights only a matching value.
         value={'' as PhotoAction}
         busy={photo.busy}
         onPick={photo.run}
@@ -249,8 +243,6 @@ function VehiclePhoto({ vehicle }: { vehicle: ClientVehicle }) {
   );
 }
 
-// Its own component because the mutation hook cannot be called inside
-// QueryState's render callback — the same reason StatusPicker takes an id.
 function AcceptPaymentButton({ vehicleId, debt }: { vehicleId: number; debt: number }) {
   const pay = usePayClientVehicle(vehicleId);
   const [asking, setAsking] = useState(false);
@@ -417,9 +409,6 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     padding: spacing.lg,
   },
-  // Tinted fill plus a hairline of the same hue, and the on-ink variant of the
-  // colour for icon and label — the pair the status badges already use, because
-  // the plain `success`/`blue`/`amber` are mixed for dark ink to carry text.
   quickAction: {
     flex: 1,
     borderRadius: radius.md,
@@ -563,8 +552,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: colors.dangerOnInk,
   },
-  // The stored photo is square (ADR-0026) and the header is wide, so `cover`
-  // crops the top and bottom. That is the trade for a full-bleed header.
   photoButton: {
     position: 'absolute',
     right: spacing.sm,

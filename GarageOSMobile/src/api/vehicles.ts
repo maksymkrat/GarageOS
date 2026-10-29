@@ -30,7 +30,6 @@ export function deleteMyVehicle(id: number): Promise<void> {
   return request(`DELETE /my-vehicles/${id}`);
 }
 
-// Same three shapes as a customer's car, only addressed under /my-vehicles.
 export function setMyVehiclePhoto(id: number, file: UploadFile): Promise<MyVehicle> {
   return upload(`POST /my-vehicles/${id}/photo`, file);
 }

@@ -3,7 +3,6 @@ import { useUpdateClientVehicleStatus } from '@/queries/use-client-vehicles';
 import { STATUS_META } from '@/theme/status';
 import type { ClientVehicleStatus } from '@/types/domain';
 
-// Board order, not alphabetical: this is the path a car walks through.
 const STATUS_ORDER: ClientVehicleStatus[] = ['in_work', 'waiting_part', 'ready', 'has_debt'];
 
 interface StatusPickerProps {

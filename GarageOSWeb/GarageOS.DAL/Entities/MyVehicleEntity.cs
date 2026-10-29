@@ -13,7 +13,6 @@ public class MyVehicleEntity : BaseEntity
     public int Mileage { get; set; }
     public MileageUnit MileageUnit { get; set; }
 
-    // Id of the current photo, null when there is none (ADR-0026).
     public Guid? PhotoId { get; set; }
 
     public ICollection<LogEntryEntity> Log { get; set; } = [];

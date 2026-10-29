@@ -56,8 +56,6 @@ export default function EditOrderScreen() {
               pending={deleteOrder.isPending}
               onConfirm={() =>
                 deleteOrder.mutate(undefined, {
-                  // The order screen underneath is gone too, so going back would
-                  // land on a 404 — return to the vehicle card.
                   onSuccess: () => router.replace(`/client-vehicles/${vehicle.id}`),
                 })
               }

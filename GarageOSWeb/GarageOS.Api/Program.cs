@@ -31,10 +31,6 @@ if (string.IsNullOrWhiteSpace(builder.Configuration[$"{TelegramOptions.Section}:
         "Не задано Telegram:BotUsername. Це нік бота, якому належить Telegram:BotToken.");
 }
 
-// Photos live outside the publish output and outside wwwroot: publishing
-// overwrites the first, and the second is served without a token. In
-// development that is a folder beside the solution; on a server the path
-// arrives as Storage__PhotosRoot and points at a mounted volume (ADR-0026).
 var photosRoot = builder.Configuration[$"{StorageOptions.Section}:PhotosRoot"];
 
 if (string.IsNullOrWhiteSpace(photosRoot))

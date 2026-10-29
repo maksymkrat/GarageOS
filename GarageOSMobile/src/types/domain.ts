@@ -10,9 +10,6 @@ export interface ClientVehicle {
   id: number;
   plate: string;
 
-  // Free text, the same three values as `MyVehicle.kind`. It picks which
-  // catalogue of makes the form offers, and tells a bike from a car on a card
-  // where both are a plate and a model (ADR-0029).
   kind: string;
   make: string;
   model: string;
@@ -26,14 +23,9 @@ export interface ClientVehicle {
   lastVisit: string;
   nextService?: string;
 
-  // Opaque id of the car's current photo, absent when it has none. It doubles
-  // as the cache key: a replacement gets a new id, so the URL changes with the
-  // picture and a cached one can never go stale.
   photoId?: string;
 }
 
-// Lines are addressable: `id` is what makes editing one of them a request of
-// its own instead of a rewrite of the whole order.
 export interface OrderWork {
   id: number;
   description: string;
@@ -62,8 +54,6 @@ export interface OrderPartInput {
   paymentStatus: PaymentStatus;
 }
 
-// Only an id: the bytes come from their own endpoint, and the uuid that names
-// the file on disk never leaves the server.
 export interface OrderPhoto {
   id: number;
 }
@@ -108,8 +98,6 @@ export interface MyVehicle {
   mileageUnit: MileageUnit;
   log: LogEntry[];
 
-  // Same meaning as on ClientVehicle: the id of the current photo, absent when
-  // there is none, and the cache key for its URL.
   photoId?: string;
 }
 
@@ -146,8 +134,6 @@ export interface UpdateClientVehicleStatusInput {
   status: ClientVehicleStatus;
 }
 
-// A new order may arrive with its lines in one go; afterwards each line is
-// edited through its own endpoint, so the order PUT carries only the complaint.
 export interface CreateOrderInput {
   clientVehicleId: number;
   description: string;

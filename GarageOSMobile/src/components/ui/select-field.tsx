@@ -8,15 +8,10 @@ interface SelectFieldProps {
   value: string;
   placeholder: string;
   error?: string;
-  // A model cannot be picked before a make is, and the field says so by
-  // looking inert rather than by opening an empty list.
   disabled?: boolean;
   onPress: () => void;
 }
 
-// The shape of TextField, with a list behind it instead of a keyboard: the two
-// sit in the same form, so a value picked from a list must not read as a
-// different kind of field from one typed in.
 export function SelectField({
   label,
   value,

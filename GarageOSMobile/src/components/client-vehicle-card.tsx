@@ -18,8 +18,6 @@ export function ClientVehicleCard({ vehicle, onPress }: ClientVehicleCardProps) 
   return (
     <PressableCard onPress={onPress} accessibilityLabel={vehicle.plate} style={styles.card}>
       <View style={styles.row}>
-        {/* Always a slot, photo or not: a row that changes shape depending on
-            whether somebody took a picture reads as a glitch. */}
         <VehicleImage
           source={
             vehicle.photoId === undefined
@@ -65,10 +63,6 @@ const styles = StyleSheet.create({
   main: {
     flex: 1,
   },
-  // The thumb rendition, not the full one: a list of cards would otherwise pull
-  // a few hundred kilobytes each (ADR-0026). Centred against the row rather
-  // than pinned to its top, because the row's own alignment is flex-start for
-  // the text block beside it.
   photo: {
     width: 72,
     height: 72,

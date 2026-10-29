@@ -10,8 +10,6 @@ interface ConfirmDialogProps {
   body: string;
   confirmLabel: string;
   cancelLabel?: string;
-  // Deleting is not the only thing worth a question — money moves once too,
-  // and a red bin over "прийняти оплату" would say the wrong thing.
   tone?: 'danger' | 'accent';
   icon?: ReactNode;
   onConfirm: () => void;
@@ -36,8 +34,6 @@ export function ConfirmDialog({
       transparent
       statusBarTranslucent
       animationType="fade"
-      // Android hardware back has to mean «скасувати», not «нічого»: a dialog
-      // about deleting must not be dismissable into an unknown state.
       onRequestClose={onCancel}>
       <View style={styles.root}>
         <Pressable

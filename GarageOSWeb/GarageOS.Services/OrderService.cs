@@ -69,9 +69,6 @@ public class OrderService(
 
         orders.Add(order);
 
-        // A new order means the car is back in the shop, so it goes to the board
-        // on its own instead of waiting for the master to set the state by hand
-        // (ADR-0032).
         vehicle.Status = ClientVehicleStatus.InWork;
 
         await uow.SaveChangesAsync(ct);
@@ -79,8 +76,6 @@ public class OrderService(
         return order.ToModel().ToDto(today);
     }
 
-    // Only the complaint: a line is written through its own endpoint, so this no
-    // longer rewrites the collection and the lines keep their ids.
     public async Task<OrderDto> UpdateOrderAsync(
         int id,
         UpdateOrderRequest request,
@@ -103,20 +98,13 @@ public class OrderService(
         var order = await orders.GetForUpdateAsync(id, ct)
                     ?? throw new NotFoundException(OrderNotFound);
 
-        // The lines go with it: order_works, order_parts and order_photos all
-        // cascade from orders.
         orders.Remove(order);
 
         await uow.SaveChangesAsync(ct);
 
-        // The rows cascade, the files do not. Dropped after the save, so a
-        // failed delete leaves the photos reachable rather than orphaned.
         photos.DeleteAll(PhotoOwner.Order, id);
     }
 
-    // Settling in one transaction: the lines and the car's state move together
-    // or not at all. Paying an order that is already settled writes nothing and
-    // is not an error, so the button stays safe to press twice.
     public async Task<OrderDetailDto> PayOrderAsync(int id, CancellationToken ct = default)
     {
         var today = Today();
@@ -131,8 +119,6 @@ public class OrderService(
 
         await uow.SaveChangesAsync(ct);
 
-        // Read after the save: the debt counts unpaid lines, and the lines just
-        // stopped being unpaid.
         var debt = await vehicles.GetDebtAsync(order.ClientVehicleId, ct);
 
         return new OrderDetailDto(
@@ -232,9 +218,6 @@ public class OrderService(
         await uow.SaveChangesAsync(ct);
     }
 
-    // A gallery, so adding appends instead of replacing: each upload is its own
-    // row with its own id, and there is no "current" photo to supersede
-    // (ADR-0027).
     public async Task<OrderPhotoDto> AddPhotoAsync(
         int orderId,
         Stream upload,

@@ -1,14 +1,3 @@
-// Reference data for the make and model pickers, not domain data: the garage
-// stores what the user picked as plain text in `MyVehicle.name`, so nothing
-// here reaches the contract. A make missing from the list is not a dead end —
-// the picker offers the typed text as a value of its own.
-//
-// Cars and motorcycles are separate catalogues even where the name repeats:
-// Honda sells both, and a CBR has no business being offered under «Авто».
-//
-// `alias` is the Cyrillic spelling people actually type on a Ukrainian
-// keyboard («мерс» for Mercedes-Benz). It is searched, never displayed.
-
 export interface VehicleMake {
   name: string;
   alias: string;
@@ -88,9 +77,6 @@ const CAR_MAKES: readonly VehicleMake[] = [
   { name: 'ZAZ', alias: 'ЗАЗ', models: ['Forza', 'Lanos', 'Sens', 'Slavuta', 'Tavria', 'Vida'] },
 ];
 
-// Motorcycles, scooters and quads under one kind, the way the garage already
-// counts them. The Chinese and Ukrainian marques are here because they are what
-// actually rolls in, not because they are famous.
 const MOTO_MAKES: readonly VehicleMake[] = [
   { name: 'Aprilia', alias: 'Апрілія', models: ['Dorsoduro', 'Pegaso', 'RS 125', 'RS 660', 'RSV4', 'Shiver', 'SR 150', 'Tuono 660', 'Tuono V4'] },
   { name: 'Bajaj', alias: 'Баджадж', models: ['Avenger', 'Boxer', 'Dominar 400', 'Pulsar 150', 'Pulsar 200'] },
@@ -154,8 +140,6 @@ export interface MakeCatalog {
 function buildCatalog(makes: readonly VehicleMake[]): MakeCatalog {
   const byName = new Map(makes.map((make) => [make.name.toLowerCase(), make]));
 
-  // Longest make first, so «Land Rover Discovery» does not match a
-  // hypothetical «Land» and «Moto Guzzi V7» does not match «Moto».
   const byLength = [...makes].sort((a, b) => b.name.length - a.name.length);
 
   return {
@@ -165,9 +149,6 @@ function buildCatalog(makes: readonly VehicleMake[]): MakeCatalog {
       return byName.get(make.trim().toLowerCase())?.models ?? [];
     },
 
-    // Matches the Latin name and the Cyrillic alias, so «мерс» and «merc» both
-    // reach Mercedes-Benz. Only makes carry an alias: models are typed as
-    // written on the tank.
     matches(make, query) {
       const found = byName.get(make.toLowerCase());
 
@@ -176,9 +157,6 @@ function buildCatalog(makes: readonly VehicleMake[]): MakeCatalog {
       );
     },
 
-    // A name the pickers did not write — one typed before this screen existed —
-    // still has to survive an edit, so it lands in the make whole rather than
-    // being guessed at.
     fields(name) {
       const trimmed = name.trim();
       const lower = trimmed.toLowerCase();
@@ -199,10 +177,6 @@ const CAR_CATALOG = buildCatalog(CAR_MAKES);
 
 const MOTO_CATALOG = buildCatalog(MOTO_MAKES);
 
-// The kinds the garage keeps, the same three on both sides of it: a customer's
-// car and one's own are the same thing seen from different ends. `kind` is free
-// text in the contract, so offering a choice keeps one kind from arriving under
-// three spellings.
 export const VEHICLE_KINDS = ['Авто', 'Мото', 'Техніка'];
 
 const CATALOGS: Record<string, MakeCatalog | undefined> = {
@@ -210,22 +184,16 @@ const CATALOGS: Record<string, MakeCatalog | undefined> = {
   Мото: MOTO_CATALOG,
 };
 
-// A kind without a catalogue — «Техніка» — is typed by hand: there is no list
-// of make and model worth the name for a trailer or a tiller.
 export function catalogFor(kind: string): MakeCatalog | undefined {
   return CATALOGS[kind];
 }
 
-// Older than anything that turns up in a garage with a plate on it.
 export const EARLIEST_YEAR = 1900;
 
-// Next year, not this one: a model year runs ahead of the calendar.
 export function latestYear(): number {
   return new Date().getFullYear() + 1;
 }
 
-// Newest first: a vehicle from this decade is what somebody is adding, and the
-// 1950s are a scroll away rather than the other way round.
 export function vehicleYears(): string[] {
   const years: string[] = [];
 

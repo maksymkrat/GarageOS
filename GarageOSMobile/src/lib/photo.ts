@@ -3,9 +3,6 @@ import * as ImagePicker from 'expo-image-picker';
 
 import type { UploadFile } from '@/api/client';
 
-// The server caps and re-encodes whatever arrives, so this is not a guarantee —
-// it is the master's mobile data. A phone photo is 3-8 MB; this leaves a few
-// hundred kilobytes to send (ADR-0026).
 const MAX_SIDE = 1024;
 const QUALITY = 0.7;
 
@@ -13,12 +10,8 @@ export type PhotoSource = 'camera' | 'library';
 
 export class PhotoAccessError extends Error {}
 
-// How many a gallery may take in one go. The cap is the picker's, not ours —
-// it keeps a stray long-press on "select all" from queueing a hundred uploads.
 const SELECTION_LIMIT = 10;
 
-// One picture, cropped to a square by hand. Used where an entity holds exactly
-// one photo, so the person gets to choose the framing (ADR-0026).
 export async function pickVehiclePhoto(source: PhotoSource): Promise<UploadFile | null> {
   await requirePermission(source);
 
@@ -28,8 +21,6 @@ export async function pickVehiclePhoto(source: PhotoSource): Promise<UploadFile 
     mediaTypes: 'images',
     allowsEditing: true,
     aspect: [1, 1],
-    // No recompression here — compress() below does it once, so the picture is
-    // not squeezed twice.
     quality: 1,
   });
 
@@ -48,7 +39,6 @@ export async function pickVehiclePhotos(source: PhotoSource): Promise<UploadFile
 
   const result = await launch(source, {
     mediaTypes: 'images',
-    // The camera takes one shot whatever this says; it matters for the library.
     allowsMultipleSelection: source === 'library',
     selectionLimit: SELECTION_LIMIT,
     quality: 1,
@@ -104,14 +94,10 @@ async function compress(asset: ImagePicker.ImagePickerAsset): Promise<UploadFile
 
   const rendered = await context.renderAsync();
 
-  // Rendering bakes in the EXIF orientation, so the upload is upright and
-  // carries no location data even before the server strips it.
   const file = await rendered.saveAsync({
     format: SaveFormat.JPEG,
     compress: QUALITY,
   });
 
-  // The saved path carries the extension, and that is where the upload reads
-  // the file name and mime type from.
   return { uri: file.uri };
 }

@@ -18,9 +18,6 @@ export function formatMoney(value: number): string {
   return `${formatNumber(value)} ₴`;
 }
 
-// Money columns keep two decimals, so 1250 and 1250,50 must both pass; a
-// digits-only sweep would silently turn the second into 125050. Returns null
-// when the text is not a usable amount.
 export function parseMoney(value: string): number | null {
   const normalized = value.replace(/\s/g, '').replace(',', '.');
 

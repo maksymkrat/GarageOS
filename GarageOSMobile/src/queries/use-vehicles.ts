@@ -47,8 +47,6 @@ export function useCreateMyVehicle() {
   });
 }
 
-// Only the id: the write loads the vehicle without its log, so storing the
-// answer whole would blank the log already on screen.
 function patchPhotoId(client: QueryClient, id: number, photoId: string | undefined) {
   const patch = (vehicle: MyVehicle) => (vehicle.id === id ? { ...vehicle, photoId } : vehicle);
 
@@ -106,8 +104,6 @@ export function useDeleteMyVehicle(id: number) {
 
   return useMutation({
     mutationFn: () => deleteMyVehicle(id),
-    // The vehicle is gone, so its own cached entry has to go with the lists —
-    // leaving it would let a stale card render after the screen pops back.
     onSuccess: () => {
       client.removeQueries({ queryKey: queryKeys.vehicleAll(id) });
       client.invalidateQueries({ queryKey: queryKeys.vehiclesAll });

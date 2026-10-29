@@ -87,8 +87,6 @@ public class OrderRepository(GarageDbContext db) : IOrderRepository
             .Include(x => x.Works)
             .Include(x => x.Parts);
 
-    // Photos come with the single-order read only: the list screens do not show
-    // them, so GetAllAsync stays as light as it was (ADR-0027).
     private IQueryable<OrderEntity> WithPhotos() =>
         WithLines().Include(x => x.Photos);
 }

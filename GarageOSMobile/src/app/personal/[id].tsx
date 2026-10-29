@@ -120,10 +120,6 @@ export default function MyVehicleScreen() {
   );
 }
 
-
-// Inside the hero block rather than behind it: the stored photo is square
-// (ADR-0026), so a square slot shows all of it instead of cropping a band out
-// of the middle the way the customer card's header does.
 function MyVehiclePhoto({ vehicle }: { vehicle: MyVehicle }) {
   const save = useSetMyVehiclePhoto(vehicle.id);
   const remove = useDeleteMyVehiclePhoto(vehicle.id);
@@ -203,16 +199,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
   },
-  // Two equal halves. `flex: 1` on both rather than a width, so the split holds
-  // on any screen; the text sizes below are tuned for the narrower column.
   heroInfo: {
     flex: 1,
   },
   photoSlot: {
     flex: 1,
   },
-  // Square, so the whole stored picture is visible — the hero's own padding
-  // frames it.
   photo: {
     width: '100%',
     aspectRatio: 1,

@@ -11,9 +11,6 @@ import { useWorkBoard, type WorkBoardRow } from '@/queries/use-work-board';
 import { colors, fontFamily, radius, spacing } from '@/theme/tokens';
 import type { ClientVehicleStatus } from '@/types/domain';
 
-// The board holds what still waits for the master's hands, so `ready` is not
-// here: it is the terminal state and a finished car leaves the board for the
-// card index, where the «Готові» filter finds it (ADR-0031).
 const GROUPS: { status: ClientVehicleStatus; title: string; color: string }[] = [
   { status: 'waiting_part', title: 'Чекає деталь', color: colors.warning },
   { status: 'in_work', title: 'В роботі', color: colors.blue },
@@ -81,8 +78,6 @@ function WorkRow({ row }: { row: WorkBoardRow }) {
       accessibilityLabel={row.vehicle.plate}
       style={styles.row}>
       <View style={styles.rowInner}>
-        {/* Always a slot, photo or not — same rule as the card in the garage:
-            a row that changes shape with the picture reads as a glitch. */}
         <VehicleImage
           source={
             row.vehicle.photoId === undefined
@@ -186,7 +181,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: spacing.md,
   },
-  // The thumb rendition, as everywhere a list shows cars (ADR-0026).
   photo: {
     width: 52,
     height: 52,

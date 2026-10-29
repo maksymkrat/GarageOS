@@ -16,8 +16,6 @@ public class MyVehicleRepository(GarageDbContext db) : IMyVehicleRepository
             .OrderBy(x => x.Id)
             .ToListAsync(ct);
 
-    // The owner is part of the lookup, not a check after it: an id that belongs
-    // to somebody else must read as absent, not as forbidden.
     public Task<MyVehicleEntity?> GetByIdAsync(
         int userId,
         int id,
@@ -35,8 +33,6 @@ public class MyVehicleRepository(GarageDbContext db) : IMyVehicleRepository
         CancellationToken ct = default) =>
         db.MyVehicles.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId, ct);
 
-    // The owner is reached through the vehicle, so a foreign entry and an
-    // entry of another vehicle both read as absent.
     public Task<LogEntryEntity?> GetLogEntryForUpdateAsync(
         int userId,
         int vehicleId,

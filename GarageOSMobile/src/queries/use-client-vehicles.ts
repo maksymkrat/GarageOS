@@ -42,8 +42,6 @@ export function useCreateClientVehicle() {
   });
 }
 
-// The same write as paying one order, only across every order of this car, so
-// it drops the same caches.
 export function usePayClientVehicle(id: number) {
   const client = useQueryClient();
 
@@ -59,9 +57,6 @@ function invalidatePhoto(client: QueryClient, id: number) {
   client.invalidateQueries({ queryKey: queryKeys.ordersAll });
 }
 
-// Written into the caches, not only invalidated: a replacement deletes the
-// file the cached `photoId` points at, so until the re-read lands the list
-// would be asking for a photo that no longer exists.
 function afterPhotoWrite(client: QueryClient, id: number, vehicle: ClientVehicle) {
   client.setQueryData<ClientVehicle[]>(queryKeys.clientVehicles, (rows) =>
     rows?.map((row) => (row.id === id ? vehicle : row))
@@ -71,7 +66,6 @@ function afterPhotoWrite(client: QueryClient, id: number, vehicle: ClientVehicle
     detail === undefined ? undefined : { ...detail, vehicle }
   );
 
-  // Both renditions: the list reads the thumbnail, the card the full one.
   if (vehicle.photoId !== undefined) {
     warmPhotoCache(
       clientVehiclePhotoSource(id, vehicle.photoId, 'thumb'),
@@ -91,8 +85,6 @@ export function useSetClientVehiclePhoto(id: number) {
   });
 }
 
-// For the create form: the car has no id to bind a hook to until its POST
-// comes back, so the id travels with the file.
 export function useSetNewClientVehiclePhoto() {
   const client = useQueryClient();
 
@@ -117,8 +109,6 @@ export function useUpdateClientVehicleStatus(id: number) {
 
   return useMutation({
     mutationFn: (input: UpdateClientVehicleStatusInput) => updateClientVehicleStatus(id, input),
-    // The status drives the work board and travels inside the order detail, so
-    // both have to be re-read, not just this one card.
     onSuccess: () => {
       client.invalidateQueries({ queryKey: queryKeys.clientVehicle(id) });
       client.invalidateQueries({ queryKey: queryKeys.clientVehicles });

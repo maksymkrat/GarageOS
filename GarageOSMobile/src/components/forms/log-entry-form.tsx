@@ -39,8 +39,6 @@ function digitsOf(value: string): string {
   return value.replace(/\D/g, '');
 }
 
-// The cost column keeps two decimals, so 1250 and 1250,50 both have to pass —
-// stripping non-digits would silently turn the second into 125050.
 function parseMoney(value: string): number | null {
   const normalized = value.replace(/\s/g, '').replace(',', '.');
 
@@ -101,8 +99,6 @@ export function LogEntryForm({
       kind: form.kind,
       note: form.note.trim(),
       cost: parseMoney(form.cost) ?? 0,
-      // Left empty means unknown, not nought: the field is absent from the
-      // request rather than sent as zero (ADR-0012).
       mileage: mileage ? Number(mileage) : undefined,
     });
   }

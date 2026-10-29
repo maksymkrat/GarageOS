@@ -27,11 +27,6 @@ function reason(cause: unknown): string {
   return cause instanceof Error ? cause.message : 'не вдалося';
 }
 
-// One flow behind four different triggers: the header button on a customer's
-// car, the slot on a personal vehicle, the photo block on a naryad and the same
-// block in the create form. Only the two writes differ, so they come in as
-// plain promises — `mutateAsync` from either mutation fits, and the labels stay
-// in one place.
 export function usePhotoActions(
   save: (file: UploadFile) => Promise<unknown>,
   remove: (() => Promise<unknown>) | null,
@@ -62,11 +57,8 @@ export function usePhotoActions(
           ? await pickVehiclePhotos(action)
           : [await pickVehiclePhoto(action)].filter((file) => file !== null);
 
-        // Cancelled in the system picker — not an error, just nothing to do.
         if (picked.length === 0) return;
 
-        // One at a time so a gallery keeps the order they were picked in, and
-        // so one bad upload does not take the rest of the batch with it.
         const failures: string[] = [];
 
         for (const file of picked) {
@@ -79,8 +71,6 @@ export function usePhotoActions(
 
         if (failures.length === 0) return;
 
-        // Alert rather than text in the dialog: the dialog is already closed by
-        // now, and a native alert does not care what is mounted.
         Alert.alert(
           'Фото',
           picked.length === 1

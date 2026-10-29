@@ -9,8 +9,6 @@ public static class PhotoProcessor
 {
     public const string ContentType = "image/webp";
 
-    // Upper bounds, not fixed sizes: a smaller picture is never blown up, so a
-    // 400px photo stays 400px instead of becoming a soft 1024.
     public const int FullSide = 1024;
     public const int ThumbSide = 320;
 
@@ -20,14 +18,6 @@ public static class PhotoProcessor
     private const string Unreadable =
         "Не вдалося прочитати зображення. Надішліть фото у JPEG або PNG.";
 
-    // Re-encoding is not about distrusting the size. It strips EXIF, and a phone
-    // photo carries GPS: keeping where a customer's car was photographed, next
-    // to their plate and phone, is a liability nobody asked for. It also leaves
-    // one format on disk, so the code that serves photos has a single branch.
-    //
-    // Square is the invariant, and it is held here rather than in the picker:
-    // the phone crops to 1:1 for the person's sake, but any other client may
-    // send anything, so whatever arrives is cropped from its centre (ADR-0026).
     public static ProcessedPhoto Process(Stream upload)
     {
         using var bitmap = Decode(upload);
@@ -63,9 +53,6 @@ public static class PhotoProcessor
         return Orient(bitmap, codec.EncodedOrigin);
     }
 
-    // Our own client bakes orientation in while it compresses, so this matters
-    // only for uploads from elsewhere — but a sideways photo is the single most
-    // common image bug, and the EXIF origin is right here in the codec.
     private static SKBitmap Orient(SKBitmap source, SKEncodedOrigin origin)
     {
         // Every EXIF origin is one horizontal mirror followed by one rotation.
@@ -132,7 +119,6 @@ public static class PhotoProcessor
         using var surface = SKSurface.Create(info);
         using var image = SKImage.FromBitmap(source);
 
-        // One draw crops and scales at once, so there is no intermediate bitmap.
         surface.Canvas.DrawImage(
             image,
             SKRect.Create(crop.Left, crop.Top, crop.Width, crop.Height),

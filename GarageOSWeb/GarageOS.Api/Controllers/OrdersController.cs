@@ -47,8 +47,6 @@ public class OrdersController(IOrderService orders) : ControllerBase
         return NoContent();
     }
 
-    // A collection, unlike a vehicle's single photo: POST appends and the new
-    // row's id comes back, the way a work or a part does (ADR-0027).
     [HttpPost("{id:int}/photos")]
     [RequestSizeLimit(MaxPhotoBytes)]
     public async Task<ActionResult<OrderPhotoDto>> AddPhoto(
@@ -89,21 +87,15 @@ public class OrdersController(IOrderService orders) : ControllerBase
             ContractFormat.ParsePhotoSize(size),
             ct);
 
-        // A photo row's bytes never change — there is no replace, only add and
-        // delete — so this URL is as immutable as a vehicle's.
         Response.Headers.CacheControl = "private, max-age=31536000, immutable";
 
         return File(photo.Content, photo.ContentType);
     }
 
-    // An action, not a sub-resource replacement: payment lives on the lines
-    // (ADR-0016), so there is no payment field on the order to PUT.
     [HttpPost("{id:int}/pay")]
     public Task<OrderDetailDto> Pay(int id, CancellationToken ct) =>
         orders.PayOrderAsync(id, ct);
 
-    // A line has no page of its own, so Location points at the order, where it
-    // becomes readable.
     [HttpPost("{id:int}/works")]
     public async Task<ActionResult<OrderWorkDto>> AddWork(
         int id,

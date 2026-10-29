@@ -21,8 +21,6 @@ public sealed record OrderWorkDto(int Id, string Description, decimal Price, str
 
 public sealed record OrderPartDto(int Id, string Description, decimal Buy, decimal Sell, string PaymentStatus);
 
-// Inputs carry no id: the line being written is named by the path, and a new
-// line has no id yet.
 public sealed record OrderWorkRequest(string Description, decimal Price, string PaymentStatus);
 
 public sealed record OrderPartRequest(string Description, decimal Buy, decimal Sell, string PaymentStatus);
@@ -41,13 +39,8 @@ public sealed record ClientVehicleDetailDto(
     IReadOnlyList<OrderDto> Orders,
     int SameOwnerCount);
 
-// Only the id travels: the file is fetched from its own endpoint, and the uuid
-// that names it on disk never leaves the server (ADR-0027).
 public sealed record OrderPhotoDto(int Id);
 
-// Photos hang off the detail rather than off OrderDto, so there is no third
-// `include*` flag and no collection that is empty for two different reasons
-// ([ADR-0018](adr/0018-include-flags-for-nested-collections.md)).
 public sealed record OrderDetailDto(
     OrderDto Order,
     ClientVehicleDto Vehicle,
@@ -105,9 +98,6 @@ public sealed record CreateLogEntryRequest(
     string Kind,
     int? Mileage);
 
-// PUT replaces the whole resource, so these repeat the create shapes field for
-// field. They stay separate records because the two verbs may yet diverge —
-// one contract entry each, as in domain.ts.
 public sealed record UpdateMyVehicleRequest(
     string Kind,
     string Name,
@@ -121,9 +111,6 @@ public sealed record UpdateLogEntryRequest(
     string Kind,
     int? Mileage);
 
-// Order lines have no identity in the contract, so OrderWorkDto and
-// OrderPartDto serve as both input and output and PUT replaces the whole
-// collection.
 public sealed record UpdateClientVehicleStatusRequest(string Status);
 
 public sealed record CreateOrderRequest(
@@ -132,6 +119,4 @@ public sealed record CreateOrderRequest(
     IReadOnlyList<OrderWorkRequest> Works,
     IReadOnlyList<OrderPartRequest> Parts);
 
-// Only the complaint: lines are written one at a time through their own
-// endpoints.
 public sealed record UpdateOrderRequest(string Description);

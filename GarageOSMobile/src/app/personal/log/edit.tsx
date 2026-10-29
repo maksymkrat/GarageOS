@@ -21,8 +21,6 @@ export default function EditLogEntryScreen() {
   return (
     <QueryState query={vehicle}>
       {(item) => {
-        // There is no endpoint for a single entry: the log arrives inside the
-        // vehicle, so the entry is looked up in what is already loaded.
         const current = item.log.find((candidate) => candidate.id === entry);
 
         if (current === undefined) {

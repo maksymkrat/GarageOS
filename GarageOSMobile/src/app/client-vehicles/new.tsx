@@ -56,8 +56,6 @@ const EMPTY_FORM: FormState = {
   complaint: '',
 };
 
-// The year is optional here, so the list has to offer a way back out of it —
-// a picked year could otherwise never be unpicked.
 const UNSET_YEAR = 'Не вказано';
 
 type TextKey = 'plate' | 'mileage' | 'owner' | 'phone' | 'complaint';
@@ -83,12 +81,8 @@ export default function NewClientVehicleScreen() {
   const [withOrder, setWithOrder] = useState(true);
   const [picker, setPicker] = useState<'make' | 'model' | 'year' | null>(null);
 
-  // Held locally until the car exists: the upload endpoint is addressed by the
-  // car's id, and there is no id before the POST comes back.
   const [photo, setPhoto] = useState<UploadFile | null>(null);
 
-  // The same flow as on a car's card, except "saving" here only parks the file
-  // in state: there is no id to upload against until the POST comes back.
   const photoActions = usePhotoActions(
     async (file) => setPhoto(file),
     photo === null ? null : async () => setPhoto(null)
@@ -98,8 +92,6 @@ export default function NewClientVehicleScreen() {
 
   const years = useMemo(() => [UNSET_YEAR, ...vehicleYears()], []);
 
-  // A make saved earlier may sit outside the catalogue; it still has to show as
-  // the current choice instead of disappearing from its own list.
   const makes = useMemo(() => {
     const known = catalog?.names ?? [];
 
@@ -122,9 +114,6 @@ export default function NewClientVehicleScreen() {
       const leaving = catalogFor(current.kind);
       const entering = catalogFor(kind);
 
-      // Moving between two catalogues drops the answer: a Mazda is not a make
-      // of motorcycle. Moving to or from free text keeps it, because a typed
-      // make is still a make.
       const swap = leaving !== undefined && entering !== undefined && leaving !== entering;
 
       return swap ? { ...current, kind, make: '', model: '' } : { ...current, kind };
@@ -132,7 +121,6 @@ export default function NewClientVehicleScreen() {
   }
 
   function pickMake(make: string) {
-    // A model belongs to one make, so changing the make drops it.
     setForm((current) => (current.make === make ? current : { ...current, make, model: '' }));
     setPicker(null);
   }
@@ -164,9 +152,6 @@ export default function NewClientVehicleScreen() {
       try {
         await uploadPhoto.mutateAsync({ id: vehicle.id, file: photo });
       } catch (cause) {
-        // The car is saved by now, so a failed photo must not read as a failed
-        // save. Alert survives the navigation that follows; an inline error on
-        // this screen would not.
         Alert.alert(
           'Фото',
           `Авто збережено, але фото не завантажилось: ${
@@ -435,8 +420,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: colors.fill,
   },
-  // Square: the picker crops to 1:1, so the preview shows exactly what will be
-  // stored (ADR-0026).
   photoPreview: {
     width: '100%',
     aspectRatio: 1,

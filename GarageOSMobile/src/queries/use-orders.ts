@@ -37,10 +37,6 @@ export function useOrderDetail(id: number) {
   });
 }
 
-// An order carries the money, so a write to it moves the vehicle's debt and the
-// finance totals as well — all of them have to be re-read, not just the order.
-// Exported because paying a vehicle's debt is the same write reached from the
-// car's card, and the two must drop the same caches.
 export function invalidateOrderWorld(client: QueryClient) {
   client.invalidateQueries({ queryKey: queryKeys.ordersAll });
   client.invalidateQueries({ queryKey: queryKeys.clientVehicles });
@@ -77,8 +73,6 @@ export function useDeleteOrder(id: number) {
   });
 }
 
-// Settling the order moves every number on the screen at once: the lines, the
-// vehicle's debt and `earned` in finance, which counts paid lines only.
 export function usePayOrder(id: number) {
   const client = useQueryClient();
 
@@ -88,15 +82,12 @@ export function usePayOrder(id: number) {
   });
 }
 
-// Photos ride on the order detail, so only that one read has to be dropped —
-// no money moved, so the vehicle and finance caches stay put.
 export function useAddOrderPhoto(orderId: number) {
   const client = useQueryClient();
 
   return useMutation({
     mutationFn: (file: UploadFile) => addOrderPhoto(orderId, file),
     onSuccess: (photo) => {
-      // The gallery renders thumbnails, so that is the one worth warming.
       warmPhotoCache(orderPhotoSource(orderId, photo.id, 'thumb'));
 
       client.invalidateQueries({ queryKey: queryKeys.order(orderId) });
@@ -104,8 +95,6 @@ export function useAddOrderPhoto(orderId: number) {
   });
 }
 
-// For the create screen: the naryad gets its id only when its POST comes
-// back, so the id travels with the file.
 export function useAddNewOrderPhoto() {
   const client = useQueryClient();
 

@@ -12,7 +12,6 @@ public static class DependencyInjection
     {
         services.AddSingleton(TimeProvider.System);
 
-        // Holds nothing but the root path, so one instance is enough.
         services.AddSingleton<IPhotoStorage, FileSystemPhotoStorage>();
 
         services.AddScoped<IClientVehicleService, ClientVehicleService>();

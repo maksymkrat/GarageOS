@@ -123,8 +123,6 @@ public class AuthService(
             throw new UnauthorizedException(SessionGone);
         }
 
-        // The end of the session comes from the sign-in, not from this call:
-        // refreshing keeps a day's work going, it does not start a new day.
         return await IssueSessionAsync(user, now, endsAt: user.RefreshExpiresAt.Value, notify: false, ct);
     }
 

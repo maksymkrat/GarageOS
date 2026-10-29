@@ -85,12 +85,10 @@ public class MyVehicleService(
         var vehicle = await vehicles.GetForUpdateAsync(userId, id, ct)
                       ?? throw new NotFoundException(VehicleNotFound);
 
-        // The whole log goes with it: log_entries cascades from my_vehicles.
         vehicles.Remove(vehicle);
 
         await uow.SaveChangesAsync(ct);
 
-        // The row is gone, so nothing points at its photo any more.
         photos.DeleteAll(PhotoOwner.MyVehicle, id);
     }
 
@@ -111,9 +109,6 @@ public class MyVehicleService(
             Kind = ContractFormat.ParseKind(request.Kind),
             Mileage = request.Mileage,
 
-            // Taken from the vehicle once, at the moment of service, and never
-            // read from it again: the entry keeps its own unit so that changing
-            // the vehicle's unit cannot rewrite history (ADR-0015).
             MileageUnit = vehicle.MileageUnit
         };
 
@@ -139,10 +134,6 @@ public class MyVehicleService(
         entry.Kind = ContractFormat.ParseKind(request.Kind);
         entry.Mileage = request.Mileage;
 
-        // MileageUnit is deliberately absent from the request and left alone
-        // here: an entry keeps the unit it was written in (ADR-0015). CreatedAt
-        // is likewise untouched — GarageDbContext pins it on update, so the date
-        // of the entry cannot be edited (ADR-0013).
         await uow.SaveChangesAsync(ct);
 
         return entry.ToModel().ToDto();
@@ -162,10 +153,6 @@ public class MyVehicleService(
         await uow.SaveChangesAsync(ct);
     }
 
-    // The owner check is the repository's: GetForUpdateAsync takes userId, so
-    // somebody else's vehicle reads as absent rather than as a 403 that would
-    // confirm it exists. Write order is the same as for a customer's car —
-    // file, row, then the old file (ADR-0026).
     public async Task<MyVehicleDto> SetPhotoAsync(
         int userId,
         int id,

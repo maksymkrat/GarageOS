@@ -5,18 +5,6 @@ using Microsoft.Extensions.Options;
 
 namespace GarageOS.Services.Photos;
 
-// Keyed by the entity the photo belongs to, not by the account that uploaded
-// it: the whole service tier is reachable by one master account, so a folder
-// per user would be a single folder holding every customer's car. A folder per
-// car makes deleting a car's photos one directory operation (ADR-0026).
-//
-//   {root}/client-vehicles/{vehicleId}/{photoId}.webp
-//   {root}/client-vehicles/{vehicleId}/{photoId}-thumb.webp
-//   {root}/my-vehicles/{vehicleId}/{photoId}.webp
-//   {root}/orders/{orderId}/{photoId}.webp
-//
-// Personal technique keys the same way even though it does have an owning user:
-// the folder follows the entity everywhere, so one rule explains the whole tree.
 public sealed class FileSystemPhotoStorage(IOptions<StorageOptions> options) : IPhotoStorage
 {
     private const int StreamBuffer = 64 * 1024;

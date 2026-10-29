@@ -12,8 +12,6 @@ interface NavButtonProps {
   children: ReactNode;
 }
 
-// One square for both, and the same square on every screen: the button that
-// leaves a screen must not change shape depending on where you are.
 function NavButton({ label, onPress, style, children }: NavButtonProps) {
   return (
     <Pressable
@@ -27,7 +25,6 @@ function NavButton({ label, onPress, style, children }: NavButtonProps) {
   );
 }
 
-// Opens the mode picker. Sits where a section's own screens would show Back.
 export function HomeButton({ style }: { style?: StyleProp<ViewStyle> }) {
   const router = useRouter();
 

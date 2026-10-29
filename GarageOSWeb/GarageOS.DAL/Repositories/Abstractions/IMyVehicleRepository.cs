@@ -15,9 +15,6 @@ public interface IMyVehicleRepository
         bool includeLog,
         CancellationToken ct = default);
 
-    // Tracked, unlike the reads above: what comes back is going to be
-    // changed or removed, and AsNoTracking would make the change invisible
-    // to SaveChanges.
     Task<MyVehicleEntity?> GetForUpdateAsync(int userId, int id, CancellationToken ct = default);
 
     Task<LogEntryEntity?> GetLogEntryForUpdateAsync(

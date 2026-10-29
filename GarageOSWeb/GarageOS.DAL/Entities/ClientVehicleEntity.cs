@@ -18,9 +18,6 @@ public class ClientVehicleEntity : BaseEntity
     public DateOnly LastVisit { get; set; }
     public DateOnly? NextService { get; set; }
 
-    // Id of the current photo, null when there is none. Only the id: the path
-    // is built in one place in code, because paths in a table rot the first
-    // time the folders are reorganised (ADR-0026).
     public Guid? PhotoId { get; set; }
 
     public ICollection<OrderEntity> Orders { get; set; } = [];

@@ -11,18 +11,12 @@ interface SearchPickerDialogProps {
   options: readonly string[];
   value: string;
   emptyText: string;
-  // A list of car makes is never complete, so the typed text has to be usable
-  // on its own — otherwise an unlisted make is a dead end.
   allowCustom?: boolean;
-  // Lets a caller widen the match, e.g. to the Cyrillic spelling of a make.
   match?: (option: string, query: string) => boolean;
   onPick: (value: string) => void;
   onCancel: () => void;
 }
 
-// The list lives only while it is open, so every opening starts from the whole
-// catalogue: a query left over from the last time reads as a list that lost
-// most of its rows, and clearing it in an effect costs a cascading render.
 export function SearchPickerDialog(props: SearchPickerDialogProps) {
   if (!props.visible) return null;
 
@@ -188,8 +182,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.text,
   },
-  // Tall enough to show that the list scrolls, short enough to leave the
-  // keyboard somewhere to go on a small screen.
   list: {
     maxHeight: 280,
   },

@@ -44,8 +44,6 @@ export const LOG_KIND_COLOR: Record<LogEntryKind, string> = {
   other: '#6F6A65',
 };
 
-// Ukrainian wording comes from the glossary, not from taste: «олива», not
-// «масло» (docs/atlas/07-glossary.md).
 export const LOG_KIND_LABEL: Record<LogEntryKind, string> = {
   oil: 'Олива',
   brakes: 'Гальма',

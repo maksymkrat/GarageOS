@@ -1,5 +1,3 @@
-// Reloads every app connected to the Metro dev server over its `/message`
-// websocket — the channel `expo start` uses for its own `r` key.
 import { setTimeout as sleep } from 'node:timers/promises';
 import { pathToFileURL } from 'node:url';
 

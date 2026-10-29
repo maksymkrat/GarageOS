@@ -17,9 +17,6 @@ export default function HomeScreen() {
   const vehicles = useMyVehicles();
 
   const clientVehicleCount = clientVehicles.data?.length ?? 0;
-  // «В роботі» covers two states, not one: the car is on the lift, or it waits
-  // for a part. In both the visit is open and the work is unfinished, which is
-  // what the number on the card promises (07-glossary).
   const inWorkCount =
     clientVehicles.data?.filter(
       (vehicle) => vehicle.status === 'in_work' || vehicle.status === 'waiting_part',
@@ -125,7 +122,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  // The square of the Back and Home buttons on every other screen.
   signOut: {
     width: 36,
     height: 36,

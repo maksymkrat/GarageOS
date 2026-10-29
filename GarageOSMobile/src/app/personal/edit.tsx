@@ -44,8 +44,6 @@ export default function EditMyVehicleScreen() {
               pending={deleteVehicle.isPending}
               onConfirm={() =>
                 deleteVehicle.mutate(undefined, {
-                  // The card this screen sits on top of is gone too, so going
-                  // back would land on a 404 — replace the whole stack instead.
                   onSuccess: () => router.replace('/personal'),
                 })
               }

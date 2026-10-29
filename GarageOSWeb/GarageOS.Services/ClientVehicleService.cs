@@ -47,9 +47,6 @@ public class ClientVehicleService(
             siblings);
     }
 
-    // The card's own button settles the whole debt, which may span more than
-    // one order, so all of them go in a single transaction rather than one
-    // request per order from the client.
     public async Task<ClientVehicleDetailDto> PayVehicleAsync(int id, CancellationToken ct = default)
     {
         var today = DateOnly.FromDateTime(time.GetLocalNow().DateTime);
@@ -72,10 +69,6 @@ public class ClientVehicleService(
             siblings);
     }
 
-    // The file is written before the row, and the row before the old file is
-    // unlinked. A file nobody points at is litter that can be swept; a row
-    // pointing at a file that is gone is a broken picture on the screen
-    // (ADR-0026).
     public async Task<ClientVehicleDto> SetPhotoAsync(
         int id,
         Stream upload,
@@ -86,7 +79,6 @@ public class ClientVehicleService(
 
         var previous = vehicle.PhotoId;
 
-        // Version 7 is time-ordered, so the folder lists in upload order.
         var photoId = Guid.CreateVersion7();
 
         var processed = PhotoProcessor.Process(upload);
@@ -103,8 +95,6 @@ public class ClientVehicleService(
 
         await uow.SaveChangesAsync(ct);
 
-        // A replacement never overwrites: the new picture got its own id, and
-        // the old files go only once no row mentions them any more.
         if (previous is not null)
         {
             photos.Delete(PhotoOwner.ClientVehicle, id, previous.Value);
@@ -141,8 +131,6 @@ public class ClientVehicleService(
         var vehicle = await vehicles.GetByIdAsync(id, ct)
                       ?? throw new NotFoundException(VehicleNotFound);
 
-        // The id in the path has to be this car's current photo. A stale or
-        // guessed id reads as absent instead of as somebody else's picture.
         if (vehicle.PhotoId != photoId) throw new NotFoundException(PhotoNotFound);
 
         return photos.Open(PhotoOwner.ClientVehicle, id, photoId, size)
@@ -161,9 +149,6 @@ public class ClientVehicleService(
 
         await uow.SaveChangesAsync(ct);
 
-        // HasDebt is a state the master sets by hand; the money it refers to
-        // is still counted from the unpaid lines (ADR-0011), so the debt is
-        // read after the save rather than derived from the new status.
         var debt = await vehicles.GetDebtAsync(id, ct);
 
         return vehicle.ToModel().ToDto(debt);

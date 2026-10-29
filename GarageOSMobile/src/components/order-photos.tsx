@@ -18,9 +18,6 @@ interface OrderPhotosProps {
   photos: OrderPhoto[];
 }
 
-// A gallery, not a single picture: adding appends, and removing is per photo,
-// so the picker offers only Camera and Gallery while a tap on a thumbnail asks
-// about that one (ADR-0027).
 export function OrderPhotos({ orderId, photos }: OrderPhotosProps) {
   const add = useAddOrderPhoto(orderId);
   const remove = useDeleteOrderPhoto(orderId);

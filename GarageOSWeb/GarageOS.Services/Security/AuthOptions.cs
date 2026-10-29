@@ -11,10 +11,6 @@ public sealed class JwtOptions
 
     public TimeSpan AccessLifetime { get; set; } = TimeSpan.FromMinutes(15);
 
-    // How long one sign-in lasts, counted from the sign-in itself: a refresh
-    // hands out new tokens but never moves this end. A working day with a
-    // margin, so the master signs in in the morning and is not asked again
-    // (ADR-0028).
     public TimeSpan RefreshLifetime { get; set; } = TimeSpan.FromHours(14);
 }
 

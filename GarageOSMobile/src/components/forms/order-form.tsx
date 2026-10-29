@@ -95,13 +95,7 @@ interface OrderFormProps {
   onSubmit: (values: OrderFormValues) => void;
   children?: ReactNode;
 
-  // Photos stay outside OrderFormValues because they are not part of
-  // CreateOrderInput: they upload one by one after the order exists, so the
-  // screen holds them and only lends them to the form (ADR-0027).
   photos?: UploadFile[];
-  // Takes an updater, not a value: a batch pick calls it once per file before
-  // React has re-rendered, so appending to a captured array would keep only the
-  // last photo.
   onPhotos?: Dispatch<SetStateAction<UploadFile[]>>;
 }
 
@@ -282,9 +276,6 @@ export function OrderForm({
   );
 }
 
-
-// Before the order exists there is nothing to upload against, so the files are
-// only parked in state and the screen sends them once the POST comes back.
 function PickedPhotos({
   photos,
   onPhotos,
@@ -292,7 +283,6 @@ function PickedPhotos({
   photos: UploadFile[];
   onPhotos: Dispatch<SetStateAction<UploadFile[]>>;
 }) {
-  // Appends one by one, so a batch arrives in the order it was picked.
   const picker = usePhotoActions(
     async (file) => onPhotos((current) => [...current, file]),
     null,

@@ -13,8 +13,6 @@ namespace GarageOS.Api.Controllers;
 [Route("client-vehicles")]
 public class ClientVehiclesController(IClientVehicleService vehicles) : ControllerBase
 {
-    // The phone already shrinks the picture to about a tenth of this, so the
-    // cap is here for everything else: a bad client cannot fill the disk.
     private const long MaxPhotoBytes = 10 * 1024 * 1024;
 
     [HttpGet]
@@ -32,9 +30,6 @@ public class ClientVehiclesController(IClientVehicleService vehicles) : Controll
         CancellationToken ct) =>
         vehicles.UpdateStatusAsync(id, request, ct);
 
-    // Multipart, one field named `file`. The photo is cropped square and
-    // re-encoded on the way in, and the answer is the card with its new
-    // `photoId` (ADR-0026).
     [HttpPost("{id:int}/photo")]
     [RequestSizeLimit(MaxPhotoBytes)]
     public async Task<ClientVehicleDto> SetPhoto(
@@ -58,8 +53,6 @@ public class ClientVehiclesController(IClientVehicleService vehicles) : Controll
     public Task<ClientVehicleDto> DeletePhoto(int id, CancellationToken ct) =>
         vehicles.DeletePhotoAsync(id, ct);
 
-    // Streamed through the API rather than served as a static file: a photo of
-    // a customer's car is not public, and a static URL is a public URL.
     [HttpGet("{id:int}/photo/{photoId:guid}")]
     public async Task<IActionResult> GetPhoto(
         int id,
@@ -73,8 +66,6 @@ public class ClientVehiclesController(IClientVehicleService vehicles) : Controll
             ContractFormat.ParsePhotoSize(size),
             ct);
 
-        // Immutable because a new picture gets a new id, hence a new URL;
-        // private because the bytes are nobody else's business.
         Response.Headers.CacheControl = "private, max-age=31536000, immutable";
 
         return File(photo.Content, photo.ContentType);

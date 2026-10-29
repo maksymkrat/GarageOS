@@ -53,8 +53,6 @@ public class MyVehiclesController(IMyVehicleService vehicles) : ControllerBase
         return NoContent();
     }
 
-    // Same three shapes as a customer's car, only the owner comes from the
-    // token instead of the Master policy (ADR-0026).
     [HttpPost("{id:int}/photo")]
     [RequestSizeLimit(MaxPhotoBytes)]
     public async Task<MyVehicleDto> SetPhoto(
@@ -95,8 +93,6 @@ public class MyVehiclesController(IMyVehicleService vehicles) : ControllerBase
         return File(photo.Content, photo.ContentType);
     }
 
-    // A log entry has no URL of its own, so Location points at the vehicle,
-    // which is where the entry becomes readable.
     [HttpPost("{id:int}/log")]
     public async Task<ActionResult<LogEntryDto>> AddLogEntry(
         int id,

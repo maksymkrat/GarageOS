@@ -214,8 +214,6 @@ export default function OrderDetailScreen() {
   );
 }
 
-// Its own component because the mutation hook cannot be called inside
-// QueryState's render callback — the same reason StatusPicker takes an id.
 function PayButton({ orderId, paid, debt }: { orderId: number; paid: boolean; debt: number }) {
   const pay = usePayOrder(orderId);
   const off = paid || pay.isPending;

@@ -18,8 +18,6 @@ public interface IClientVehicleRepository
 
     Task<int> CountSiblingsAsync(int clientId, int exceptVehicleId, CancellationToken ct = default);
 
-    // Tracked and with the client loaded: the caller changes the row and
-    // then maps it back, and the owner's name travels in that DTO.
     Task<ClientVehicleEntity?> GetForUpdateAsync(int id, CancellationToken ct = default);
 
     void Add(ClientVehicleEntity vehicle);

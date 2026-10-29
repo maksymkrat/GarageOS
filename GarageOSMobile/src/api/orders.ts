@@ -17,9 +17,6 @@ export interface OrderDetail {
   order: Order;
   vehicle: ClientVehicle;
 
-  // On the detail rather than on `Order`: the list screens do not show photos,
-  // so there is no third `include*` flag and no collection that comes back
-  // empty for two different reasons.
   photos: OrderPhoto[];
 }
 
@@ -43,13 +40,10 @@ export function deleteOrder(id: number): Promise<void> {
   return request(`DELETE /orders/${id}`);
 }
 
-// Settles the whole order at once: every line becomes paid and the vehicle
-// becomes `ready`, so both come back together.
 export function payOrder(id: number): Promise<OrderDetail> {
   return request(`POST /orders/${id}/pay`);
 }
 
-// Appends — a naryad keeps a gallery, so there is no photo to supersede.
 export function addOrderPhoto(orderId: number, file: UploadFile): Promise<OrderPhoto> {
   return upload(`POST /orders/${orderId}/photos`, file);
 }
@@ -58,7 +52,6 @@ export function deleteOrderPhoto(orderId: number, photoId: number): Promise<void
   return request(`DELETE /orders/${orderId}/photos/${photoId}`);
 }
 
-// A photo row's bytes never change, so this URL is safe to cache forever.
 export function orderPhotoSource(orderId: number, photoId: number, size: PhotoSize) {
   return authorizedSource(`/orders/${orderId}/photos/${photoId}?size=${size}`);
 }

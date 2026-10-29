@@ -11,9 +11,6 @@ export const unstable_settings = {
   anchor: 'index',
 };
 
-// The window behind the whole app. It is white by default, and the service
-// tab bar is painted in a 6% cream that lets it through — which on Android
-// reads as a white strip under the navigation buttons.
 void SystemUI.setBackgroundColorAsync(colors.ink);
 
 export default function RootLayout() {
@@ -30,9 +27,6 @@ function RootNavigator() {
   const { session, restoring } = useSession();
   const signedIn = !!session;
 
-  // Nothing until the stored session has been checked: a frame of the
-  // sign-in screen in front of somebody who signed in this morning reads as
-  // being thrown out.
   if (restoring) return null;
 
   return (

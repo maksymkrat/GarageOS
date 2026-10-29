@@ -18,16 +18,11 @@ export default function NewOrderScreen() {
   const createOrder = useCreateOrder();
   const uploadPhoto = useAddNewOrderPhoto();
 
-  // Held here until the order exists: the upload endpoint is addressed by the
-  // order's id, and there is no id before the POST comes back (ADR-0027).
   const [photos, setPhotos] = useState<UploadFile[]>([]);
 
   async function submit(values: Parameters<typeof createOrder.mutateAsync>[0]) {
     const order = await createOrder.mutateAsync(values);
 
-    // One request per photo, in order, so the gallery keeps the order they were
-    // picked in. A failure here must not read as a failed order: the order is
-    // already saved, so it is reported and the screen moves on.
     const failed: string[] = [];
 
     for (const photo of photos) {

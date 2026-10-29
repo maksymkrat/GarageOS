@@ -30,8 +30,6 @@ function resolveBaseUrl(): string {
 
 export const baseUrl = resolveBaseUrl();
 
-// Only the local path. The file name and mime type are read off the file
-// itself, so there is one source for them instead of two that can disagree.
 export interface UploadFile {
   uri: string;
 }
@@ -56,10 +54,6 @@ async function toApiError(response: Response, endpoint: string): Promise<ApiErro
   return new ApiError(`Запит ${endpoint} не вдався (${response.status})`, endpoint, response.status);
 }
 
-// `fetch` rejects for everything that happens before a response exists: no
-// route to the host, a refused connection, a body the platform could not read.
-// Those are different problems with different fixes, so the underlying text is
-// carried through instead of being replaced by a guess about the network.
 function transportError(cause: unknown, endpoint: string): ApiError {
   const detail = cause instanceof Error ? cause.message : String(cause);
 
@@ -77,8 +71,6 @@ export function setAccessToken(token: string | null): void {
   accessToken = token;
 }
 
-// Set by the session: swaps an expired access token for a fresh one and
-// answers with it, or with null when the session itself is over.
 type UnauthorizedHandler = () => Promise<string | null>;
 
 let onUnauthorized: UnauthorizedHandler | null = null;
@@ -87,11 +79,6 @@ export function setUnauthorizedHandler(handler: UnauthorizedHandler | null): voi
   onUnauthorized = handler;
 }
 
-// A 401 on the way in is worth one silent retry — the access token lives
-// fifteen minutes and the session fourteen hours, so most of them mean
-// nothing more than "the token aged". The auth endpoints are excluded: a
-// refresh that answers 401 is the session ending, and retrying it would
-// only ask again (ADR-0028).
 async function renewed(path: string, status: number, retried: boolean): Promise<string | null> {
   if (status !== 401 || retried || onUnauthorized === null) return null;
   if (path.startsWith('/auth/')) return null;
@@ -99,8 +86,6 @@ async function renewed(path: string, status: number, retried: boolean): Promise<
   return onUnauthorized();
 }
 
-// expo-image fetches the URL itself, so a protected image needs the token
-// inside the source rather than around it.
 export function authorizedSource(path: string): { uri: string; headers?: Record<string, string> } {
   return {
     uri: `${baseUrl}${path}`,

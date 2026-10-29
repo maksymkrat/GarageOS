@@ -114,8 +114,6 @@ export function MyVehicleForm({
 
   const years = useMemo(() => vehicleYears(), []);
 
-  // A value saved earlier may be outside the catalogue; it still has to show as
-  // the current choice instead of disappearing from its own list.
   const makes = useMemo(() => {
     const known = catalog?.names ?? [];
 
@@ -138,9 +136,6 @@ export function MyVehicleForm({
       const leaving = catalogFor(current.kind);
       const entering = catalogFor(kind);
 
-      // What is already filled in has to survive the switch — but an answer
-      // from one catalogue means nothing in another, because a Mazda is not a
-      // make of motorcycle.
       const name = leaving ? current.name || composeName(current) : current.name;
       const fields = entering && !leaving ? entering.fields(name) : NO_FIELDS;
 
@@ -149,7 +144,6 @@ export function MyVehicleForm({
   }
 
   function pickMake(make: string) {
-    // A model belongs to one make, so changing the make drops it.
     setForm((current) => (current.make === make ? current : { ...current, make, model: '' }));
     setPicker(null);
   }
