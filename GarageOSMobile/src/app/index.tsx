@@ -17,8 +17,13 @@ export default function HomeScreen() {
   const vehicles = useMyVehicles();
 
   const clientVehicleCount = clientVehicles.data?.length ?? 0;
+  // «В роботі» covers two states, not one: the car is on the lift, or it waits
+  // for a part. In both the visit is open and the work is unfinished, which is
+  // what the number on the card promises (07-glossary).
   const inWorkCount =
-    clientVehicles.data?.filter((vehicle) => vehicle.status === 'in_work').length ?? 0;
+    clientVehicles.data?.filter(
+      (vehicle) => vehicle.status === 'in_work' || vehicle.status === 'waiting_part',
+    ).length ?? 0;
   const readyCount =
     clientVehicles.data?.filter((vehicle) => vehicle.status === 'ready').length ?? 0;
   const vehicleCount = vehicles.data?.length ?? 0;

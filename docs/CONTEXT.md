@@ -119,6 +119,7 @@ garage-login-flow.drawio докладна схема входу (дублює Me
 | статус наряду | його немає: статус має лише авто ([ADR-0017](atlas/adr/0017-order-without-own-status-and-date.md)) |
 | `orderPaid`, `orderEarnings` | рахує `src/lib/order.ts` з рядків |
 | `sameOwnerCount` | скільки **інших** авто на тому ж телефоні |
+| «в роботі» (лічильник на головній) | `in_work` + `waiting_part`: поняття над двома станами, коду в контракті не має ([07-glossary](atlas/07-glossary.md)) |
 | `FinanceStats.earned/works/parts` | лише рядки зі `paid`; `visits` — наряди за період, незалежно від оплати |
 
 Read-моделі, які сервер мусить склеювати сам: `ClientVehicleDetail`
@@ -209,8 +210,14 @@ Postgres.
 2. **Дефолти**: порожня скарга → `'Без опису'`; `mileageUnit` → `km`. `year` і
    `mileage` не підставляються — не передали, значить невідомо
    ([ADR-0012](atlas/adr/0012-optional-fields-and-single-log-note.md)).
-3. **Статус при створенні**: `createOrder: true` → `in_work` і наряд зі скаргою
-   з `complaint`; інакше `ready`.
+3. **Статус рухається сам на обох кінцях візиту**: `createOrder: true` → `in_work`
+   і наряд зі скаргою з `complaint`, інакше `ready`; далі кожен `POST /orders`
+   теж ставить `in_work` ([ADR-0032](atlas/adr/0032-new-order-puts-the-car-in-work.md)),
+   а оплата — `ready` ([ADR-0025](atlas/adr/0025-settle-order-in-one-action.md)).
+   Руками лишаються `waiting_part` і `has_debt`. `ready` — **кінцевий** стан: поняття «забрали»
+   в моделі немає, тож на дошці робіт його групи теж немає — дошка показує
+   `waiting_part`, `in_work`, `has_debt`
+   ([ADR-0031](atlas/adr/0031-ready-is-the-terminal-state.md)).
 4. **Наряд не існує без авто**: `GET /orders/{id}` дає `404` і тоді, коли наряд
    є, а його авто немає.
 5. **Дані з запиту не мутуються на місці** — нова версія через мутацію й

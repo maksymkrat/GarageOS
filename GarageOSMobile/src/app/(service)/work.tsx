@@ -1,18 +1,23 @@
 import { useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { clientVehiclePhotoSource } from '@/api/client-vehicles';
 import { PressableCard } from '@/components/ui/card';
 import { EmptyState, QueryState } from '@/components/ui/query-state';
 import { HomeButton } from '@/components/ui/nav-button';
 import { Screen } from '@/components/ui/screen';
+import { VehicleImage } from '@/components/ui/vehicle-image';
 import { useWorkBoard, type WorkBoardRow } from '@/queries/use-work-board';
 import { colors, fontFamily, radius, spacing } from '@/theme/tokens';
 import type { ClientVehicleStatus } from '@/types/domain';
 
+// The board holds what still waits for the master's hands, so `ready` is not
+// here: it is the terminal state and a finished car leaves the board for the
+// card index, where the «Готові» filter finds it (ADR-0031).
 const GROUPS: { status: ClientVehicleStatus; title: string; color: string }[] = [
   { status: 'waiting_part', title: 'Чекає деталь', color: colors.warning },
   { status: 'in_work', title: 'В роботі', color: colors.blue },
-  { status: 'ready', title: 'Готово, не забрали', color: colors.success },
+  { status: 'has_debt', title: 'Чекаю оплату', color: colors.danger },
 ];
 
 const LATE_THRESHOLD_DAYS = 5;
@@ -76,6 +81,18 @@ function WorkRow({ row }: { row: WorkBoardRow }) {
       accessibilityLabel={row.vehicle.plate}
       style={styles.row}>
       <View style={styles.rowInner}>
+        {/* Always a slot, photo or not — same rule as the card in the garage:
+            a row that changes shape with the picture reads as a glitch. */}
+        <VehicleImage
+          source={
+            row.vehicle.photoId === undefined
+              ? null
+              : clientVehiclePhotoSource(row.vehicle.id, row.vehicle.photoId, 'thumb')
+          }
+          glyph={30}
+          style={styles.photo}
+        />
+
         <View style={styles.rowMain}>
           <Text style={styles.plate}>{row.vehicle.plate}</Text>
           <Text style={styles.meta}>
@@ -167,6 +184,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: spacing.md,
+  },
+  // The thumb rendition, as everywhere a list shows cars (ADR-0026).
+  photo: {
+    width: 52,
+    height: 52,
+    borderRadius: radius.sm,
+    backgroundColor: colors.fill,
   },
   rowMain: {
     flex: 1,

@@ -1,4 +1,4 @@
-using GarageOS.DAL.Entities;
+﻿using GarageOS.DAL.Entities;
 using GarageOS.DAL.Repositories.Abstractions;
 using GarageOS.Domain.Enums;
 using GarageOS.Services.Abstractions;
@@ -55,7 +55,7 @@ public class OrderService(
     {
         var today = Today();
 
-        _ = await vehicles.GetByIdAsync(request.ClientVehicleId, ct)
+        var vehicle = await vehicles.GetByIdAsync(request.ClientVehicleId, ct)
             ?? throw new NotFoundException("Авто не знайдено");
 
         var order = new OrderEntity
@@ -68,6 +68,11 @@ public class OrderService(
         foreach (var part in request.Parts) order.Parts.Add(NewPart(part));
 
         orders.Add(order);
+
+        // A new order means the car is back in the shop, so it goes to the board
+        // on its own instead of waiting for the master to set the state by hand
+        // (ADR-0032).
+        vehicle.Status = ClientVehicleStatus.InWork;
 
         await uow.SaveChangesAsync(ct);
 

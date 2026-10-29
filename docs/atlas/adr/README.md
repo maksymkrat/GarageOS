@@ -46,3 +46,5 @@ ADR фіксує **одне** рішення: контекст, вибір, ал
 | [0028](0028-session-lasts-a-working-day.md) | Сесія живе робочий день: 14 годин від входу, токени — у сховищі пристрою | Accepted |
 | [0029](0029-vehicle-kind-picks-the-catalogue.md) | Вид техніки є і в картці клієнта, і він обирає каталог марок | Accepted |
 | [0030](0030-drop-reminders.md) | Нагадування прибрані: домен, ендпойнт і таблиця | Accepted |
+| [0031](0031-ready-is-the-terminal-state.md) | `ready` — кінцевий стан; дошка робіт показує лише активні авто | Accepted |
+| [0032](0032-new-order-puts-the-car-in-work.md) | Новий наряд сам ставить авто в `in_work` | Accepted |
